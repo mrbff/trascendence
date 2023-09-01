@@ -1,0 +1,62 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:latest
+    networks:
+      trascendence_network:
+    env_file:
+      - .env
+    restart: unless-stopped
+
+  nest:
+    build:
+      context: ./NestJS/
+      dockerfile: Dockerfile
+      target: development
+    depends_on:
+      - postgres
+    ports:
+      - "3000:3000"
+    networks:
+      trascendence_network:
+    env_file:
+      - .env
+    volumes:
+      - nest_volume:/usr/src/app/
+    command: npm run start:dev
+    restart: unless-stopped
+
+  svelte:
+    build:
+      context: ./Svelte/
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+    networks:
+      trascendence_network:
+    env_file:
+      - .env
+    volumes:
+      - svelte_volume:/usr/src/app/
+    restart: unless-stopped
+
+networks:
+  trascendence_network:
+
+volumes:
+  nest_volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: "./nest_volume/"
+    name: "nest_volume"
+
+  svelte_volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: "./svelte_volume/"
+    name: "svelte_volume"
