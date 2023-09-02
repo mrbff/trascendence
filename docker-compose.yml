@@ -5,6 +5,8 @@ services:
     image: postgres:latest
     networks:
       trascendence_network:
+        aliases:
+          - post
     env_file:
       - .env
     restart: unless-stopped
@@ -16,10 +18,10 @@ services:
       target: development
     depends_on:
       - postgres
-    ports:
-      - "3000:3000"
     networks:
       trascendence_network:
+        aliases:
+          - nest
     env_file:
       - .env
     volumes:
@@ -27,18 +29,39 @@ services:
     command: npm run start:dev
     restart: unless-stopped
 
-  svelte:
+  angular:
     build:
-      context: ./Svelte/
+      context: ./Angular/
       dockerfile: Dockerfile
     depends_on:
       - postgres
+      - nest
     networks:
       trascendence_network:
+        aliases:
+          - angular
     env_file:
       - .env
     volumes:
-      - svelte_volume:/usr/src/app/
+      - angular_volume:/usr/src/app/
+    restart: unless-stopped
+
+  nginx:
+    build:
+      context: ./Nginx/
+      dockerfile: Dockerfile
+    depends_on:
+      - postgres
+      - nest
+      - angular
+    ports:
+      - '8080:8080'
+    networks:
+      trascendence_network:
+        aliases:
+          - ngx
+    env_file:
+      - .env
     restart: unless-stopped
 
 networks:
@@ -53,10 +76,10 @@ volumes:
       device: "./nest_volume/"
     name: "nest_volume"
 
-  svelte_volume:
+  angular_volume:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: "./svelte_volume/"
-    name: "svelte_volume"
+      device: "./angular_volume/"
+    name: "angular_volume"

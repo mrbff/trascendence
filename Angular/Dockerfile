@@ -1,5 +1,7 @@
 FROM node:20-alpine
 
+RUN npm install -g @angular/cli
+
 WORKDIR /usr/src/app
 
 #COPY package*.json ./
@@ -8,4 +10,4 @@ WORKDIR /usr/src/app
 
 #COPY . .
 
-CMD ["npx", "vite", "dev"]
+CMD ["ng", "serve", "--host", "0.0.0.0", "--port", "4200"]
