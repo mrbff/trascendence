@@ -2,6 +2,8 @@ COMPOSE_FILE := docker-compose.yml
 
 build:
 	@docker-compose -f $(COMPOSE_FILE) build --no-cache
+	@cd angular_volume && npm install
+	@cd ../nest_volume && npm install
 
 up:
 	@echo "\e[32mStarting trascendece\e[0m"
