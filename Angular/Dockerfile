@@ -1,6 +1,6 @@
 FROM node:20-alpine
 
-RUN npm install -g @angular/cli
+RUN npm install -g @angular/cli && npm install -g bootstrap@3
 
 WORKDIR /usr/src/app
 
