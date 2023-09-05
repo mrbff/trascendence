@@ -1,1 +1,37 @@
 /* You can add global styles to this file, and also import other style files */
+@font-face {
+	font-family: 'Azonix';
+	src: url('assets/fonts/Azonix.otf') format('opentype');
+}
+
+@font-face {
+	font-family: 'Acqua';
+	src: url('assets/fonts/Aquatico-Regular.otf') format('opentype');
+}
+
+@font-face {
+	font-family: 'Newake';
+	src: url('assets/fonts/Newake-Font-Demo.otf') format('opentype');
+}
+
+.background {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-image: url('assets/home_wall.gif');
+	background-size: cover;
+	z-index: -1;
+}
+  
+.background::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.7);
+	z-index: -1;
+}

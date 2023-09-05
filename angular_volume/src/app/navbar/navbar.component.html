@@ -1,13 +1,40 @@
-<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+<body>
+    <nav>
+      <div class="navbar">
+		  <div class="container nav-container">
+			  <input class="checkbox" type="checkbox" name="" id="" />
+			  <div class="hamburger-lines">
+				  <span class="line line1"></span>
+				  <span class="line line2"></span>
+				  <span class="line line3"></span>
+				</div> 
+				<div class="logo"><a [routerLink]="['/home']">TRASCENDENCE</a></div>
+				<div class="menu-items">
+					
+				</div>
+			</div>
+      </div>
+    </nav>
+  </body>
 
-<div class="navbar">
-	<div class="logo"><a [routerLink]="['/home']">TRASCENDENCE</a></div>
-	<ul class="links">
-		<li><a href="Pong">Pong</a></li>
-		<li><a href="Leaderboard">Leaderboard</a></li>
-		<li><a href="Profile">Profile</a></li>
-		<li><a href="Friends">Friends</a></li>
-	</ul>
-	<div class="bx bx-menu" id="menu-icon"></div>
-</div>
-
+<body>
+    <nav>
+        <div class="logo">
+            <img src="logo.svg" alt="Logo Image">
+        </div>
+        <div class="hamburger">
+            <div class="line1"></div>
+            <div class="line2"></div>
+            <div class="line3"></div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="Pong">Pong</a></li>
+			<li><a href="Leaderboard">Leaderboard</a></li>
+			<li><a href="Profile">Profile</a></li>
+			<li><a href="Friends">Friends</a></li>
+            <li><button class="login-button" href="#">Login</button></li>
+            <li><button class="join-button" href="#">Join</button></li>
+        </ul>
+    </nav>
+    <script src="nav.js"></script>
+</body>
