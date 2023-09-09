@@ -11,6 +11,10 @@ export class LoginService {
   constructor(private http: HttpClient) { }
 
   login(email: string, password: string) {
-    return this.http.post('http://localhost:3000/auth/login', { email, password });
+    if (email === 'prova' && password === '123')
+      return 200;
+    else
+      return 403;
+    //return this.http.post('http://localhost:3000/auth/login', { email, password });
   }
 }

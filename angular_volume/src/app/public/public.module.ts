@@ -5,16 +5,19 @@ import { PublicRoutingModule } from './public-routing.module';
 import { PublicComponent } from './public.component';
 import { LoginComponent } from './components/login/login.component';
 import { FormsModule } from '@angular/forms';
+import { SignupComponent } from './components/signup/signup/signup.component';
 
 @NgModule({
   declarations: [
     PublicComponent,
-    LoginComponent
+    LoginComponent,
+    SignupComponent
   ],
   imports: [
     FormsModule,
     CommonModule,
     PublicRoutingModule
-  ]
+  ],
+  providers: [LoginComponent]
 })
 export class PublicModule { }

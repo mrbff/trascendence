@@ -1,4 +1,4 @@
-.login-container {
+.signup-container {
   font-family: Azonix;
   display: flex;
   justify-content: center;
@@ -6,7 +6,7 @@
   height: 100vh;
 }
 
-.login-box {
+.signup-box {
   padding: 30px;
   border-radius: 8px;
   color: orange;
@@ -16,14 +16,14 @@
   backdrop-filter: blur(15px);
 }
 
-.login-title {
+.signup-title {
   display: flex;
   justify-content: center;
-  font-size: 30px;
+  font-size: 20px;
   margin-bottom: 30px;
 }
 
-.login-input {
+.signup-input {
   font-family: Newake;
   border-radius: 80px;
   width: 80%;
@@ -37,23 +37,23 @@
   font-size: 15px;
 }
 
-.login-input::placeholder {
+.signup-input::placeholder {
   color: orange;
   background: transparent;
   text-indent: 20px;
 }
 
-.login-input:focus {
+.signup-input:focus {
   background: transparent;
 }
 
-.login-footer {
+.signup-footer {
   margin-top: 30px;
   font-size: 12px;
   text-align: center;
 }
 
-.login-footer a {
+.signup-footer a {
   color: #1da1f2;
   text-decoration: none;
 }
@@ -62,56 +62,16 @@
   display: flex;
   justify-content: center;
   font-size: 15px;
-  margin-top: 25px;
+  margin-top: 15px;
+  margin-bottom: 15px;
   color: red;
 }
 
-.oauth {
+.signup-button {
   font-family: Azonix;
-  margin-top: 5px;
   border-radius: 50px;
   padding: 15px 20px;
-  background-color: black;
+  background-color: orange;
   color: #ffffff;
   width: 100%;
-}
-
-.split-button {
-  display: flex;
-  overflow: hidden;
-}
-
-.split-button button {
-  margin-top: 15px;
-  font-family: Azonix;
-  text-align: center;
-  flex: 1;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  font-size: 16px;
-  padding: 10px;
-  transition: background 0.3s;
-}
-
-.split-button .left-half {
-  background-color: orange;
-  color: #fff;
-  border-top-left-radius: 50px;
-  border-top-right-radius: 0px;
-  border-bottom-left-radius: 50px;
-  border-bottom-right-radius: 0;
-}
-
-.split-button .right-half {
-  background-color: black;
-  color: #fff;
-  border-top-left-radius: 0px;
-  border-top-right-radius: 50px;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 50px;
-}
-
-.split-button button:hover {
-  background-color: #555;
 }
