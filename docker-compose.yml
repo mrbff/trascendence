@@ -9,7 +9,11 @@ services:
           - post
     env_file:
       - .env
+    volumes:
+      - postgres:/var/lib/postgresql/data
     restart: unless-stopped
+    ports:
+      - '5432:5432'
 
   nest:
     build:
@@ -83,3 +87,5 @@ volumes:
       o: bind
       device: "./angular_volume/"
     name: "angular_volume"
+
+  postgres:
