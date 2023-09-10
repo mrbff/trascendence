@@ -4,6 +4,7 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
+  user-select: none;
 }
 
 .login-box {
@@ -45,6 +46,23 @@
 
 .login-input:focus {
   background: transparent;
+}
+
+.input-group {
+  position: relative;
+}
+
+.input-group-append {
+  position: absolute;
+  right: 30px;
+  top: 45%;
+  transform: translateY(-50%);
+}
+
+.input-group-text {
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }
 
 .login-footer {
@@ -90,7 +108,7 @@
   outline: none;
   cursor: pointer;
   font-size: 16px;
-  padding: 10px;
+  padding: 15px;
   transition: background 0.3s;
 }
 

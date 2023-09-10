@@ -11,6 +11,7 @@ export class LoginComponent{
   email: string = '';
   password: string = '';
   errorMsg: string = '';
+  showPassword: boolean = false;
 
   constructor(private loginService: LoginService, private router: Router) {}
 
@@ -29,5 +30,9 @@ export class LoginComponent{
         this.errorMsg = "Invalid credentials";
       }
     }
+  }
+  
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 }
