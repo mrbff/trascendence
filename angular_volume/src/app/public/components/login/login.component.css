@@ -48,23 +48,6 @@
   background: transparent;
 }
 
-.input-group {
-  position: relative;
-}
-
-.input-group-append {
-  position: absolute;
-  right: 30px;
-  top: 45%;
-  transform: translateY(-50%);
-}
-
-.input-group-text {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-}
-
 .login-footer {
   margin-top: 30px;
   font-size: 12px;

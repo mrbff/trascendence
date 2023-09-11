@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { LoginService } from '../../../core/services/login.service';
 import { Router } from '@angular/router';
+import { DataService } from '../../services/data.service';
 
 @Component({
   selector: 'app-login',
@@ -9,20 +10,20 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent{
   email: string = '';
-  password: string = '';
   errorMsg: string = '';
-  showPassword: boolean = false;
 
-  constructor(private loginService: LoginService, private router: Router) {}
+  constructor(private loginService: LoginService, private router: Router, private data: DataService) {}
 
   onLogin() {
+    let password: string = this.data.getPassword();
+
     if (this.email.trim().length === 0) {
       this.errorMsg = "Insert Username";
-    } else if (this.password.trim().length === 0) {
+    } else if (password.trim().length === 0) {
       this.errorMsg = "Insert Password";
     } else {
       this.errorMsg = "";
-      let resp = this.loginService.login(this.email, this.password);
+      let resp = this.loginService.login(this.email, password);
       if (resp === 200) {
         this.errorMsg = "";
         this.router.navigate(['home']);
@@ -30,9 +31,5 @@ export class LoginComponent{
         this.errorMsg = "Invalid credentials";
       }
     }
-  }
-  
-  togglePasswordVisibility() {
-    this.showPassword = !this.showPassword;
   }
 }

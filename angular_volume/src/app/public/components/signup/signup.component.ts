@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { DataService } from 'src/app/public/services/data.service';
 
 @Component({
   selector: 'app-signup',
@@ -7,18 +8,20 @@ import { Component } from '@angular/core';
 })
 export class SignupComponent {
   email: string = '';
-  password: string = '';
-  confirmPassword: string = '';
   errorMsg: string = '';
 
+  constructor(private data:DataService) {}
+
   newUser() {
+    let password:string = this.data.getPassword();
+    let confirmPassword:string = this.data.getConfirm();
     if (this.email.trim().length === 0) {
       this.errorMsg = "Insert Email";
-    } else if (this.password.trim().length === 0) {
+    } else if (password.trim().length === 0) {
       this.errorMsg = "Insert Password";
-    } else if (this.confirmPassword.trim().length === 0) {
+    } else if (confirmPassword.trim().length === 0) {
       this.errorMsg = "Insert password again";
-    } else if (this.password !== this.confirmPassword) {
+    } else if (password !== confirmPassword) {
         this.errorMsg = "Passwords doesn't match";
     } else {
       this.errorMsg = "";
