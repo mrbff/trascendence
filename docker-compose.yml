@@ -32,6 +32,8 @@ services:
       - nest_volume:/usr/src/app/
     command: npm run start:dev
     restart: unless-stopped
+    ports:
+      - '3000:3000'
 
   angular:
     build:
