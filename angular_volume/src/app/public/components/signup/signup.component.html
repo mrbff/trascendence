@@ -12,6 +12,16 @@
           placeholder="Email"
         />
       </div>
+      <div class="form-group">
+        <input
+          [(ngModel)]="username"
+          name="username"
+          type="text"
+          class="form-control signup-input"
+          id="username"
+          placeholder="Username"
+        />
+      </div>
       <app-password
         [inputType]="'password'"
         [placeholder]="'Password'"

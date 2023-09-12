@@ -21,6 +21,9 @@ export class PasswordComponent {
   @Input()
   inputType!: string;
 
+  @Input()
+  id!: string;
+
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
