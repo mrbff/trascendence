@@ -2,26 +2,37 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: Azonix;
   text-decoration: none;
+  font-family: Azonix;
+  user-select: none;
 }
 
 .header {
+  background-image: radial-gradient(
+    circle farthest-corner at 10% 20%,
+    purple 17.8%,
+    orange 100.2%
+  );
+  z-index: -1;
+}
+
+.menu {
   top: 0;
   left: 0;
   width: 100%;
-  padding: 20px 50px;
-  background: transparent;
-  backdrop-filter: blur(50px);
+  padding: 15px 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 1;
+  backdrop-filter: blur(50px);
 }
 
 .logo {
-  font-size: 20px;
+  font-size: 25px;
   color: orange;
+  margin-top: 5px;
+  margin-left: 10px;
 }
 
 .navbar a {
@@ -31,5 +42,5 @@
 }
 
 .navbar a:hover {
-  color: orange;
+  color: silver;
 }
