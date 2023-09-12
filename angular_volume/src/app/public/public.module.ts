@@ -5,13 +5,15 @@ import { PublicRoutingModule } from './public-routing.module';
 import { PublicComponent } from './public.component';
 import { LoginComponent } from './components/login/login.component';
 import { FormsModule } from '@angular/forms';
-import { SignupComponent } from './components/signup/signup/signup.component';
+import { SignupComponent } from './components/signup/signup.component';
+import { PasswordComponent } from './components/password/password.component';
 
 @NgModule({
   declarations: [
     PublicComponent,
     LoginComponent,
-    SignupComponent
+    SignupComponent,
+    PasswordComponent
   ],
   imports: [
     FormsModule,

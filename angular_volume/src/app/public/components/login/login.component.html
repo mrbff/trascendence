@@ -1,27 +1,21 @@
 <div class="login-container">
   <div class="login-box">
     <h1 class="login-title">TRASCENDENCE</h1>
-    <form autocomplete="off">
-      <div class="form-group">
+    <form>
+      <div>
         <input
           [(ngModel)]="email"
           name="email"
           type="email"
-          class="form-control login-input"
+          class="login-input"
           id="email"
           placeholder="Email"
         />
       </div>
-      <div class="form-group">
-        <input
-          [(ngModel)]="password"
-          name="password"
-          type="password"
-          class="form-control login-input"
-          id="password"
-          placeholder="Password"
-        />
-      </div>
+      <app-password
+        [inputType]="'password'"
+        [placeholder]="'Password'"
+      ></app-password>
       <div class="split-button">
         <button class="left-half" (click)="onLogin()">LOGIN</button>
         <button class="right-half">42</button>
