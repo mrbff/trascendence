@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TokenService } from './token.service';
+import { Observable } from 'rxjs';
+import { UserData } from 'src/app/models/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -18,13 +20,8 @@ export class LoginService {
     return localStorage.getItem('user');
   }
 
-  login(email: string, password: string) {
-    if (email === 'prova' && password === '123'){
-      this.setUser(email);
-      return 200;
-    }
-    else
-      return 403;
-    //return this.http.post('http://localhost:3000/auth/login', { email, password });
+  login(user: UserData) : Observable<any>{
+      this.setUser(user.email);
+      return this.http.post('http://localhost:3000/auth/login', { user });
   }
 }

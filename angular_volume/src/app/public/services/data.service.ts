@@ -4,22 +4,31 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class DataService {
-  private password: string = '';
-  private confirmPass: string = '';
+  private _password: string;
+  private _confirmPass: string;
 
-  getPassword(): string {
-    return this.password;
+  constructor() {
+    this._password = '';
+    this._confirmPass = '';
+  }
+  get password(): string {
+    return this._password;
   }
 
-  getConfirm(): string {
-    return this.confirmPass;
+  get confirm(): string {
+    return this._confirmPass;
   }
 
-  setPassword(password: string) {
-    this.password = password;
+  set password(password: string) {
+    this._password = password;
   }
 
-  setConfirm(confirmPass: string) {
-    this.confirmPass = confirmPass;
+  set confirm(confirmPass: string) {
+    this._confirmPass = confirmPass;
+  }
+
+  reset() {
+    this._password = '';
+    this._confirmPass = '';
   }
 }

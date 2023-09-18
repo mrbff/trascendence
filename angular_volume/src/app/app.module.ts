@@ -8,17 +8,15 @@ import { PublicModule } from './public/public.module';
 import { PrivateModule } from './private/private.module';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     PublicModule,
-    PrivateModule
+    PrivateModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

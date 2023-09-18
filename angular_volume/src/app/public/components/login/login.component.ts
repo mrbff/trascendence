@@ -8,28 +8,46 @@ import { DataService } from '../../services/data.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
 })
-export class LoginComponent{
-  email: string = '';
-  errorMsg: string = '';
+export class LoginComponent {
+  email: string;
+  password: string;
+  errorMsg: string;
 
-  constructor(private loginService: LoginService, private router: Router, private data: DataService) {}
+  constructor(
+    private loginService: LoginService,
+    private router: Router,
+    private data: DataService
+  ) {
+    this.email = '';
+    this.password = '';
+    this.errorMsg = '';
+  }
 
   onLogin() {
-    let password: string = this.data.getPassword();
-
+    this.password = this.data.password;
     if (this.email.trim().length === 0) {
-      this.errorMsg = "Insert Username";
-    } else if (password.trim().length === 0) {
-      this.errorMsg = "Insert Password";
+      this.errorMsg = 'Insert Username';
+    } else if (this.password.trim().length === 0) {
+      this.errorMsg = 'Insert Password';
     } else {
-      this.errorMsg = "";
-      let resp = this.loginService.login(this.email, password);
-      if (resp === 200) {
-        this.errorMsg = "";
-        this.router.navigate(['home']);
-      } else if (resp === 403) {
-        this.errorMsg = "Invalid credentials";
-      }
+      this.errorMsg = '';
+      this.loginService
+        .login({ username: '', email: this.email, password: this.password })
+        .subscribe({
+          next: (response) => {
+            this.router.navigate(['home']);
+            resetInput();
+          },
+          error: (error) => {
+            this.errorMsg = 'Invalid credentials';
+            resetInput();
+          },
+        });
     }
+    const resetInput = () => {
+      this.email = '';
+      this.password = '';
+      this.data.reset;
+    };
   }
 }

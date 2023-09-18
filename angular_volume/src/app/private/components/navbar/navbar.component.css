@@ -7,7 +7,7 @@
   user-select: none;
 }
 
-.header {
+.navbar {
   background-image: radial-gradient(
     circle farthest-corner at 10% 20%,
     purple 17.8%,
@@ -25,7 +25,6 @@
   justify-content: space-between;
   align-items: center;
   z-index: 1;
-  backdrop-filter: blur(50px);
 }
 
 .logo {
