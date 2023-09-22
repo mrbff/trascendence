@@ -4,8 +4,8 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { PublicModule } from './public/public.module';
-import { PrivateModule } from './private/private.module';
+import { SharedModule } from './shared/shared.module';
+import { FeaturesModule } from './features/features.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -13,8 +13,8 @@ import { PrivateModule } from './private/private.module';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    PublicModule,
-    PrivateModule,
+    SharedModule,
+    FeaturesModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

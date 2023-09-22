@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DataService } from 'src/app/public/services/data.service';
+import { DataService } from 'src/app/shared/services/data.service';
 import { UserData } from 'src/app/models/user.model';
 import { UserService } from 'src/app/core/services/user.service';
 import { Router } from '@angular/router';
