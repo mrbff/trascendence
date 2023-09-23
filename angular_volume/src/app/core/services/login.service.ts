@@ -5,14 +5,12 @@ import { Observable } from 'rxjs';
 import { UserData } from 'src/app/models/user.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-
 export class LoginService {
+  constructor(private http: HttpClient) {}
 
-  constructor(private http: HttpClient) { }
-
-  setUser(name: string){
+  setUser(name: string) {
     localStorage.setItem('user', name);
   }
 
@@ -20,8 +18,8 @@ export class LoginService {
     return localStorage.getItem('user');
   }
 
-  login(user: UserData) : Observable<any>{
-      this.setUser(user.email);
-      return this.http.post('http://localhost:3000/auth/login', { user });
+  login(user: UserData): Observable<any> {
+    this.setUser(user.email);
+    return this.http.post('http://localhost:3000/auth/login', { user });
   }
 }

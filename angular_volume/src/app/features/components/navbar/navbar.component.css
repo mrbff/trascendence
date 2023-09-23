@@ -7,7 +7,14 @@
   user-select: none;
 }
 
-.navbar {
+.navbar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 65px;
+  border-bottom: 2px solid;
   background-image: radial-gradient(
     circle farthest-corner at 10% 20%,
     purple 17.8%,
@@ -20,7 +27,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  padding: 15px 50px;
+  padding: 25px 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -28,10 +35,7 @@
 }
 
 .logo {
-  font-size: 25px;
-  color: orange;
-  margin-top: 5px;
-  margin-left: 10px;
+  color: orange !important;
 }
 
 .navbar a {
