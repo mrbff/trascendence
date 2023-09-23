@@ -6,7 +6,7 @@ build:
 	@npm install --prefix ./nest_volume/
 
 up:
-	@echo "\e[32mStarting trascendece\e[0m"
+	@echo "\e[32mStarting trascendence\e[0m"
 	@docker-compose -f $(COMPOSE_FILE) up -d
 
 down:
