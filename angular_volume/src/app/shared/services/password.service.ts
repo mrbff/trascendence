@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 @Injectable({
   providedIn: 'root',
 })
-export class DataService {
+export class PasswordService {
   private _password: string;
   private _confirmPass: string;
 
@@ -11,6 +11,7 @@ export class DataService {
     this._password = '';
     this._confirmPass = '';
   }
+
   get password(): string {
     return this._password;
   }

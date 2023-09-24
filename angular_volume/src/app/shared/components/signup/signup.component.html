@@ -4,7 +4,7 @@
     <form autocomplete="off">
       <div class="form-group">
         <input
-          [(ngModel)]="email"
+          formControlName="email"
           name="email"
           type="email"
           class="form-control signup-input"
@@ -14,7 +14,7 @@
       </div>
       <div class="form-group">
         <input
-          [(ngModel)]="username"
+          formControlName="username"
           name="username"
           type="text"
           class="form-control signup-input"

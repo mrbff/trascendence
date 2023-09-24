@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { DataService } from 'src/app/shared/services/data.service';
-import { UserData } from 'src/app/models/user.model';
+import { Component } from '@angular/core';
+import { PasswordService } from 'src/app/shared/services/password.service';
 import { UserService } from 'src/app/core/services/user.service';
 import { Router } from '@angular/router';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-signup',
@@ -10,64 +10,59 @@ import { Router } from '@angular/router';
   styleUrls: ['./signup.component.css'],
 })
 export class SignupComponent {
-  email: string;
-  password: string;
-  confirmPassword: string;
-  username: string;
+  signupForm: FormGroup;
   errorMsg: string;
 
   constructor(
-    private data: DataService,
+    private passService: PasswordService,
+    private fb: FormBuilder,
     private userService: UserService,
     private router: Router
   ) {
-    this.email = '';
-    this.password = '';
-    this.confirmPassword = '';
-    this.username = '';
+    this.signupForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      username: ['', Validators.required],
+      password: ['', Validators.required],
+      confirmPassword: ['', Validators.required],
+    });
     this.errorMsg = '';
   }
 
   newUser() {
-    this.password = this.data.password;
-    this.confirmPassword = this.data.confirm;
-    if (this.email.trim().length === 0) {
+    const formValue = this.signupForm.value;
+    let password = this.passService.password;
+    let confirmPassword = this.passService.confirm;
+    if (formValue.email.trim().length === 0) {
       this.errorMsg = 'Insert Email';
-    } else if (this.username.trim().length === 0) {
+    } else if (formValue.username.trim().length === 0) {
       this.errorMsg = 'Insert Username';
-    } else if (this.password.trim().length === 0) {
+    } else if (password.trim().length === 0) {
       this.errorMsg = 'Insert Password';
-    } else if (this.confirmPassword.trim().length === 0) {
+    } else if (confirmPassword.trim().length === 0) {
       this.errorMsg = 'Insert password again';
-    } else if (this.password !== this.confirmPassword) {
+    } else if (password !== confirmPassword) {
       this.errorMsg = "Passwords doesn't match";
     } else {
       this.userService
         .registerUser({
-          username: this.username,
-          email: this.email,
-          password: this.password,
+          username: formValue.username,
+          email: formValue.email,
+          password: password,
         })
         .subscribe({
           next: (response) => {
             this.errorMsg = '';
             this.router.navigate(['login']);
-            resetInput();
+            this.signupForm.reset();
             console.log('Utente registrato con successo', response);
           },
           error: (error) => {
             this.errorMsg = 'Error. Try again.';
-            resetInput();
+            this.signupForm.reset();
             console.error('Errore durante la registrazione', error);
           },
         });
     }
-    const resetInput = () => {
-      this.email = '';
-      this.password = '';
-      this.confirmPassword = '';
-      this.username = '';
-      this.data.reset;
-    };
+    this.passService.reset();
   }
 }
