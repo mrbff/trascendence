@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DataService } from '../../services/data.service';
+import { PasswordService } from '../../services/password.service';
 import { Input } from '@angular/core';
 
 @Component({
@@ -12,7 +12,7 @@ export class PasswordComponent {
   confirmPass: string;
   showPassword: boolean;
 
-  constructor(private data: DataService) {
+  constructor(private passService: PasswordService) {
     this.password = '';
     this.confirmPass = '';
     this.showPassword = false;
@@ -32,8 +32,9 @@ export class PasswordComponent {
   }
 
   updatePass() {
-    if (this.password.length != 0) this.data.password = this.password;
-    if (this.confirmPass.length != 0) this.data.confirm = this.confirmPass;
+    if (this.password.length != 0) this.passService.password = this.password;
+    if (this.confirmPass.length != 0)
+      this.passService.confirm = this.confirmPass;
     this.password = '';
     this.confirmPass = '';
   }

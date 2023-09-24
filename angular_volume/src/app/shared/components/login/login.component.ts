@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { LoginService } from '../../../core/services/login.service';
 import { Router } from '@angular/router';
-import { DataService } from '../../services/data.service';
+import { PasswordService } from '../../services/password.service';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +16,7 @@ export class LoginComponent {
   constructor(
     private loginService: LoginService,
     private router: Router,
-    private data: DataService
+    private passService: PasswordService
   ) {
     this.email = '';
     this.password = '';
@@ -24,7 +24,7 @@ export class LoginComponent {
   }
 
   onLogin() {
-    this.password = this.data.password;
+    this.password = this.passService.password;
     if (this.email.trim().length === 0) {
       this.errorMsg = 'Insert Username';
     } else if (this.password.trim().length === 0) {
@@ -47,7 +47,7 @@ export class LoginComponent {
     const resetInput = () => {
       this.email = '';
       this.password = '';
-      this.data.reset;
+      this.passService.reset;
     };
   }
 }
