@@ -1,9 +1,12 @@
 -- CreateTable
 CREATE TABLE "Users" (
     "id" SERIAL NOT NULL,
-    "username" VARCHAR(45) NOT NULL,
-    "email" VARCHAR(45) NOT NULL,
-    "password" VARCHAR(100) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "username" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "hash" TEXT NOT NULL,
+    "hashedRt" TEXT,
 
     CONSTRAINT "Users_pkey" PRIMARY KEY ("id")
 );
