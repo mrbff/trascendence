@@ -55,7 +55,8 @@
 }
 
 .login-footer a {
-  color: #1da1f2;
+  font-size: 15px;
+  color: purple;
   text-decoration: none;
 }
 
@@ -106,6 +107,7 @@
 
 .split-button .right-half {
   background-color: black;
+  border: 1px solid orange;
   color: #fff;
   border-top-left-radius: 0px;
   border-top-right-radius: 50px;
@@ -113,8 +115,12 @@
   border-bottom-right-radius: 50px;
 }
 
-.split-button button:hover {
-  background-color: #555;
+.split-button .right-half:hover {
+  background-image: linear-gradient(to right, black, purple);
+}
+
+.split-button .left-half:hover {
+  background-image: linear-gradient(to right, purple, orange);
 }
 
 input:-webkit-autofill,
