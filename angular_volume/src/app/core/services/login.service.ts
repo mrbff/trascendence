@@ -19,7 +19,6 @@ export class LoginService {
   }
 
   login(user: UserData): Observable<any> {
-    this.setUser(user.email);
-    return this.http.post('http://localhost:3000/auth/login', { user });
+    return this.http.post('api/users', { user });
   }
 }

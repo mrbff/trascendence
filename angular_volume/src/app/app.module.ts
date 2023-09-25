@@ -7,6 +7,9 @@ import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
 import { FeaturesModule } from './features/features.module';
 
+import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
+import { FakeBack } from './fakeBack';
+
 @NgModule({
   declarations: [AppComponent],
   imports: [
@@ -15,6 +18,7 @@ import { FeaturesModule } from './features/features.module';
     HttpClientModule,
     SharedModule,
     FeaturesModule,
+    InMemoryWebApiModule.forRoot(FakeBack),
   ],
   providers: [],
   bootstrap: [AppComponent],

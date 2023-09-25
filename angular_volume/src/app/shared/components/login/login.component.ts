@@ -48,11 +48,14 @@ export class LoginComponent {
         })
         .subscribe({
           next: (response) => {
+            console.log(response);
             this.errorMsg = '';
+            this.loginService.setUser(response.username);
             this.signupForm.reset();
             this.router.navigate(['home']);
           },
           error: (error) => {
+            console.log(error);
             this.errorMsg = 'Invalid credentials';
             this.signupForm.reset();
           },

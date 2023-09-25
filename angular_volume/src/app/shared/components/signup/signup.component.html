@@ -5,7 +5,6 @@
       <div class="form-group">
         <input
           formControlName="email"
-          name="email"
           type="email"
           class="form-control signup-input"
           id="email"
@@ -15,7 +14,6 @@
       <div class="form-group">
         <input
           formControlName="username"
-          name="username"
           type="text"
           class="form-control signup-input"
           id="username"
@@ -43,16 +41,13 @@
         <input
           formControlName="confirmPassword"
           class="input-group"
-          [type]="showPassword ? 'text' : 'password'"
+          [type]="showConfirm ? 'text' : 'password'"
           placeholder="Confirm Password"
         />
         <div class="password-eye">
-          <span
-            class="password-eye-button"
-            (click)="togglePasswordVisibility()"
-          >
-            <i class="fa-regular fa-eye-slash" *ngIf="showPassword"></i>
-            <i class="fa-sharp fa-regular fa-eye" *ngIf="!showPassword"></i>
+          <span class="password-eye-button" (click)="toggleConfirmVisibility()">
+            <i class="fa-regular fa-eye-slash" *ngIf="showConfirm"></i>
+            <i class="fa-sharp fa-regular fa-eye" *ngIf="!showConfirm"></i>
           </span>
         </div>
       </div>
