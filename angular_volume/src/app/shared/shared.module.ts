@@ -15,6 +15,5 @@ import { ReactiveFormsModule } from '@angular/forms';
     SharedRoutingModule,
     ReactiveFormsModule,
   ],
-  providers: [LoginComponent],
 })
 export class SharedModule {}

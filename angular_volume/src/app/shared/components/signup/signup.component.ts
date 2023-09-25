@@ -12,6 +12,7 @@ export class SignupComponent {
   signupForm: FormGroup;
   errorMsg: string;
   showPassword: boolean;
+  showConfirm: boolean;
 
   constructor(
     private fb: FormBuilder,
@@ -26,10 +27,15 @@ export class SignupComponent {
     });
     this.errorMsg = '';
     this.showPassword = false;
+    this.showConfirm = false;
   }
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmVisibility() {
+    this.showConfirm = !this.showConfirm;
   }
 
   newUser() {
