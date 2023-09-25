@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { LoginService } from '../../../core/services/login.service';
 import { Router } from '@angular/router';
-import { PasswordService } from '../../services/password.service';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
@@ -9,45 +9,54 @@ import { PasswordService } from '../../services/password.service';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
-  email: string;
-  password: string;
   errorMsg: string;
+  showPassword: boolean;
+  signupForm: FormGroup;
 
   constructor(
     private loginService: LoginService,
     private router: Router,
-    private passService: PasswordService
+    private fb: FormBuilder
   ) {
-    this.email = '';
-    this.password = '';
     this.errorMsg = '';
+    this.showPassword = false;
+    this.signupForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: [null],
+    });
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 
   onLogin() {
-    this.password = this.passService.password;
-    if (this.email.trim().length === 0) {
-      this.errorMsg = 'Insert Username';
-    } else if (this.password.trim().length === 0) {
+    const formValue = this.signupForm.value;
+    if (this.signupForm.get('email')?.hasError('email')) {
+      this.errorMsg = 'Insert Valid Email';
+    } else if (
+      formValue.password === null ||
+      formValue.password.trim().length === 0
+    ) {
       this.errorMsg = 'Insert Password';
     } else {
-      this.errorMsg = '';
       this.loginService
-        .login({ username: '', email: this.email, password: this.password })
+        .login({
+          username: '',
+          email: formValue.email,
+          password: formValue.password,
+        })
         .subscribe({
           next: (response) => {
+            this.errorMsg = '';
+            this.signupForm.reset();
             this.router.navigate(['home']);
-            resetInput();
           },
           error: (error) => {
             this.errorMsg = 'Invalid credentials';
-            resetInput();
+            this.signupForm.reset();
           },
         });
     }
-    const resetInput = () => {
-      this.email = '';
-      this.password = '';
-      this.passService.reset;
-    };
   }
 }

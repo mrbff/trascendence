@@ -1,10 +1,10 @@
 <div class="login-container">
   <div class="login-box">
     <h1 class="login-title">TRASCENDENCE</h1>
-    <form>
+    <form [formGroup]="signupForm">
       <div>
         <input
-          [(ngModel)]="email"
+          formControlName="email"
           name="email"
           type="email"
           class="login-input"
@@ -12,10 +12,23 @@
           placeholder="Email"
         />
       </div>
-      <app-password
-        [inputType]="'password'"
-        [placeholder]="'Password'"
-      ></app-password>
+      <div class="input-form">
+        <input
+          formControlName="password"
+          class="input-group"
+          [type]="showPassword ? 'text' : 'password'"
+          placeholder="Password"
+        />
+        <div class="password-eye">
+          <span
+            class="password-eye-button"
+            (click)="togglePasswordVisibility()"
+          >
+            <i class="fa-regular fa-eye-slash" *ngIf="showPassword"></i>
+            <i class="fa-sharp fa-regular fa-eye" *ngIf="!showPassword"></i>
+          </span>
+        </div>
+      </div>
       <div class="split-button">
         <button class="left-half" (click)="onLogin()">LOGIN</button>
         <button class="right-half">42</button>
