@@ -20,7 +20,6 @@ export class RtStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
         if (authorizationHeader) {
             refreshToken = authorizationHeader.replace('Bearer', '').trim();
         } else {
-            // Throw an HttpException
             throw new HttpException('Authorization header is missing', HttpStatus.UNAUTHORIZED);
         }
     }

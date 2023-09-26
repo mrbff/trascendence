@@ -11,6 +11,7 @@ export class AuthService {
   constructor(private prisma: PrismaService, private jwtService: JwtService) {}
     
   async signupLocal(dto: AuthDto): Promise<Tokens> {
+    
     const hash = await this.hashData(dto.password);
 
     const newUser = await this.prisma.users.create({
@@ -21,9 +22,10 @@ export class AuthService {
         },
     });
 
-    const tokens = await this.getTokens(newUser.id, newUser.email);
+    const tokens = await this.getTokens(newUser.id, newUser.username, newUser.email);
     await this.updateRtHash(newUser.id, tokens.refresh_token);
     return tokens;
+  
   }
     
   signinLocal() {}
@@ -40,11 +42,12 @@ export class AuthService {
     return bcrypt.hash(data, 10);
   }
 
-  async getTokens(userId: number, email: string): Promise<Tokens> {
+  async getTokens(userId: number, username: string,  email: string): Promise<Tokens> {
     const [at, rt] = await Promise.all([
       this.jwtService.signAsync(
         {
           sub: userId,
+          username,
           email,
         },
         {
@@ -55,6 +58,7 @@ export class AuthService {
       this.jwtService.signAsync(
         {
           sub: userId,
+          username,
           email,
         },
         {
