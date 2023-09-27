@@ -15,11 +15,9 @@
   width: 100%;
   height: 65px;
   border-bottom: 2px solid;
-  background-image: radial-gradient(
-    circle farthest-corner at 10% 20%,
-    purple 17.8%,
-    orange 100.2%
-  );
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(40px);
   z-index: -1;
 }
 
@@ -27,7 +25,7 @@
   top: 0;
   left: 0;
   width: 100%;
-  padding: 25px 50px;
+  padding: 22px 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -36,14 +34,15 @@
 
 .logo {
   color: orange !important;
+  font-size: 30px !important;
+  padding-right: 50px;
 }
 
 .navbar a {
-  font-size: 18px;
+  font-size: 20px;
   color: white;
-  margin-left: 40px;
 }
 
 .navbar a:hover {
-  color: silver;
+  color: orange;
 }

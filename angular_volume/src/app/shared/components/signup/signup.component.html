@@ -20,37 +20,14 @@
           placeholder="Username"
         />
       </div>
-      <div class="input-form">
-        <input
-          formControlName="password"
-          class="input-group"
-          [type]="showPassword ? 'text' : 'password'"
-          placeholder="Password"
-        />
-        <div class="password-eye">
-          <span
-            class="password-eye-button"
-            (click)="togglePasswordVisibility()"
-          >
-            <i class="fa-regular fa-eye-slash" *ngIf="showPassword"></i>
-            <i class="fa-sharp fa-regular fa-eye" *ngIf="!showPassword"></i>
-          </span>
-        </div>
-      </div>
-      <div class="input-form">
-        <input
-          formControlName="confirmPassword"
-          class="input-group"
-          [type]="showConfirm ? 'text' : 'password'"
-          placeholder="Confirm Password"
-        />
-        <div class="password-eye">
-          <span class="password-eye-button" (click)="toggleConfirmVisibility()">
-            <i class="fa-regular fa-eye-slash" *ngIf="showConfirm"></i>
-            <i class="fa-sharp fa-regular fa-eye" *ngIf="!showConfirm"></i>
-          </span>
-        </div>
-      </div>
+      <app-password
+        formControlName="password"
+        [placeholder]="'Password'"
+      ></app-password>
+      <app-password
+        formControlName="confirmPassword"
+        [placeholder]="'Confirm   password'"
+      ></app-password>
       <div class="error">{{ errorMsg }}</div>
       <button
         type="submit"

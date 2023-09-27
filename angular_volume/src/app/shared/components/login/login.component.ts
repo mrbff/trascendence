@@ -10,7 +10,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class LoginComponent {
   errorMsg: string;
-  showPassword: boolean;
   signupForm: FormGroup;
 
   constructor(
@@ -19,15 +18,11 @@ export class LoginComponent {
     private fb: FormBuilder
   ) {
     this.errorMsg = '';
-    this.showPassword = false;
+
     this.signupForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: [null],
     });
-  }
-
-  togglePasswordVisibility() {
-    this.showPassword = !this.showPassword;
   }
 
   onLogin() {
