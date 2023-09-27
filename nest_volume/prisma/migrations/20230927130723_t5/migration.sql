@@ -1,5 +1,5 @@
 -- CreateTable
-CREATE TABLE "Users" (
+CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -8,11 +8,11 @@ CREATE TABLE "Users" (
     "hash" TEXT NOT NULL,
     "hashedRt" TEXT,
 
-    CONSTRAINT "Users_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Users_username_key" ON "Users"("username");
+CREATE UNIQUE INDEX "users_username_key" ON "users"("username");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Users_email_key" ON "Users"("email");
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
