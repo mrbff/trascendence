@@ -20,10 +20,10 @@ export class SignupComponent {
     private router: Router
   ) {
     this.signupForm = this.fb.group({
-      email: [null, [Validators.required, Validators.email]],
-      username: [null],
-      password: [null],
-      confirmPassword: [null],
+      email: ['', [Validators.required, Validators.email]],
+      username: [''],
+      password: [''],
+      confirmPassword: [''],
     });
     this.errorMsg = '';
     this.showPassword = false;
@@ -40,28 +40,30 @@ export class SignupComponent {
 
   newUser() {
     const formValue = this.signupForm.value;
+    console.log(formValue);
     if (formValue.email.trim().length === 0) {
       this.errorMsg = 'Insert Email';
     } else if (this.signupForm.get('email')?.hasError('email')) {
       this.errorMsg = 'Insert Valid Email';
     } else if (
-      formValue.username === null ||
+      formValue.username === '' ||
       formValue.username.trim().length === 0
     ) {
       this.errorMsg = 'Insert Username';
     } else if (
-      formValue.password === null ||
+      formValue.password === '' ||
       formValue.password.trim().length === 0
     ) {
       this.errorMsg = 'Insert Password';
     } else if (
-      formValue.confirmPassword === null ||
+      formValue.confirmPassword === '' ||
       formValue.confirmPassword.trim().length === 0
     ) {
       this.errorMsg = 'Insert password again';
     } else if (formValue.password !== formValue.confirmPassword) {
       this.errorMsg = "Passwords doesn't match";
     } else {
+      this.errorMsg = '';
       this.userService
         .registerUser({
           username: formValue.username,
@@ -70,7 +72,6 @@ export class SignupComponent {
         })
         .subscribe({
           next: (response) => {
-            this.errorMsg = '';
             this.signupForm.reset();
             this.router.navigate(['login']);
             console.log('Utente registrato con successo', response);

@@ -5,30 +5,17 @@
       <div>
         <input
           formControlName="email"
+          id="email"
           name="email"
           type="email"
           class="login-input"
-          id="email"
           placeholder="Email"
         />
       </div>
-      <div class="input-form">
-        <input
-          formControlName="password"
-          class="input-group"
-          [type]="showPassword ? 'text' : 'password'"
-          placeholder="Password"
-        />
-        <div class="password-eye">
-          <span
-            class="password-eye-button"
-            (click)="togglePasswordVisibility()"
-          >
-            <i class="fa-regular fa-eye-slash" *ngIf="showPassword"></i>
-            <i class="fa-sharp fa-regular fa-eye" *ngIf="!showPassword"></i>
-          </span>
-        </div>
-      </div>
+      <app-password
+        formControlName="password"
+        [placeholder]="'Password'"
+      ></app-password>
       <div class="split-button">
         <button class="left-half" (click)="onLogin()">LOGIN</button>
         <button class="right-half">42</button>
