@@ -761,10 +761,10 @@
     "@types/jsonwebtoken" "9.0.2"
     jsonwebtoken "9.0.0"
 
-"@nestjs/passport@^10.0.1":
-  version "10.0.1"
-  resolved "https://registry.npmjs.org/@nestjs/passport/-/passport-10.0.1.tgz"
-  integrity sha512-hS22LeNj0LByS9toBPkpKyZhyKAXoHACLS1EQrjbAJJEQjhocOskVGwcMwvMlz+ohN+VU804/nMF1Zlya4+TiQ==
+"@nestjs/passport@^10.0.2":
+  version "10.0.2"
+  resolved "https://registry.npmjs.org/@nestjs/passport/-/passport-10.0.2.tgz"
+  integrity sha512-od31vfB2z3y05IDB5dWSbCGE2+pAf2k2WCBinNuTTOxN0O0+wtO1L3kawj/aCW3YR9uxsTOVbTDwtwgpNNsnjQ==
 
 "@nestjs/platform-express@^10.0.0":
   version "10.2.4"
@@ -1060,13 +1060,22 @@
   resolved "https://registry.npmjs.org/@types/parse-json/-/parse-json-4.0.0.tgz"
   integrity sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==
 
-"@types/passport-jwt@^3.0.9":
-  version "3.0.9"
-  resolved "https://registry.npmjs.org/@types/passport-jwt/-/passport-jwt-3.0.9.tgz"
-  integrity sha512-5XJt+79emfgpuBvBQusUPylFIVtW1QVAAkTRwCbRJAmxUjmLtIqUU6V1ovpnHPu6Qut3mR5Juc+s7kd06roNTg==
+"@types/passport-jwt@^3.0.10":
+  version "3.0.10"
+  resolved "https://registry.npmjs.org/@types/passport-jwt/-/passport-jwt-3.0.10.tgz"
+  integrity sha512-D2A911g2uiFsq/XXFBxQjcBcK4c6zPF2gAx9blEfz2AOXx5UUwsd8ZcMTcPe8z9dhW8LQBYLjv+vug2dvnRevA==
   dependencies:
     "@types/express" "*"
     "@types/jsonwebtoken" "*"
+    "@types/passport-strategy" "*"
+
+"@types/passport-local@^1.0.36":
+  version "1.0.36"
+  resolved "https://registry.npmjs.org/@types/passport-local/-/passport-local-1.0.36.tgz"
+  integrity sha512-NoL8ynRuzZHw/xUkLOTCscykNYlu6EasXKrGizF0ibMB+vq//big56+jgS2jtd9DZwL7q5fSJZDrZusex72Fjg==
+  dependencies:
+    "@types/express" "*"
+    "@types/passport" "*"
     "@types/passport-strategy" "*"
 
 "@types/passport-strategy@*":
@@ -4225,12 +4234,19 @@ passport-jwt@^4.0.1:
     jsonwebtoken "^9.0.0"
     passport-strategy "^1.0.0"
 
+passport-local@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/passport-local/-/passport-local-1.0.0.tgz"
+  integrity sha512-9wCE6qKznvf9mQYYbgJ3sVOHmCWoUNMVFoZzNoznmISbhnNNPhN9xfY3sLmScHMetEJeoY7CXwfhCe7argfQow==
+  dependencies:
+    passport-strategy "1.x.x"
+
 passport-strategy@^1.0.0, passport-strategy@1.x.x:
   version "1.0.0"
   resolved "https://registry.npmjs.org/passport-strategy/-/passport-strategy-1.0.0.tgz"
   integrity sha512-CB97UUvDKJde2V0KDWWB3lyf6PC3FaZP7YxZ2G8OAtn9p4HI9j9JLP9qjOGZFvyl8uwNT8qM+hGnz/n16NI7oA==
 
-"passport@^0.4.0 || ^0.5.0 || ^0.6.0":
+"passport@^0.4.0 || ^0.5.0 || ^0.6.0", passport@^0.6.0:
   version "0.6.0"
   resolved "https://registry.npmjs.org/passport/-/passport-0.6.0.tgz"
   integrity sha512-0fe+p3ZnrWRW74fe8+SvCyf4a3Pb2/h7gFkQ8yTJpAO50gDzlfjZUZTO1k5Eg9kUct22OxHLqDZoKUWRHOh9ug==
