@@ -1,14 +1,26 @@
-import { AuthService } from './auth.service';
-import { Body, Controller, Post , HttpCode, HttpStatus} from '@nestjs/common';
-import { AuthDto } from './dto';
-import { Tokens } from './types';
+import {
+    Body,
+    Controller,
+    HttpCode,
+    HttpStatus,
+    Post,
+    UseGuards,
+  } from '@nestjs/common';
+  
+  //import { Public, GetCurrentUserId, GetCurrentUser } from '../common/decorators';
+  //import { RtGuard } from '../common/guards';
+  import { AuthService } from './auth.service';
+  import { AuthDto } from './dto';
+  import { Tokens } from './types';
+import { Public } from '@prisma/client/runtime/library';
 
 @Controller('auth')
 export class AuthController {
     
     constructor(private authService: AuthService) {}
 
-    @Post('/local/signup')
+    @Post('local/signup')
+    @HttpCode(HttpStatus.CREATED)
     signupLocal(@Body() dto: AuthDto): Promise<Tokens> {
         return this.authService.signupLocal(dto);
     }
