@@ -1,0 +1,30 @@
+<app-navbar></app-navbar>
+<div class="profile-container">
+  <div class="profile-box">
+    <div class="username">{{ user }}</div>
+    <div class="profile-image-space">
+      <img
+        id="image"
+        [src]="profileImage"
+        alt="Profile image"
+        class="profile-image"
+        appChangeImage
+      />
+      <input
+        type="file"
+        accept="image/*"
+        (change)="onFileSelected($event)"
+        style="display: none"
+        #fileInput
+      />
+      <button
+        (click)="fileInput.click()"
+        appChangeImage
+        id="text"
+        class="change-text"
+      >
+        Change Image
+      </button>
+    </div>
+  </div>
+</div>

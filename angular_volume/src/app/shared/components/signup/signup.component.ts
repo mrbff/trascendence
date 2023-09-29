@@ -40,25 +40,15 @@ export class SignupComponent {
 
   newUser() {
     const formValue = this.signupForm.value;
-    console.log(formValue);
-    if (formValue.email.trim().length === 0) {
+    if (formValue.username.trim() === '') {
+      this.errorMsg = 'Insert Username';
+    } else if (formValue.email.trim() === '') {
       this.errorMsg = 'Insert Email';
     } else if (this.signupForm.get('email')?.hasError('email')) {
       this.errorMsg = 'Insert Valid Email';
-    } else if (
-      formValue.username === '' ||
-      formValue.username.trim().length === 0
-    ) {
-      this.errorMsg = 'Insert Username';
-    } else if (
-      formValue.password === '' ||
-      formValue.password.trim().length === 0
-    ) {
+    } else if (formValue.password.trim() === '') {
       this.errorMsg = 'Insert Password';
-    } else if (
-      formValue.confirmPassword === '' ||
-      formValue.confirmPassword.trim().length === 0
-    ) {
+    } else if (formValue.confirmPassword === '') {
       this.errorMsg = 'Insert password again';
     } else if (formValue.password !== formValue.confirmPassword) {
       this.errorMsg = "Passwords doesn't match";
@@ -77,8 +67,8 @@ export class SignupComponent {
             console.log('Utente registrato con successo', response);
           },
           error: (error) => {
-            this.signupForm.reset();
             this.errorMsg = 'Error. Try again.';
+            this.signupForm.reset();
             console.error('Errore durante la registrazione', error);
           },
         });
