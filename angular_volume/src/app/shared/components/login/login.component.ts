@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { LoginService } from '../../../core/services/login.service';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from 'src/app/core/auth/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,8 @@ export class LoginComponent {
   constructor(
     private loginService: LoginService,
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private auth: AuthService
   ) {
     this.errorMsg = '';
 
@@ -46,6 +48,7 @@ export class LoginComponent {
             console.log(response);
             this.errorMsg = '';
             this.loginService.setUser(response.username);
+            this.auth.login();
             this.signupForm.reset();
             this.router.navigate(['home']);
           },

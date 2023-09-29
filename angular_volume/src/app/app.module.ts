@@ -9,6 +9,7 @@ import { FeaturesModule } from './features/features.module';
 
 import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { FakeBack } from './fakeBack';
+import { CoreModule } from './core/core.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -16,6 +17,7 @@ import { FakeBack } from './fakeBack';
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
+    CoreModule,
     SharedModule,
     FeaturesModule,
     InMemoryWebApiModule.forRoot(FakeBack),
