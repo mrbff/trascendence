@@ -11,7 +11,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Users {
+model User {
   id        Int       @id @default(autoincrement())
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -21,5 +21,5 @@ model Users {
   hash      String
   hashedRt  String?
 
-  @@map("users")
+//  @@map("users")
 }
