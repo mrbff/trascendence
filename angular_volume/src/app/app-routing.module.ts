@@ -1,15 +1,17 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes, CanActivateFn } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './features/components/home/home.component';
 import { LoginComponent } from './shared/components/login/login.component';
-import { ProfileComponent } from './features/profile/profile.component';
+import { ProfileComponent } from './features/components/profile/profile.component';
 import { authGuard } from './core/guards/auth.guard';
+import { SignupComponent } from './shared/components/signup/signup.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent },
-  { path: 'home', component: HomeComponent },
-  { path: 'profile', component: ProfileComponent },
+  { path: '', component: LoginComponent },
+  { path: 'signup', component: SignupComponent },
+  { path: 'home', component: HomeComponent, canActivate: [authGuard] },
+  { path: 'profile', component: ProfileComponent, canActivate: [authGuard] },
+  { path: '**', redirectTo: '' },
 ];
 
 @NgModule({

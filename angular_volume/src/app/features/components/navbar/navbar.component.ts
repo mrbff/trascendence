@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { LoginService } from 'src/app/core/services/login.service';
+import { UserService } from 'src/app/core/services/user.service';
 
 @Component({
   selector: 'app-navbar',
@@ -9,8 +9,9 @@ import { LoginService } from 'src/app/core/services/login.service';
 export class NavbarComponent {
   user: string | null = null;
 
-  constructor(private login: LoginService) {
-    if (this.login.getUser() != null) this.user = this.login.getUser();
+  constructor(private userService: UserService) {
+    if (this.userService.getUser() != null)
+      this.user = this.userService.getUser();
     else this.user = 'PROFILE';
   }
 }

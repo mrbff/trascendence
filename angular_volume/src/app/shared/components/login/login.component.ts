@@ -1,35 +1,38 @@
-import { Component } from '@angular/core';
-import { LoginService } from '../../../core/services/login.service';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/core/auth/auth.service';
+import { UserService } from 'src/app/core/services/user.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   errorMsg: string;
-  signupForm: FormGroup;
+  loginForm: FormGroup;
 
   constructor(
-    private loginService: LoginService,
+    private userService: UserService,
     private router: Router,
     private fb: FormBuilder,
     private auth: AuthService
   ) {
     this.errorMsg = '';
-
-    this.signupForm = this.fb.group({
+    this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: [null],
     });
   }
 
+  ngOnInit(): void {
+    if (this.auth.getToken() !== null) this.router.navigate(['home']);
+  }
+
   onLogin() {
-    const formValue = this.signupForm.value;
-    if (this.signupForm.get('email')?.hasError('email')) {
+    const formValue = this.loginForm.value;
+    if (this.loginForm.get('email')?.hasError('email')) {
       this.errorMsg = 'Insert Valid Email';
     } else if (
       formValue.password === null ||
@@ -37,7 +40,7 @@ export class LoginComponent {
     ) {
       this.errorMsg = 'Insert Password';
     } else {
-      this.loginService
+      this.userService
         .login({
           username: '',
           email: formValue.email,
@@ -45,17 +48,17 @@ export class LoginComponent {
         })
         .subscribe({
           next: (response) => {
-            console.log(response);
             this.errorMsg = '';
-            this.loginService.setUser(response.username);
-            this.auth.login();
-            this.signupForm.reset();
+            console.log(response);
+            this.userService.setUser(response.username);
+            this.auth.saveToken(response.token);
+            this.loginForm.reset();
             this.router.navigate(['home']);
           },
           error: (error) => {
             console.log(error);
             this.errorMsg = 'Invalid credentials';
-            this.signupForm.reset();
+            this.loginForm.reset();
           },
         });
     }

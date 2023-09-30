@@ -4,19 +4,19 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class AuthService {
-  private status = false;
-
   constructor() {}
 
-  isLogged(): boolean {
-    return this.status;
+  private readonly TOKEN_KEY = 'auth_token';
+
+  saveToken(token: string) {
+    localStorage.setItem(this.TOKEN_KEY, token);
   }
 
-  login() {
-    this.status = true;
+  getToken(): string | null {
+    return localStorage.getItem(this.TOKEN_KEY);
   }
 
-  logout() {
-    this.status = false;
+  removeToken() {
+    localStorage.removeItem(this.TOKEN_KEY);
   }
 }

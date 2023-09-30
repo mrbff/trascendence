@@ -1,7 +1,7 @@
 <div class="login-container">
   <div class="login-box">
     <h1 class="login-title">TRASCENDENCE</h1>
-    <form [formGroup]="signupForm">
+    <form id="loginForm" [formGroup]="loginForm">
       <div>
         <input
           formControlName="email"
@@ -10,6 +10,7 @@
           type="email"
           class="login-input"
           placeholder="Email"
+          autocomplete="on"
         />
       </div>
       <app-password

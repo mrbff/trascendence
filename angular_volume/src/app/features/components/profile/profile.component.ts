@@ -1,5 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { LoginService } from 'src/app/core/services/login.service';
+import { UserService } from 'src/app/core/services/user.service';
+import { AuthService } from '../../../core/auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   templateUrl: './profile.component.html',
@@ -11,8 +13,13 @@ export class ProfileComponent {
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
-  constructor(private readonly login: LoginService) {
-    if (this.login.getUser() !== null) this.user = this.login.getUser();
+  constructor(
+    private readonly userService: UserService,
+    private readonly auth: AuthService,
+    private router: Router
+  ) {
+    if (this.userService.getUser() !== null)
+      this.user = this.userService.getUser();
     else this.user = 'USER';
     this.profileImage = 'https://i.ytimg.com/vi/RQnE2EDbIks/maxresdefault.jpg';
   }
@@ -29,5 +36,10 @@ export class ProfileComponent {
       };
       reader.readAsDataURL(file);
     }
+  }
+
+  logout() {
+    this.auth.removeToken();
+    this.router.navigate(['user']);
   }
 }

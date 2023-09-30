@@ -24,8 +24,9 @@ export class FakeBack implements InMemoryDbService {
           u.email == credentials.email && u.password == credentials.password
       );
       if (user) {
+        const fakeToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
         return reqInfo.utils.createResponse$(() => ({
-          body: { user, username: user.username },
+          body: { user, username: user.username, token: fakeToken },
           status: 200,
           statusText: 'OK',
         }));

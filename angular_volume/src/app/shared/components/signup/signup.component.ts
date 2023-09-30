@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AuthService } from 'src/app/core/auth/auth.service';
 
 @Component({
   selector: 'app-signup',
@@ -17,7 +18,8 @@ export class SignupComponent {
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private auth: AuthService
   ) {
     this.signupForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -28,6 +30,10 @@ export class SignupComponent {
     this.errorMsg = '';
     this.showPassword = false;
     this.showConfirm = false;
+  }
+
+  ngOnInit(): void {
+    if (this.auth.getToken() !== null) this.router.navigate(['home']);
   }
 
   togglePasswordVisibility() {
