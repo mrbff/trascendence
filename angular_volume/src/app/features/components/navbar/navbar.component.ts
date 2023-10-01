@@ -9,9 +9,9 @@ import { UserService } from 'src/app/core/services/user.service';
 export class NavbarComponent {
   user: string | null = null;
 
-  constructor(private userService: UserService) {
-    if (this.userService.getUser() != null)
-      this.user = this.userService.getUser();
-    else this.user = 'PROFILE';
+  constructor(private readonly userService: UserService) {
+    this.userService.getUser() !== null
+      ? (this.user = this.userService.getUser())
+      : (this.user = 'PROFILE');
   }
 }

@@ -16,12 +16,13 @@ export class ProfileComponent {
   constructor(
     private readonly userService: UserService,
     private readonly auth: AuthService,
-    private router: Router
+    private readonly router: Router
   ) {
     if (this.userService.getUser() !== null)
       this.user = this.userService.getUser();
     else this.user = 'USER';
-    this.profileImage = 'https://i.ytimg.com/vi/RQnE2EDbIks/maxresdefault.jpg';
+    this.profileImage =
+      'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
   }
 
   onFileSelected(event: Event) {

@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
-import { NavbarComponent } from '../navbar/navbar.component';
+import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
-export class HomeComponent {}
+export class HomeComponent {
+  constructor() {}
+}

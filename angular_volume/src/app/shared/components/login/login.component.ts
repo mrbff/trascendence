@@ -14,10 +14,10 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup;
 
   constructor(
-    private userService: UserService,
-    private router: Router,
-    private fb: FormBuilder,
-    private auth: AuthService
+    private readonly userService: UserService,
+    private readonly router: Router,
+    private readonly fb: FormBuilder,
+    private readonly auth: AuthService
   ) {
     this.errorMsg = '';
     this.loginForm = this.fb.group({
