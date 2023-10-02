@@ -32,6 +32,7 @@ RUN npm install
 
 RUN npm run build
 
+RUN npx prisma migrate dev
 #ENV NODE_ENV production
 
 RUN npm ci --only=production && npm cache clean --force
