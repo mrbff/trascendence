@@ -10,6 +10,8 @@ import { FeaturesModule } from './features/features.module';
 import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { FakeBack } from './fakeBack';
 import { CoreModule } from './core/core.module';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
 
 @NgModule({
   declarations: [AppComponent],
@@ -21,6 +23,8 @@ import { CoreModule } from './core/core.module';
     SharedModule,
     FeaturesModule,
     InMemoryWebApiModule.forRoot(FakeBack),
+    StoreModule.forRoot({}, {}),
+    EffectsModule.forRoot([]),
   ],
   providers: [],
   bootstrap: [AppComponent],

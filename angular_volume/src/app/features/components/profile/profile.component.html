@@ -1,7 +1,10 @@
 <app-navbar></app-navbar>
 <div class="profile-container">
   <div class="profile-box">
-    <div class="username">{{ user }}</div>
+    <div class="username">
+      {{ user }}
+      <button class="logout" (click)="logout()">LOGOUT</button>
+    </div>
     <div class="profile-image-space">
       <img
         id="image"

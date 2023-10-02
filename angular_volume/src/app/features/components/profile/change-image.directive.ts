@@ -1,9 +1,4 @@
-import {
-  AfterViewInit,
-  Directive,
-  ElementRef,
-  HostListener,
-} from '@angular/core';
+import { AfterViewInit, Directive, HostListener } from '@angular/core';
 
 @Directive({
   selector: '[appChangeImage]',
@@ -12,7 +7,7 @@ export class ChangeImageDirective implements AfterViewInit {
   private changeText: any;
   private imageSpace: any;
 
-  constructor(private element: ElementRef) {}
+  constructor() {}
 
   ngAfterViewInit(): void {
     this.changeText = document.querySelector('#text');
