@@ -28,9 +28,11 @@ COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modul
 
 COPY --chown=node:node . .
 
+RUN npm install
+
 RUN npm run build
 
-ENV NODE_ENV production
+#ENV NODE_ENV production
 
 RUN npm ci --only=production && npm cache clean --force
 
@@ -40,9 +42,9 @@ USER node
 # 	PRODUCTION	  #
 ###################
 
-FROM node:20-alpine As production
+#FROM node:20-alpine As production
 
-COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
-COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+#COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
+#COPY --chown=node:node --from=build /usr/src/app/dist ./dist
 
-CMD [ "node", "dist/main.js" ]
+#CMD [ "node", "dist/main.js" ]
