@@ -1,6 +1,7 @@
+import { Body } from '@nestjs/common';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, firstValueFrom, lastValueFrom } from 'rxjs';
 import { UserData } from 'src/app/models/user.model';
 
 @Injectable({
@@ -21,7 +22,20 @@ export class UserService {
     return this.http.post('api/users', { user });
   }
 
-  registerUser(userData: UserData): Observable<any> {
-    return this.http.post(`http://nest:3000/auth/register`, userData);
+  async registerUser(userData: UserData): Promise<any> {
+    try {
+      const response = await lastValueFrom(
+        this.http.post(`/users/signup`, userData, {
+          headers: {
+            'Content-Type': 'application/json',
+            accept: 'application/json',
+          },
+        })
+      );
+      console.log(`promise: ${response}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
   }
 }

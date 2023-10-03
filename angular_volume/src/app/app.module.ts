@@ -7,8 +7,6 @@ import { AppComponent } from './app.component';
 import { SharedModule } from './shared/shared.module';
 import { FeaturesModule } from './features/features.module';
 
-import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
-import { FakeBack } from './fakeBack';
 import { CoreModule } from './core/core.module';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
@@ -22,7 +20,7 @@ import { EffectsModule } from '@ngrx/effects';
     CoreModule,
     SharedModule,
     FeaturesModule,
-    InMemoryWebApiModule.forRoot(FakeBack),
+
     StoreModule.forRoot({}, {}),
     EffectsModule.forRoot([]),
   ],
