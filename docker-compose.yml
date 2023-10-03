@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 
 services:
   postgres:
@@ -7,13 +7,10 @@ services:
       trascendence_network:
         aliases:
           - post
-    env_file:
-      .env
-    volumes:
-      - postgres:/var/lib/postgresql/data
+    env_file: .env
     restart: unless-stopped
     ports:
-      - '5432:5432'
+      - "5432:5432"
 
   nest:
     build:
@@ -33,7 +30,7 @@ services:
     command: npm run start:dev
     restart: unless-stopped
     ports:
-      - '3000:3000'
+      - "3000:3000"
 
   angular:
     build:
@@ -61,7 +58,7 @@ services:
       - nest
       - angular
     ports:
-      - '8080:8080'
+      - "8080:8080"
     networks:
       trascendence_network:
         aliases:
@@ -89,5 +86,3 @@ volumes:
       o: bind
       device: "./angular_volume/"
     name: "angular_volume"
-
-  postgres:

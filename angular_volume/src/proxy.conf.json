@@ -1,0 +1,7 @@
+{
+  "/users/*": {
+    "target": "http://nest:3000/users/",
+    "secure": false,
+    "logLevel": "debug"
+  }
+}

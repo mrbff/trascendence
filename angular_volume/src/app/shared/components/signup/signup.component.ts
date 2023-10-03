@@ -60,24 +60,22 @@ export class SignupComponent {
       this.errorMsg = "Passwords doesn't match";
     } else {
       this.errorMsg = '';
-      this.userService
-        .registerUser({
-          username: formValue.username,
-          email: formValue.email,
-          password: formValue.password,
-        })
-        .subscribe({
-          next: (response) => {
-            this.signupForm.reset();
-            this.router.navigate(['login']);
-            console.log('Utente registrato con successo', response);
-          },
-          error: (error) => {
-            this.errorMsg = 'Error. Try again.';
-            this.signupForm.reset();
-            console.error('Errore durante la registrazione', error);
-          },
-        });
+      this.onSignup(formValue);
+    }
+  }
+
+  async onSignup(formValue: any) {
+    try {
+      const response = await this.userService.registerUser({
+        username: formValue.username,
+        email: formValue.email,
+        password: formValue.password,
+      });
+      this.signupForm.reset();
+      this.router.navigate(['login']);
+    } catch (error) {
+      this.errorMsg = 'Error. Try again.';
+      this.signupForm.reset();
     }
   }
 }
