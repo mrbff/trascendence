@@ -22,45 +22,43 @@ export class LoginComponent implements OnInit {
     this.errorMsg = '';
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: [null],
+      password: ['', [Validators.required]],
     });
   }
 
   ngOnInit(): void {
-    if (this.auth.getToken() !== null) this.router.navigate(['home']);
+    if (this.auth.getToken() !== null) {
+      this.router.navigate(['home']);
+    }
   }
 
-  onLogin() {
+  async onLogin() {
     const formValue = this.loginForm.value;
-    if (this.loginForm.get('email')?.hasError('email')) {
+    if (formValue.email.trim() === '') {
+      this.errorMsg = 'Insert Email';
+    } else if (this.loginForm.get('email')?.hasError('email')) {
       this.errorMsg = 'Insert Valid Email';
-    } else if (
-      formValue.password === null ||
-      formValue.password.trim().length === 0
-    ) {
+    } else if (formValue.password.trim() === '') {
       this.errorMsg = 'Insert Password';
     } else {
       this.userService
-        .login({
-          username: '',
-          email: formValue.email,
-          password: formValue.password,
+        .login(formValue.email, formValue.password)
+        .then((response) => {
+          this.errorMsg = '';
+          this.afterLogin(response);
         })
-        .subscribe({
-          next: (response) => {
-            this.errorMsg = '';
-            console.log(response);
-            this.userService.setUser(response.username);
-            this.auth.saveToken(response.token);
-            this.loginForm.reset();
-            this.router.navigate(['home']);
-          },
-          error: (error) => {
-            console.log(error);
-            this.errorMsg = 'Invalid credentials';
-            this.loginForm.reset();
-          },
+        .catch((error) => {
+          console.log(error);
+          this.errorMsg = 'Invalid credentials';
+          this.loginForm.reset();
         });
     }
+  }
+
+  afterLogin(response: any) {
+    this.auth.saveToken(response.token);
+    this.userService.setUser(response.username);
+    this.loginForm.reset();
+    this.router.navigate(['home']);
   }
 }

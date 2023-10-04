@@ -23,9 +23,9 @@ export class SignupComponent {
   ) {
     this.signupForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      username: [''],
-      password: [''],
-      confirmPassword: [''],
+      username: ['', [Validators.required]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
     });
     this.errorMsg = '';
     this.showPassword = false;
@@ -46,36 +46,57 @@ export class SignupComponent {
 
   newUser() {
     const formValue = this.signupForm.value;
-    if (formValue.username.trim() === '') {
-      this.errorMsg = 'Insert Username';
-    } else if (formValue.email.trim() === '') {
-      this.errorMsg = 'Insert Email';
-    } else if (this.signupForm.get('email')?.hasError('email')) {
-      this.errorMsg = 'Insert Valid Email';
-    } else if (formValue.password.trim() === '') {
-      this.errorMsg = 'Insert Password';
-    } else if (formValue.confirmPassword === '') {
-      this.errorMsg = 'Insert password again';
-    } else if (formValue.password !== formValue.confirmPassword) {
-      this.errorMsg = "Passwords doesn't match";
-    } else {
-      this.errorMsg = '';
-      this.onSignup(formValue);
+    const validations = [
+      {
+        condition: formValue.username.trim() === '',
+        message: 'Insert Username',
+      },
+      { condition: formValue.email.trim() === '', message: 'Insert Email' },
+      {
+        condition: this.signupForm.get('email')?.hasError('email'),
+        message: 'Insert Valid Email',
+      },
+      {
+        condition: formValue.password.trim() === '',
+        message: 'Insert Password',
+      },
+      {
+        condition: this.signupForm.get('password')?.hasError('minlength'),
+        message: 'Password too short(Min length: 6)',
+      },
+      {
+        condition: formValue.confirmPassword === '',
+        message: 'Insert password again',
+      },
+      {
+        condition: formValue.password !== formValue.confirmPassword,
+        message: "Passwords don't match",
+      },
+    ];
+    for (const validation of validations) {
+      if (validation.condition) {
+        this.errorMsg = validation.message;
+        return;
+      }
     }
+    this.errorMsg = '';
+    this.onSignup(formValue);
   }
 
   async onSignup(formValue: any) {
-    try {
-      const response = await this.userService.registerUser({
+    this.userService
+      .registerUser({
         username: formValue.username,
         email: formValue.email,
         password: formValue.password,
+      })
+      .then((response) => {
+        this.signupForm.reset();
+        this.router.navigate(['login']);
+      })
+      .catch((error) => {
+        this.errorMsg = 'Error. Try again.';
+        this.signupForm.reset();
       });
-      this.signupForm.reset();
-      this.router.navigate(['login']);
-    } catch (error) {
-      this.errorMsg = 'Error. Try again.';
-      this.signupForm.reset();
-    }
   }
 }
