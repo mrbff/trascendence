@@ -9,7 +9,7 @@ extends PrismaClient implements OnModuleInit, OnModuleDestroy
     super({
         datasources: {
             db: {
-                url: 'postgresql://postgres:123@post:5432/nest_db?schema=public',
+                url: process.env.DATABASE_URL,
             },
         },
     });
