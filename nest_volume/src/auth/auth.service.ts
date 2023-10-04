@@ -7,7 +7,9 @@ import {
   import { PrismaService } from './../prisma/prisma.service';
   import { JwtService } from '@nestjs/jwt';
   import { AuthEntity } from './entity/auth.entity';
-  
+  import { roundsOfHashing } from 'src/users/users.module';
+
+
   @Injectable()
   export class AuthService {
     constructor(private prisma: PrismaService, private jwtService: JwtService) {}
@@ -21,9 +23,10 @@ import {
         throw new NotFoundException(`No user found for email: ${email}`);
       }
       
-    //  const hashedpwd = await bcrypto
       // Step 2: Check if the password is correct
-      const isPasswordValid = user.hash === password;
+      const bcrypt = require('bcryptjs');
+      let hashedPass = await bcrypt.hash(password, roundsOfHashing);
+      const isPasswordValid = bcrypt.compare(user.hash, hashedPass);
   
       // If password does not match, throw an error
       if (!isPasswordValid) {
@@ -32,7 +35,10 @@ import {
   
       // Step 3: Generate a JWT containing the user's ID and return it
       return {
-        accessToken: this.jwtService.sign({ userId: user.id }),
+        accessToken: this.jwtService.sign({
+          userId: user.id,
+        //  username: user.username,
+        }),
       };
     }
   }

@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-
-export const roundsOfHashing = 10;
+import { roundsOfHashing } from './users.module';
 
 @Injectable()
 export class UsersService {
