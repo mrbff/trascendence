@@ -33,7 +33,9 @@ export class SignupComponent {
   }
 
   ngOnInit(): void {
-    if (this.auth.getToken() !== null) this.router.navigate(['home']);
+    if (this.auth.getToken() !== '') {
+      this.router.navigate(['home']);
+    }
   }
 
   togglePasswordVisibility() {

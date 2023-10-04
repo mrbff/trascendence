@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  async onLogin() {
+  onSubmit() {
     const formValue = this.loginForm.value;
     if (formValue.email.trim() === '') {
       this.errorMsg = 'Insert Email';
@@ -41,24 +41,23 @@ export class LoginComponent implements OnInit {
     } else if (formValue.password.trim() === '') {
       this.errorMsg = 'Insert Password';
     } else {
-      this.userService
-        .login(formValue.email, formValue.password)
-        .then((response) => {
-          this.errorMsg = '';
-          this.afterLogin(response);
-        })
-        .catch((error) => {
-          console.log(error);
-          this.errorMsg = 'Invalid credentials';
-          this.loginForm.reset();
-        });
+      this.errorMsg = '';
+      this.onLogin(formValue);
     }
   }
 
-  afterLogin(response: any) {
-    this.auth.saveToken(response.token);
-    this.userService.setUser(response.username);
-    this.loginForm.reset();
-    this.router.navigate(['home']);
+  async onLogin(formValue: any) {
+    this.userService
+      .login(formValue.email, formValue.password)
+      .then((response) => {
+        this.auth.saveToken(response.accessToken);
+        this.userService.setUser(response.username);
+        this.loginForm.reset();
+        this.router.navigate(['home']);
+      })
+      .catch((error) => {
+        this.errorMsg = 'Invalid credentials';
+        this.loginForm.reset();
+      });
   }
 }
