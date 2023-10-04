@@ -1,7 +1,6 @@
-import { Body } from '@nestjs/common';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, firstValueFrom, lastValueFrom } from 'rxjs';
+import { Observable, lastValueFrom } from 'rxjs';
 import { UserData } from 'src/app/models/user.model';
 
 @Injectable({
@@ -18,24 +17,19 @@ export class UserService {
     return localStorage.getItem('user');
   }
 
-  login(user: UserData): Observable<any> {
-    return this.http.post('api/users', { user });
+  async login(email: string, password: string): Promise<any> {
+    return lastValueFrom(
+      this.http.post(`/auth/login`, { email: email, password: password })
+    ).catch((error) => {
+      throw error;
+    });
   }
 
   async registerUser(userData: UserData): Promise<any> {
-    try {
-      const response = await lastValueFrom(
-        this.http.post(`/users/signup`, userData, {
-          headers: {
-            'Content-Type': 'application/json',
-            accept: 'application/json',
-          },
-        })
-      );
-      console.log(`promise: ${response}`);
-      return response;
-    } catch (error) {
-      throw error;
-    }
+    return lastValueFrom(this.http.post(`/users/signup`, userData)).catch(
+      (error) => {
+        throw error;
+      }
+    );
   }
 }
