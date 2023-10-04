@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./profile.component.css'],
 })
 export class ProfileComponent {
-  user: string | null;
+  user: string;
   profileImage: string;
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
@@ -18,9 +18,11 @@ export class ProfileComponent {
     private readonly auth: AuthService,
     private readonly router: Router
   ) {
-    if (this.userService.getUser() !== null)
+    if (this.userService.getUser() !== '')
       this.user = this.userService.getUser();
-    else this.user = 'USER';
+    else {
+      this.user = 'USER';
+    }
     this.profileImage =
       'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
   }
@@ -41,6 +43,7 @@ export class ProfileComponent {
 
   logout() {
     this.auth.removeToken();
+    this.userService.removeUser();
     this.router.navigate(['user']);
   }
 }
