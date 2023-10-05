@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
 
 @Component({
@@ -6,12 +6,15 @@ import { UserService } from 'src/app/core/services/user.service';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css'],
 })
-export class NavbarComponent {
-  user: string | null = null;
+export class NavbarComponent implements OnInit {
+  user!: string;
 
-  constructor(private readonly userService: UserService) {
-    this.userService.getUser() !== null
-      ? (this.user = this.userService.getUser())
-      : (this.user = 'PROFILE');
+  constructor(private readonly userService: UserService) {}
+
+  ngOnInit(): void {
+    this.user =
+      this.userService.getUser() === ''
+        ? 'PROFILE'
+        : this.userService.getUser();
   }
 }

@@ -10,39 +10,41 @@ import { UserService } from 'src/app/core/services/user.service';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
-  errorMsg: string;
-  loginForm: FormGroup;
+  errorMsg!: string;
+  loginForm!: FormGroup;
 
   constructor(
     private readonly userService: UserService,
     private readonly router: Router,
     private readonly fb: FormBuilder,
     private readonly auth: AuthService
-  ) {
-    this.errorMsg = '';
+  ) {}
+
+  ngOnInit(): void {
+    if (this.auth.getToken() !== '') {
+      this.router.navigate(['home']);
+      return;
+    }
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]],
     });
   }
 
-  ngOnInit(): void {
-    if (this.auth.getToken() !== null) {
-      this.router.navigate(['home']);
-    }
+  private isFieldEmpty(field: string): boolean {
+    return this.loginForm.get(field)?.hasError('required') || false;
   }
 
   onSubmit() {
-    const formValue = this.loginForm.value;
-    if (formValue.email.trim() === '') {
+    if (this.isFieldEmpty('email')) {
       this.errorMsg = 'Insert Email';
     } else if (this.loginForm.get('email')?.hasError('email')) {
       this.errorMsg = 'Insert Valid Email';
-    } else if (formValue.password.trim() === '') {
+    } else if (this.isFieldEmpty('password')) {
       this.errorMsg = 'Insert Password';
     } else {
       this.errorMsg = '';
-      this.onLogin(formValue);
+      this.onLogin(this.loginForm.value);
     }
   }
 
@@ -55,7 +57,7 @@ export class LoginComponent implements OnInit {
         this.loginForm.reset();
         this.router.navigate(['home']);
       })
-      .catch((error) => {
+      .catch(() => {
         this.errorMsg = 'Invalid credentials';
         this.loginForm.reset();
       });
