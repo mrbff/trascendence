@@ -1,9 +1,21 @@
 <app-navbar></app-navbar>
 <div class="profile-container">
   <div class="profile-box">
+    <div class="logout">
+      <button (click)="logout()">LOGOUT</button>
+    </div>
     <div class="username">
       {{ user }}
-      <button class="logout" (click)="logout()">LOGOUT</button>
+    </div>
+    <div class="matchbox">
+      <div class="win">WIN</div>
+      <div class="winRes">
+        {{ win }}
+      </div>
+      <div class="lose">LOSE</div>
+      <div class="loseRes">
+        {{ lose }}
+      </div>
     </div>
     <div class="profile-image-space">
       <img

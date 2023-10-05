@@ -10,6 +10,8 @@ import { Router } from '@angular/router';
 export class ProfileComponent implements OnInit {
   user!: string;
   profileImage!: string;
+  win!: number;
+  lose!: number;
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
@@ -27,6 +29,8 @@ export class ProfileComponent implements OnInit {
     }
     this.profileImage =
       'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
+    this.win = 0;
+    this.lose = 0;
   }
 
   onFileSelected(event: Event) {
