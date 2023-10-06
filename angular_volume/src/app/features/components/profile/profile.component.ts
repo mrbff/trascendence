@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { Router } from '@angular/router';
@@ -7,9 +7,11 @@ import { Router } from '@angular/router';
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
 })
-export class ProfileComponent {
-  user: string;
-  profileImage: string;
+export class ProfileComponent implements OnInit {
+  user!: string;
+  profileImage!: string;
+  win!: number;
+  lose!: number;
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
@@ -17,7 +19,9 @@ export class ProfileComponent {
     private readonly userService: UserService,
     private readonly auth: AuthService,
     private readonly router: Router
-  ) {
+  ) {}
+
+  ngOnInit(): void {
     if (this.userService.getUser() !== '')
       this.user = this.userService.getUser();
     else {
@@ -25,6 +29,8 @@ export class ProfileComponent {
     }
     this.profileImage =
       'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
+    this.win = 0;
+    this.lose = 0;
   }
 
   onFileSelected(event: Event) {
@@ -44,6 +50,6 @@ export class ProfileComponent {
   logout() {
     this.auth.removeToken();
     this.userService.removeUser();
-    this.router.navigate(['user']);
+    this.router.navigate(['login']);
   }
 }

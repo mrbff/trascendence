@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
-import { Observable, lastValueFrom } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 import { UserData } from 'src/app/models/user.model';
 
 @Injectable({
@@ -28,16 +28,10 @@ export class UserService {
   async login(email: string, password: string): Promise<any> {
     return lastValueFrom(
       this.http.post(`/auth/login`, { email: email, password: password })
-    ).catch((error) => {
-      throw error;
-    });
+    );
   }
 
   async registerUser(userData: UserData): Promise<any> {
-    return lastValueFrom(this.http.post(`/users/signup`, userData)).catch(
-      (error) => {
-        throw error;
-      }
-    );
+    return lastValueFrom(this.http.post(`/users/signup`, userData));
   }
 }

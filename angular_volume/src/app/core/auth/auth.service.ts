@@ -12,7 +12,6 @@ export class AuthService {
   }
 
   getToken(): string {
-    console.log(`TOKEN ${this.cookieService.get('token')}`);
     return this.cookieService.get('token');
   }
 
