@@ -29,6 +29,10 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { id } });
   }
 
+  findOneByEmail(email: string) {
+    return this.prisma.user.findUnique({ where: { email } });
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto) {
     const bcrypt = require("bcryptjs");
     if (updateUserDto.password) {
