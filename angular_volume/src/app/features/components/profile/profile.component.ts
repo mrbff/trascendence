@@ -52,4 +52,9 @@ export class ProfileComponent implements OnInit {
     this.userService.removeUser();
     this.router.navigate(['login']);
   }
+
+  addFriend() {
+    let icon: any = document.querySelector('.friend');
+    icon.style.color = 'grey';
+  }
 }
