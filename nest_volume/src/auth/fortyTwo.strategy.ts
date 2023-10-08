@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-oauth2';
 import { UsersService } from '../users/users.service';
+import { roundsOfHashing } from 'src/users/users.module';
 
 @Injectable()
 export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
@@ -22,10 +23,12 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     if (existingUser) {
         return existingUser;
     } else {
+        const bcrypt = require('bcryptjs');
+        let hashedPass = await bcrypt.hash(profile.password, roundsOfHashing);
         const newUser = await this.usersService.create({
             email: profile.email,
             username: profile.username,
-            password: profile.password
+            password: hashedPass
         });
         return newUser;
     }

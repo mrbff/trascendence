@@ -7,6 +7,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
 import { FortyTwoStrategy } from './fortyTwo.strategy';
 import { FortyTwoDto } from './dto/fortyTwo.dto';
+import { User } from '@prisma/client';
 
 
 @Controller('auth')
@@ -22,7 +23,7 @@ export class AuthController {
 
   @Get('42')
   @UseGuards(AuthGuard('42'))
-  async loginWithFortyTwo(@Body() { code }: FortyTwoDto) {
+  async loginWithFortyTwo() {
     // Initiates the 42 OAuth2 login flow
   }
 
@@ -30,6 +31,7 @@ export class AuthController {
   @UseGuards(AuthGuard('42'))
   async fortyTwoCallback(@Req() req: Request) {
     // Handles the 42 OAuth2 callback
-    const user = req.user;
+    const user = req.user as User;
+    return this.authService.login42(user.email);
   }
 }
