@@ -39,4 +39,19 @@ import {
         accessToken: this.jwtService.sign({userId: user.id }),
       };
     }
+
+    async login42(email: string): Promise<AuthEntity> {
+      // Fetch a user with the given email
+      const user = await this.prisma.user.findUnique({ where: { email: email } });
+      // If no user is found, throw an error
+      if (!user) {
+        throw new NotFoundException(`No user found for email: ${email}`);
+      }
+
+      //Generate a JWT containing the user's ID and return it
+      return {
+        username: user.username,
+        accessToken: this.jwtService.sign({userId: user.id }),
+      };
+    }
   }
