@@ -1,42 +1,53 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/core/auth/auth.service';
 import { UserService } from 'src/app/core/services/user.service';
 import { OAuth2Service } from 'src/app/core/auth/oauth2.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   errorMsg!: string;
   loginForm!: FormGroup;
+  private codeSubscription: Subscription;
 
   constructor(
     private readonly userService: UserService,
     private readonly router: Router,
     private readonly fb: FormBuilder,
     private readonly auth: AuthService,
-    private readonly Oauth2: OAuth2Service
+    private readonly Oauth2: OAuth2Service,
+    private readonly route: ActivatedRoute
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]],
     });
+    this.codeSubscription = new Subscription;
   }
 
   ngOnInit(): void {
-    this.Oauth2.getAuthCode();
+    this.codeSubscription = this.route.queryParams.subscribe(params => {
+      if (params['code']) {
+        this.Oauth2.getAuthCode();
+      }
+    });
     if (this.auth.getToken() !== '') {
       this.router.navigate(['home']);
-      return;
     }
   }
 
-  private isFieldEmpty(field: string): boolean {
-    return this.loginForm.get(field)?.hasError('required') || false;
+  ngOnDestroy(): void {
+    this.codeSubscription.unsubscribe();
+  }
+
+  on42Auth() {
+    this.Oauth2.redirectUser();
   }
 
   onSubmit() {
@@ -52,7 +63,7 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  async onLogin(formValue: any) {
+  private async onLogin(formValue: any) {
     this.userService
       .login(formValue.email, formValue.password)
       .then((response) => {
@@ -67,7 +78,7 @@ export class LoginComponent implements OnInit {
       });
   }
 
-  on42Auth() {
-    this.Oauth2.redirectUser();
+  private isFieldEmpty(field: string): boolean {
+    return this.loginForm.get(field)?.hasError('required') || false;
   }
 }

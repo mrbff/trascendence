@@ -87,7 +87,7 @@ export class SignupComponent {
     }
   }
 
-  async onSignup(formValue: any) {
+  private async onSignup(formValue: any) {
     this.userService
       .registerUser({
         username: formValue.username,
