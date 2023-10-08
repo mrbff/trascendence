@@ -5,6 +5,8 @@ import { AuthEntity } from './entity/auth.entity';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
+import { FortyTwoStrategy } from './fortyTwo.strategy';
+import { FortyTwoDto } from './dto/fortyTwo.dto';
 
 
 @Controller('auth')
@@ -20,7 +22,7 @@ export class AuthController {
 
   @Get('42')
   @UseGuards(AuthGuard('42'))
-  async loginWithFortyTwo() {
+  async loginWithFortyTwo(@Body() { code }: FortyTwoDto) {
     // Initiates the 42 OAuth2 login flow
   }
 
