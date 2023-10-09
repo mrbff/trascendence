@@ -12,7 +12,7 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
       tokenURL: 'https://api.intra.42.fr/oauth/token',
       clientID: process.env.FORTYTWO_CLIENT_ID,
       clientSecret: process.env.FORTYTWO_CLIENT_SECRET,
-      callbackURL: 'http://localhost:3000/auth/42/callback',
+      callbackURL: 'http://localhost:8080/login',
       scope: 'public',
     });
   }
@@ -21,16 +21,16 @@ export class FortyTwoStrategy extends PassportStrategy(Strategy, '42') {
     const existingUser = await this.usersService.findOneByEmail(profile.email);
 
     if (existingUser) {
-        return existingUser;
+      return existingUser;
     } else {
-        const bcrypt = require('bcryptjs');
-        let hashedPass = await bcrypt.hash(profile.password, roundsOfHashing);
-        const newUser = await this.usersService.create({
-            email: profile.email,
-            username: profile.username,
-            password: hashedPass
-        });
-        return newUser;
+      const bcrypt = require('bcryptjs');
+      let hashedPass = await bcrypt.hash(profile.password, roundsOfHashing);
+      const newUser = await this.usersService.create({
+        email: profile.email,
+        username: profile.username,
+        password: hashedPass,
+      });
+      return newUser;
     }
   }
 }

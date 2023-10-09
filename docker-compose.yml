@@ -43,6 +43,8 @@ services:
       trascendence_network:
         aliases:
           - angular
+    ports:
+      - "4200:4200"
     env_file:
       - .env
     volumes:
