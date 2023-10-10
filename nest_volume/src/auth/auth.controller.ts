@@ -9,7 +9,6 @@ import { FortyTwoStrategy } from './fortyTwo.strategy';
 import { FortyTwoDto } from './dto/fortyTwo.dto';
 import { User } from '@prisma/client';
 
-
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
@@ -27,11 +26,8 @@ export class AuthController {
     // Initiates the 42 OAuth2 login flow
   }
 
-  @Get('42/callback')
-  @UseGuards(AuthGuard('42'))
-  async fortyTwoCallback(@Req() req: Request) {
-    // Handles the 42 OAuth2 callback
-    const user = req.user as User;
-    return this.authService.login42(user.email);
+  @Post('callback')
+  handleCallback(@Body('code') code: string) {
+    return this.authService.exchangeCodeForAccessToken(code);
   }
 }
