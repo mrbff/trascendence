@@ -8,11 +8,13 @@ import { Request } from 'express';
 import { FortyTwoStrategy } from './fortyTwo.strategy';
 import { FortyTwoDto } from './dto/fortyTwo.dto';
 import { User } from '@prisma/client';
+import { UsersService } from '../users/users.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService, private usersService: UsersService, private prisma: PrismaService) {}
 
   @Post('login')
   @ApiOkResponse({ type: AuthEntity })
@@ -24,19 +26,20 @@ export class AuthController {
   @ApiOkResponse()
   async loginFortyTwo(@Body('code') code: string) : Promise<any> {
     const token42 = await this.authService.exchangeCodeForAccessToken(code);
-    console.log(`\n\n ${token42.access_token} \n\n`);
+  //  console.log(`\n\n ${token42.access_token} \n\n`);
     const profile42data = await this.authService.fetch42Profile(token42.access_token);
+  //  console.log(`\n\n ${profile42data.login}\n\n`)
+/*
+    let user = await this.usersService.findOneByEmail(profile42data.email);
+    console.log(`\n\n ${profile42data.email}\n\n`)
+    if (!user) {
+      user = await this.usersService.create({
+        email: profile42data.email,
+        username: profile42data.username,
+        password: 'culocalo',
+      });
+    }
+    */
     return profile42data;
   }
-  /*
-  @Get('42')
-  @UseGuards(AuthGuard('42'))
-  async loginWithFortyTwo() {
-    // Initiates the 42 OAuth2 login flow
-  }
-
-  @Post('callback')
-  handleCallback(@Body('code') code: string) {
-    return this.authService.exchangeCodeForAccessToken(code);
-  }*/
 }

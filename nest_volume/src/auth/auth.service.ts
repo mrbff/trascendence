@@ -47,14 +47,13 @@ export class AuthService {
   }
 
   async login42(email: string): Promise<AuthEntity> {
-    // Fetch a user with the given email
+  
     const user = await this.prisma.user.findUnique({ where: { email: email } });
-    // If no user is found, throw an error
+ 
     if (!user) {
       throw new NotFoundException(`No user found for email: ${email}`);
     }
-
-    //Generate a JWT containing the user's ID and return it
+    
     return {
       username: user.username,
       accessToken: this.jwtService.sign({ userId: user.id }),
@@ -87,15 +86,11 @@ export class AuthService {
       Authorization: `Bearer ${accessToken}`,
     };
   
-  /*  const pippo = this.httpService.get(url, { headers }).subscribe({
-      next:(response)=>{console.log('malemale')},
-      error:(error)=>{console.error('malissimo')}
-    })*/
-  
     const response = await lastValueFrom(
       this.httpService.get(url, { headers }),
     );
-  console.log(response.data);
+
+    console.log(response.data);
     return response.data;
   }
 }
