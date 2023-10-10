@@ -16,7 +16,11 @@ export class OAuth2Service {
     private http: HttpClient
   ) {}
 
-  async redirectUser() {
+  redirectUser() {
     window.location.href = 'http://localhost:8080/auth/42';
+  }
+
+  exchangeCodeForAccessToken(code: string): Observable<any> {
+    return this.http.post<any>('/auth/callback', { code });
   }
 }

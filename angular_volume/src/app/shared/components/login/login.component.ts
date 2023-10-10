@@ -13,6 +13,8 @@ import { OAuth2Service } from 'src/app/core/auth/oauth2.service';
 export class LoginComponent implements OnInit {
   errorMsg!: string;
   loginForm!: FormGroup;
+  code!: string;
+  accessToken: string | null = null;
 
   constructor(
     private readonly userService: UserService,
@@ -29,6 +31,21 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      this.code = params['code'];
+      if (this.code) {
+        this.Oauth2.exchangeCodeForAccessToken(this.code).subscribe({
+          next: (response) => {
+            console.log(response);
+            this.auth.saveToken(response.access_token);
+            this.router.navigate(['home']);
+          },
+          error: (error) => {
+            console.error(error);
+          },
+        });
+      }
+    });
     if (this.auth.getToken() !== '') {
       this.router.navigate(['home']);
     }
