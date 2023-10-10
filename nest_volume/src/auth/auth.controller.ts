@@ -20,6 +20,15 @@ export class AuthController {
     return this.authService.login(email, password);
   }
 
+  @Post('42')
+  @ApiOkResponse()
+  async loginFortyTwo(@Body('code') code: string) : Promise<any> {
+    const token42 = await this.authService.exchangeCodeForAccessToken(code);
+    console.log(`\n\n ${token42.access_token} \n\n`);
+    const profile42data = await this.authService.fetch42Profile(token42.access_token);
+    return profile42data;
+  }
+  /*
   @Get('42')
   @UseGuards(AuthGuard('42'))
   async loginWithFortyTwo() {
@@ -29,5 +38,5 @@ export class AuthController {
   @Post('callback')
   handleCallback(@Body('code') code: string) {
     return this.authService.exchangeCodeForAccessToken(code);
-  }
+  }*/
 }

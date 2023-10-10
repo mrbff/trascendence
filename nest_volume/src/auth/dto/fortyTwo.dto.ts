@@ -1,3 +1,3 @@
 export class FortyTwoDto {
-    code: String;
+    code: string;
 }

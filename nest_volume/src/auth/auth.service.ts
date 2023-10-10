@@ -8,7 +8,7 @@ import { PrismaService } from './../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthEntity } from './entity/auth.entity';
 import { roundsOfHashing } from 'src/users/users.module';
-import { Observable, firstValueFrom } from 'rxjs';
+import { Observable, map, firstValueFrom, lastValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import querystring from 'querystring';
 
@@ -78,6 +78,24 @@ export class AuthService {
     const response = await firstValueFrom(
       this.httpService.post('https://api.intra.42.fr/oauth/token', formData),
     );
+    return response.data;
+  }
+
+  async fetch42Profile(accessToken: string): Promise<any> {
+    const url = 'https://api.intra.42.fr/v2/me';
+    const headers = {
+      Authorization: `Bearer ${accessToken}`,
+    };
+  
+  /*  const pippo = this.httpService.get(url, { headers }).subscribe({
+      next:(response)=>{console.log('malemale')},
+      error:(error)=>{console.error('malissimo')}
+    })*/
+  
+    const response = await lastValueFrom(
+      this.httpService.get(url, { headers }),
+    );
+  console.log(response.data);
     return response.data;
   }
 }
