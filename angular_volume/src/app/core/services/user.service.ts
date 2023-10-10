@@ -8,10 +8,14 @@ import { UserData } from 'src/app/models/user.model';
   providedIn: 'root',
 })
 export class UserService {
+  private avatar: string;
+
   constructor(
     private readonly http: HttpClient,
     private readonly cookieService: CookieService
-  ) {}
+  ) {
+    this.avatar = '';
+  }
 
   setUser(name: string) {
     this.cookieService.set('user', name);
@@ -23,6 +27,18 @@ export class UserService {
 
   removeUser() {
     this.cookieService.delete('user');
+  }
+
+  setUserAvatar(link: string) {
+    this.avatar = link;
+  }
+
+  getUserAvatar(): string {
+    return this.avatar;
+  }
+
+  removeUserAvatar() {
+    this.avatar = '';
   }
 
   async login(email: string, password: string): Promise<any> {

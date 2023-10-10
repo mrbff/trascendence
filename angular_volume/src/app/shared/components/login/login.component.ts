@@ -11,10 +11,8 @@ import { OAuth2Service } from 'src/app/core/auth/oauth2.service';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
+  loginForm: FormGroup;
   errorMsg!: string;
-  loginForm!: FormGroup;
-  code!: string;
-  accessToken: string | null = null;
 
   constructor(
     private readonly userService: UserService,
@@ -31,27 +29,34 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // CHECK IF CODE IN URL QUERY
     this.route.queryParams.subscribe((params) => {
-      this.code = params['code'];
-      if (this.code) {
-        this.Oauth2.exchangeCodeForAccessToken(this.code).subscribe({
-          next: (response) => {
-            console.log(response);
-            this.auth.saveToken(response.access_token);
-            this.router.navigate(['home']);
-          },
-          error: (error) => {
-            console.error(error);
-          },
-        });
+      const code = params['code'];
+      if (code) {
+        this.onAuth42(code);
       }
     });
-    if (this.auth.getToken() !== '') {
+    // STOP USER GET BACK TO LOGIN
+    if (this.auth.getToken()) {
       this.router.navigate(['home']);
     }
   }
 
-  on42Auth() {
+  //SEND CODE TO BACKEND FOR 42 API WORKFLOW
+  onAuth42(code: string) {
+    this.Oauth2.codeForAccessToken(code)
+      .then((response) => {
+        this.auth.saveToken(response.access_token);
+        this.userService.setUser(response.login);
+        this.userService.setUserAvatar(response.image.link);
+        this.router.navigate(['home']);
+      })
+      .catch((error) => {
+        this.errorMsg = `42 Api error: ${error.status.toString()}. Try again`;
+      });
+  }
+
+  on42AuthClick() {
     this.Oauth2.redirectUser();
   }
 
