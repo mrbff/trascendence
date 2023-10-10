@@ -22,15 +22,21 @@ export class ProfileComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    if (this.userService.getUser() !== '')
-      this.user = this.userService.getUser();
-    else {
-      this.user = 'USER';
-    }
-    this.profileImage =
-      'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
+    this.user = this.userService.getUser()
+      ? this.userService.getUser()
+      : 'USER';
+    this.profileImage = this.userService.getUserAvatar()
+      ? this.userService.getUserAvatar()
+      : 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
     this.win = 0;
     this.lose = 0;
+  }
+
+  logout() {
+    this.auth.removeToken();
+    this.userService.removeUser();
+    this.userService.removeUserAvatar();
+    this.router.navigate(['login']);
   }
 
   onFileSelected(event: Event) {
@@ -45,12 +51,6 @@ export class ProfileComponent implements OnInit {
       };
       reader.readAsDataURL(file);
     }
-  }
-
-  logout() {
-    this.auth.removeToken();
-    this.userService.removeUser();
-    this.router.navigate(['login']);
   }
 
   addFriend() {
