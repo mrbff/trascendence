@@ -18,4 +18,8 @@ export class AuthService {
   removeToken() {
     this.cookieService.delete('token');
   }
+
+  decodeToken(token: string): any {
+    return JSON.parse(atob(token.split('.')[1]));
+  }
 }

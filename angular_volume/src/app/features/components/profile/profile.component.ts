@@ -36,6 +36,7 @@ export class ProfileComponent implements OnInit {
     this.auth.removeToken();
     this.userService.removeUser();
     this.userService.removeUserAvatar();
+    this.userService.removeUserId();
     this.router.navigate(['login']);
   }
 
