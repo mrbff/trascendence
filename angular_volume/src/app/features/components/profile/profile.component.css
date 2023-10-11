@@ -10,7 +10,7 @@
 .profile-box {
   display: grid;
   grid-template-columns: 2fr 2fr 2fr 2fr;
-  grid-template-rows: 2fr 2fr 2fr 2fr;
+  grid-template-rows: 2fr 2fr 2fr;
   border-radius: 8px;
   color: orange;
   margin-bottom: 90px;
@@ -22,7 +22,7 @@
 }
 
 .profile-image-space {
-  grid-row: 1 / 4;
+  grid-row: 1 / 2;
   grid-column: 1 / 4;
   position: relative;
   margin-left: 50px;
@@ -58,7 +58,7 @@
 }
 
 .username {
-  grid-row: 1 / 4;
+  grid-row: 1 / 2;
   grid-column: 4 / 4;
   font-size: 70px;
   margin-top: 60px;
@@ -67,13 +67,12 @@
 }
 
 .logout {
-  grid-row: 4 / 4;
+  grid-row: 3 / 3;
   grid-column: 4 / 4;
 }
 
 .logout button {
   float: right;
-  margin-top: 100px;
   margin-right: 40px;
   font-family: Azonix;
   border-radius: 50px;
@@ -90,7 +89,7 @@
   grid-template-columns: 1fr;
   grid-template-rows: 2fr 2fr 2fr 2fr;
   align-items: center;
-  grid-row: 2 / 3;
+  grid-row: 2 / 2;
   grid-column: 4 / 4;
   font-size: 40px;
   margin-right: 40px;
@@ -147,4 +146,110 @@
 .block {
   grid-column: 3 / 3;
   cursor: pointer;
+}
+
+@media screen and (max-width: 1255px) {
+  .user-buttons {
+    display: grid;
+    grid-template-columns: 2fr 2fr 2fr;
+    grid-template-rows: 2fr;
+    grid-row: 1 / 1;
+    grid-column: 4 / 4;
+    margin-top: 150px;
+    margin-right: 40px;
+    text-align: center;
+    align-content: center;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .profile-container {
+    font-family: Azonix;
+    height: 100vh;
+    user-select: none;
+  }
+
+  .profile-box {
+    display: grid;
+    grid-template-columns: 2fr;
+    grid-template-rows: 2fr 2fr 2fr 2fr;
+    border-radius: 8px;
+    color: orange;
+    margin-bottom: 90px;
+    width: 95%;
+    height: 85%;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(40px);
+  }
+
+  .profile-image-space {
+    grid-row: 1 / 1;
+    grid-column: 1 / 1;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid;
+    border-radius: 50%;
+  }
+
+  .profile-image {
+    display: block;
+    overflow: hidden;
+    width: 150px;
+    height: 150px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+  }
+
+  .username {
+    grid-row: 2 / 2;
+    grid-column: 1 / 1;
+    font-size: 40px;
+    margin-top: 60px;
+    text-align: center;
+    align-items: center;
+  }
+
+  .user-buttons {
+    display: grid;
+    grid-template-columns: 2fr 2fr 2fr;
+    grid-template-rows: 2fr;
+    grid-row: 2 / 2;
+    grid-column: 1 / 1;
+    margin-top: 150px;
+    margin-right: 40px;
+    text-align: center;
+    align-content: center;
+  }
+
+  .matchbox {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 2fr 2fr 2fr 2fr;
+    align-items: center;
+    grid-row: 3 / 3;
+    grid-column: 1 / 1;
+    font-size: 40px;
+    margin-right: 40px;
+  }
+
+  .logout {
+    grid-row: 4 / 4;
+    grid-column: 1 / 1;
+  }
+
+  .logout button {
+    float: right;
+    margin-right: 40px;
+    font-family: Azonix;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 15px;
+    padding: 15px;
+    transition: background 0.3s;
+    color: white;
+    background-image: linear-gradient(to right, purple, orange);
+  }
 }
