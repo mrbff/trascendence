@@ -28,18 +28,8 @@ export class AuthController {
     const token42 = await this.authService.exchangeCodeForAccessToken(code);
   //  console.log(`\n\n ${token42.access_token} \n\n`);
     const profile42data = await this.authService.fetch42Profile(token42.access_token);
-  //  console.log(`\n\n ${profile42data.login}\n\n`)
-/*
-    let user = await this.usersService.findOneByEmail(profile42data.email);
-    console.log(`\n\n ${profile42data.email}\n\n`)
-    if (!user) {
-      user = await this.usersService.create({
-        email: profile42data.email,
-        username: profile42data.username,
-        password: 'culocalo',
-      });
-    }
-    */
+  //  console.log(`\n\n ${profile42data.login}\n\n`);
+    const entity = await this.authService.login42(profile42data);
     return profile42data;
   }
 }

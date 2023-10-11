@@ -11,6 +11,7 @@ import { roundsOfHashing } from 'src/users/users.module';
 import { Observable, map, firstValueFrom, lastValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import querystring from 'querystring';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
@@ -18,42 +19,44 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private httpService: HttpService,
+    private usersService: UsersService
   ) {}
 
   async login(email: string, password: string): Promise<AuthEntity> {
-    // Step 1: Fetch a user with the given email
+    
     const user = await this.prisma.user.findUnique({ where: { email: email } });
 
-    // If no user is found, throw an error
     if (!user) {
       throw new NotFoundException(`No user found for email: ${email}`);
     }
 
-    // Step 2: Check if the password is correct
     const bcrypt = require('bcryptjs');
     let hashedPass = await bcrypt.hash(password, roundsOfHashing);
     const isPasswordValid = bcrypt.compare(user.hash, hashedPass);
 
-    // If password does not match, throw an error
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid password');
     }
 
-    // Step 3: Generate a JWT containing the user's ID and return it
     return {
       username: user.username,
       accessToken: this.jwtService.sign({ userId: user.id }),
     };
   }
 
-  async login42(email: string): Promise<AuthEntity> {
+  async login42(profile: any): Promise<any> {
   
-    const user = await this.prisma.user.findUnique({ where: { email: email } });
- 
+    let user = await this.prisma.user.findUnique({ where: { email: profile.email } });
+
     if (!user) {
-      throw new NotFoundException(`No user found for email: ${email}`);
+      user = await this.usersService.create({
+        email: profile.email,
+        username: profile.login,
+        password: 'culocalo',
+      });
     }
-    
+    user.img = profile.image.link;
+    //TO DO update
     return {
       username: user.username,
       accessToken: this.jwtService.sign({ userId: user.id }),
@@ -90,7 +93,6 @@ export class AuthService {
       this.httpService.get(url, { headers }),
     );
 
-    console.log(response.data);
     return response.data;
   }
 }

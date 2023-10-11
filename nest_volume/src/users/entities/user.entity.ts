@@ -28,4 +28,25 @@ export class UserEntity implements User {
 
   @Exclude()
   hashedRt: string | null;
+  
+  @ApiProperty()
+  img: string;
+  
+  @ApiProperty()
+  isOnline:              boolean;
+  
+  @ApiProperty()
+  isPlaying:             boolean;
+  
+  @ApiProperty()
+  Wins:                  number;
+  
+  @ApiProperty()
+  Losses:                number;
+
+  @ApiProperty()
+  is2faEnabled:          boolean;
+  
+  @Exclude()
+  emailVerificationCode: string | null;
 }

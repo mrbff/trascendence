@@ -52,7 +52,7 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['home']);
       })
       .catch((error) => {
-        this.errorMsg = `42 Api error: ${error.status.toString()}. Try again`;
+        this.errorMsg = `42 Api error. Try again`;
       });
   }
 
