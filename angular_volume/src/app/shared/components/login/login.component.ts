@@ -4,6 +4,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/core/auth/auth.service';
 import { UserService } from 'src/app/core/services/user.service';
 import { OAuth2Service } from 'src/app/core/auth/oauth2.service';
+import { SocketService } from 'src/app/socket.service';
+
 
 @Component({
   selector: 'app-login',
@@ -13,6 +15,7 @@ import { OAuth2Service } from 'src/app/core/auth/oauth2.service';
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
   errorMsg!: string;
+  message: unknown;
 
   constructor(
     private readonly userService: UserService,
@@ -20,7 +23,8 @@ export class LoginComponent implements OnInit {
     private readonly fb: FormBuilder,
     private readonly auth: AuthService,
     private readonly Oauth2: OAuth2Service,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute,
+    private socketService: SocketService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -46,18 +50,28 @@ export class LoginComponent implements OnInit {
   onAuth42(code: string) {
     this.Oauth2.codeForAccessToken(code)
       .then((response) => {
-        this.auth.saveToken(response.access_token);
-        this.userService.setUser(response.login);
-        this.userService.setUserAvatar(response.image.link);
+        console.log(response);
+        this.auth.saveToken(response.accessToken);
+        this.userService.setUser(response.username);
+     //   this.userService.setUserAvatar(response.image.link);
         this.router.navigate(['home']);
       })
       .catch((error) => {
         this.errorMsg = `42 Api error. Try again`;
+        console.error(error);
       });
   }
 
   on42AuthClick() {
-    this.Oauth2.redirectUser();
+    this.socketService.onTextMessage().subscribe({
+      next: (response) => {
+        this.Oauth2.redirectUser(response as string);
+      },
+      error: (error) => {
+        console.error(error);
+      }
+    });
+    this.socketService.sendMessageRequest();
   }
 
   onSubmit() {

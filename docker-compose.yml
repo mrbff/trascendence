@@ -67,6 +67,8 @@ services:
           - ngx
     env_file:
       - .env
+    volumes:
+      - ./Nginx/nginx.conf:/etc/nginx/nginx.conf
     restart: unless-stopped
 
 networks:
