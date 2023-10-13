@@ -8,7 +8,9 @@ export class AuthService {
   constructor(private readonly cookieService: CookieService) {}
 
   saveToken(token: string) {
-    this.cookieService.set('token', token);
+    if (token !== undefined) {
+      this.cookieService.set('token', token);
+    }
   }
 
   getToken(): string {
