@@ -46,3 +46,17 @@
 .navbar a:hover {
   color: orange;
 }
+
+@media (max-width: 765px) {
+  .logo {
+    position: absolute;
+    color: orange !important;
+    font-size: 30px !important;
+    padding-right: 50px;
+    left: 10px;
+  }
+
+  .menu a {
+    display: none;
+  }
+}
