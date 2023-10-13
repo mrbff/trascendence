@@ -12,7 +12,11 @@ import { PrismaService } from 'src/prisma/prisma.service';
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService, private usersService: UsersService, private prisma: PrismaService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private usersService: UsersService,
+    private prisma: PrismaService,
+  ) {}
 
   @Post('login')
   @ApiOkResponse({ type: AuthEntity })
@@ -22,7 +26,7 @@ export class AuthController {
 
   @Post('42')
   @ApiOkResponse()
-  async loginFortyTwo(@Body('code') code: string) : Promise<any> {
+  async loginFortyTwo(@Body('code') code: string): Promise<any> {
     const token42 = await this.authService.exchangeCodeForAccessToken(code);
     const profile42data = await this.authService.fetch42Profile(token42.access_token);
     const entity = await this.authService.login42(profile42data);

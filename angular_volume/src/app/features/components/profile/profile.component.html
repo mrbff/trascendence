@@ -1,8 +1,30 @@
 <app-navbar></app-navbar>
 <div class="profile-container">
   <div class="profile-box">
-    <div class="logout">
-      <button (click)="logout()">LOGOUT</button>
+    <img
+      id="image"
+      class="profile-image"
+      [src]="profileImage"
+      alt="Profile image"
+      appChangeImage
+    />
+    <input
+      type="file"
+      accept="image/*"
+      (change)="onFileSelected($event)"
+      style="display: none"
+      #fileInput
+    />
+    <button
+      (click)="fileInput.click()"
+      appChangeImage
+      id="text"
+      class="profile-image change-text"
+    >
+      Change Image
+    </button>
+    <div class="username-space">
+      <span class="username">{{ user }}</span>
     </div>
     <div class="user-buttons">
       <div class="friend" (click)="addFriend()">
@@ -17,9 +39,6 @@
         <span>BLOCK</span>
       </div>
     </div>
-    <div class="username">
-      {{ user }}
-    </div>
     <div class="matchbox">
       <div class="win">WIN</div>
       <div class="winRes">
@@ -30,29 +49,8 @@
         {{ lose }}
       </div>
     </div>
-    <div class="profile-image-space">
-      <img
-        id="image"
-        [src]="profileImage"
-        alt="Profile image"
-        class="profile-image"
-        appChangeImage
-      />
-      <input
-        type="file"
-        accept="image/*"
-        (change)="onFileSelected($event)"
-        style="display: none"
-        #fileInput
-      />
-      <button
-        (click)="fileInput.click()"
-        appChangeImage
-        id="text"
-        class="change-text"
-      >
-        Change Image
-      </button>
+    <div class="logout">
+      <button class="logout-bt" (click)="logout()">LOGOUT</button>
     </div>
   </div>
 </div>

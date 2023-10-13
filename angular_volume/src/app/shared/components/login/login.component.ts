@@ -50,15 +50,14 @@ export class LoginComponent implements OnInit {
   onAuth42(code: string) {
     this.Oauth2.codeForAccessToken(code)
       .then((response) => {
-        console.log(response);
         this.auth.saveToken(response.accessToken);
+        this.userService.setUserId(this.auth.decodeToken(response.accessToken));
         this.userService.setUser(response.username);
-     //   this.userService.setUserAvatar(response.image.link);
+        //this.userService.setUserAvatar(response.image.link);
         this.router.navigate(['home']);
       })
-      .catch((error) => {
+      .catch(() => {
         this.errorMsg = `42 Api error. Try again`;
-        console.error(error);
       });
   }
 
