@@ -5,14 +5,18 @@ import { AuthEntity } from './entity/auth.entity';
 import { LoginDto } from './dto/login.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import { FortyTwoStrategy } from './fortyTwo.strategy';
-import { FortyTwoDto } from './dto/fortyTwo.dto';
 import { User } from '@prisma/client';
+import { UsersService } from '../users/users.service';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Controller('auth')
 @ApiTags('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private usersService: UsersService,
+    private prisma: PrismaService,
+  ) {}
 
   @Post('login')
   @ApiOkResponse({ type: AuthEntity })
@@ -22,21 +26,10 @@ export class AuthController {
 
   @Post('42')
   @ApiOkResponse()
-  async loginFortyTwo(@Body('code') code: string) : Promise<any> {
+  async loginFortyTwo(@Body('code') code: string): Promise<any> {
     const token42 = await this.authService.exchangeCodeForAccessToken(code);
-    console.log(`\n\n ${token42.access_token} \n\n`);
     const profile42data = await this.authService.fetch42Profile(token42.access_token);
-    return profile42data;
+    const entity = await this.authService.login42(profile42data);
+    return entity;
   }
-  /*
-  @Get('42')
-  @UseGuards(AuthGuard('42'))
-  async loginWithFortyTwo() {
-    // Initiates the 42 OAuth2 login flow
-  }
-
-  @Post('callback')
-  handleCallback(@Body('code') code: string) {
-    return this.authService.exchangeCodeForAccessToken(code);
-  }*/
 }

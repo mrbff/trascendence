@@ -11,6 +11,7 @@ import { CoreModule } from './core/core.module';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { HeaderInterceptor } from './core/interceptors/header.interceptor';
+import { SocketService } from './socket.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -30,6 +31,7 @@ import { HeaderInterceptor } from './core/interceptors/header.interceptor';
       useClass: HeaderInterceptor,
       multi: true,
     },
+    SocketService
   ],
   bootstrap: [AppComponent],
 })

@@ -41,6 +41,18 @@ export class UsersService {
     return this.prisma.user.update({ where: { id }, data: updateUserDto });
   }
 
+  async updateImg(id: number, newImg: string) {
+    return this.prisma.user.update({ where: { id }, data: {img: newImg} });
+  }
+
+  async updateOnline(id: number, newStatus: boolean) {
+    return this.prisma.user.update({ where: { id }, data: {isOnline: newStatus} });
+  }
+
+  async updateIsPlaying(id: number, newStatus: boolean) {
+    return this.prisma.user.update({ where: { id }, data: {isPlaying: newStatus} });
+  }
+
   remove(id: number) {
     return this.prisma.user.delete({ where: { id } });
   }

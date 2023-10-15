@@ -8,14 +8,10 @@ import { UserData } from 'src/app/models/user.model';
   providedIn: 'root',
 })
 export class UserService {
-  private avatar: string;
-
   constructor(
     private readonly http: HttpClient,
     private readonly cookieService: CookieService
-  ) {
-    this.avatar = '';
-  }
+  ) {}
 
   setUser(name: string) {
     this.cookieService.set('user', name);
@@ -30,15 +26,27 @@ export class UserService {
   }
 
   setUserAvatar(link: string) {
-    this.avatar = link;
+    this.cookieService.set('avatar', link);
   }
 
   getUserAvatar(): string {
-    return this.avatar;
+    return this.cookieService.get('avatar');
   }
 
   removeUserAvatar() {
-    this.avatar = '';
+    this.cookieService.delete('avatar');
+  }
+
+  setUserId(decode: any) {
+    this.cookieService.set('id', decode.userId);
+  }
+
+  getUserId(): string {
+    return this.cookieService.get('id');
+  }
+
+  removeUserId() {
+    this.cookieService.delete('id');
   }
 
   async login(email: string, password: string): Promise<any> {

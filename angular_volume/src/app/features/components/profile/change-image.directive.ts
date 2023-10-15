@@ -15,7 +15,7 @@ export class ChangeImageDirective implements AfterViewInit {
   }
 
   @HostListener('mouseenter') onMouseEnter() {
-    this.changeStyle('50px');
+    this.changeStyle('20px');
     this.changeTextVisibility('block');
   }
 

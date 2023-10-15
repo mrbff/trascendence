@@ -59,6 +59,39 @@ export class UsersController {
     return new UserEntity(await this.usersService.update(id, updateUserDto));
   }
 
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ type: UserEntity })
+  async updateImg(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() newImg: string,
+  ) {
+    return new UserEntity(await this.usersService.updateImg(id, newImg));
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ type: UserEntity })
+  async updateOnline(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() newStatus: boolean,
+  ) {
+    return new UserEntity(await this.usersService.updateOnline(id, newStatus));
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ type: UserEntity })
+  async updateIsPlaying(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() newStatus: boolean,
+  ) {
+    return new UserEntity(await this.usersService.updateIsPlaying(id, newStatus));
+  }
+
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -67,10 +100,3 @@ export class UsersController {
     return new UserEntity(await this.usersService.remove(id));
   }
 }
-  
-  // @Get(':id')
-  // @UseGuards(JwtAuthGuard)
-  // @ApiOkResponse({ type: UserEntity })
-  // async findOne(@Param('id', ParseIntPipe) id: number) {
-  //   return new UserEntity(await this.usersService.findOne(id));
-  // }
