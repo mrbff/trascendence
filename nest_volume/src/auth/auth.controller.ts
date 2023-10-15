@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Get, UseGuards, Req } from '@nestjs/common';
+import { Body, Controller, Post, Get, UseGuards, Req, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AuthEntity } from './entity/auth.entity';
@@ -31,5 +31,26 @@ export class AuthController {
     const profile42data = await this.authService.fetch42Profile(token42.access_token);
     const entity = await this.authService.login42(profile42data);
     return entity;
+  }
+
+  @Post('2fa-generate')
+  @ApiOkResponse()
+  async generateTwoFactorSecret(@Body('userId') userId: string) {
+    const id = Number(userId);
+    return this.usersService.generateTwoFactorSecret(id);
+  }
+
+  @Post('2fa-validate')
+  @ApiOkResponse()
+  async validateTwoFactorToken(
+    @Body('userId') userId: string,
+    @Body('token') token: string,
+  ) {
+    const id = Number(userId);
+    const response:boolean = await this.usersService.validateTwoFactorCode(id, token) as boolean;
+    if (response == true)
+      return (this.authService.login2fa(id))
+    else
+      return new UnauthorizedException('Invalid 2fa code');
   }
 }

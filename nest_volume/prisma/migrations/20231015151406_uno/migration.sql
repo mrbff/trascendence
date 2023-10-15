@@ -1,12 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropTable
-DROP TABLE "User";
-
 -- CreateTable
 CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
@@ -22,7 +13,7 @@ CREATE TABLE "users" (
     "Wins" INTEGER NOT NULL DEFAULT 0,
     "Losses" INTEGER NOT NULL DEFAULT 0,
     "is2faEnabled" BOOLEAN NOT NULL DEFAULT false,
-    "emailVerificationCode" TEXT,
+    "secret2fa" TEXT,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );

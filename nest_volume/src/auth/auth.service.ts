@@ -22,7 +22,7 @@ export class AuthService {
     private usersService: UsersService
   ) {}
 
-  async login(email: string, password: string): Promise<AuthEntity> {
+  async login(email: string, password: string): Promise<AuthEntity | number> {
     
     const user = await this.prisma.user.findUnique({ where: { email: email } });
 
@@ -37,14 +37,16 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid password');
     }
-
-    return {
-      username: user.username,
-      accessToken: this.jwtService.sign({ userId: user.id }),
-    };
+    if (user.is2faEnabled == false)
+      return {
+        username: user.username,
+        accessToken: this.jwtService.sign({ userId: user.id }),
+      };
+    else
+      return user.id;
   }
 
-  async login42(profile: any): Promise<any> {
+  async login42(profile: any): Promise<AuthEntity | number> {
   
     let user = await this.prisma.user.findUnique({ where: { email: profile.email } });
 
@@ -57,10 +59,14 @@ export class AuthService {
     }
     user.img = profile.image.link;
     //TO DO update
-    return {
-      username: user.username,
-      accessToken: this.jwtService.sign({ userId: user.id }),
-    };
+    
+    if (user.is2faEnabled == false)
+      return {
+        username: user.username,
+        accessToken: this.jwtService.sign({ userId: user.id }),
+      };
+    else
+      return user.id;
   }
 
   async exchangeCodeForAccessToken(code: string): Promise<any> {
@@ -94,5 +100,19 @@ export class AuthService {
     );
 
     return response.data;
+  }
+
+  async login2fa(id: number): Promise<AuthEntity> {
+    
+    const user = await this.prisma.user.findUnique({ where: { id: id } });
+
+    if (!user) {
+      throw new NotFoundException(`No user found.`);
+    }
+
+    return {
+      username: user.username,
+      accessToken: this.jwtService.sign({ userId: id }),
+    };
   }
 }

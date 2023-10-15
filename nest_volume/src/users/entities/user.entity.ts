@@ -48,5 +48,5 @@ export class UserEntity implements User {
   is2faEnabled:          boolean;
   
   @Exclude()
-  emailVerificationCode: string | null;
+  secret2fa:             string | null;
 }
