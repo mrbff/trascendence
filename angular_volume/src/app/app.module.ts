@@ -8,10 +8,8 @@ import { SharedModule } from './shared/shared.module';
 import { FeaturesModule } from './features/features.module';
 
 import { CoreModule } from './core/core.module';
-import { StoreModule } from '@ngrx/store';
-import { EffectsModule } from '@ngrx/effects';
 import { HeaderInterceptor } from './core/interceptors/header.interceptor';
-import { SocketService } from './socket.service';
+import { SocketService } from './core/services/socket.service';
 
 @NgModule({
   declarations: [AppComponent],
@@ -22,8 +20,6 @@ import { SocketService } from './socket.service';
     CoreModule,
     SharedModule,
     FeaturesModule,
-    StoreModule.forRoot({}, {}),
-    EffectsModule.forRoot([]),
   ],
   providers: [
     {
@@ -31,7 +27,7 @@ import { SocketService } from './socket.service';
       useClass: HeaderInterceptor,
       multi: true,
     },
-    SocketService
+    SocketService,
   ],
   bootstrap: [AppComponent],
 })
