@@ -1,21 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/core/auth/auth.service';
 import { UserService } from 'src/app/core/services/user.service';
 import { OAuth2Service } from 'src/app/core/auth/oauth2.service';
-import { SocketService } from 'src/app/socket.service';
-
+import { SocketService } from 'src/app/core/services/socket.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
   errorMsg!: string;
-  message: unknown;
+  private subscription: Subscription;
 
   constructor(
     private readonly userService: UserService,
@@ -30,9 +30,22 @@ export class LoginComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]],
     });
+    this.subscription = new Subscription();
   }
 
   ngOnInit(): void {
+    // SUBSCRIBE FOR REDIRECT MESSAGE (OBSERVABLE)
+    this.subscription.add(
+      this.socketService.onTextMessage().subscribe({
+        next: (response) => {
+          console.log(response);
+          this.Oauth2.redirectUser(response as string);
+        },
+        error: (error) => {
+          console.error(error);
+        },
+      })
+    );
     // CHECK IF CODE IN URL QUERY
     this.route.queryParams.subscribe((params) => {
       const code = params['code'];
@@ -46,8 +59,12 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  //SEND CODE TO BACKEND FOR 42 API WORKFLOW
-  onAuth42(code: string) {
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
+  //SEND CODE TO BACKEND FOR 42 API WORKFLOW (PROMISE)
+  private onAuth42(code: string) {
     this.Oauth2.codeForAccessToken(code)
       .then((response) => {
         this.auth.saveToken(response.accessToken);
@@ -62,14 +79,6 @@ export class LoginComponent implements OnInit {
   }
 
   on42AuthClick() {
-    this.socketService.onTextMessage().subscribe({
-      next: (response) => {
-        this.Oauth2.redirectUser(response as string);
-      },
-      error: (error) => {
-        console.error(error);
-      }
-    });
     this.socketService.sendMessageRequest();
   }
 

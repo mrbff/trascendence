@@ -51,11 +51,11 @@ export class UserService {
 
   async login(email: string, password: string): Promise<any> {
     return lastValueFrom(
-      this.http.post(`/auth/login`, { email: email, password: password })
+      this.http.post(`/nest/auth/login`, { email: email, password: password })
     );
   }
 
   async registerUser(userData: UserData): Promise<any> {
-    return lastValueFrom(this.http.post(`/users/signup`, userData));
+    return lastValueFrom(this.http.post(`/nest/users/signup`, userData));
   }
 }

@@ -1,12 +1,6 @@
 {
-  "/users/*": {
-    "target": "http://nest:3000/users/",
-    "secure": false,
-    "logLevel": "debug"
-  },
-
-  "/auth/*": {
-    "target": "http://nest:3000/auth/",
+  "/nest/*": {
+    "target": "http://nest:3000/",
     "secure": false,
     "logLevel": "debug"
   }

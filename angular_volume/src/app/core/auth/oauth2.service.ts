@@ -14,6 +14,6 @@ export class OAuth2Service {
   }
 
   async codeForAccessToken(code: string): Promise<any> {
-    return lastValueFrom(this.http.post('/auth/42', { code }));
+    return lastValueFrom(this.http.post('/nest/auth/42', { code }));
   }
 }
