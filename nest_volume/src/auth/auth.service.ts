@@ -12,6 +12,7 @@ import { Observable, map, firstValueFrom, lastValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import querystring from 'querystring';
 import { UsersService } from 'src/users/users.service';
+import { environment } from 'src/environment/environment';
 
 @Injectable()
 export class AuthService {
@@ -54,11 +55,10 @@ export class AuthService {
       user = await this.usersService.create({
         email: profile.email,
         username: profile.login,
-        password: 'culocalo',
+        password: 'blank',
       });
     }
     user.img = profile.image.link;
-    //TO DO update
     
     if (user.is2faEnabled == false)
       return {
@@ -74,11 +74,11 @@ export class AuthService {
     formData.append('grant_type', 'authorization_code');
     formData.append(
       'client_id',
-      'u-s4t2ud-7cad452637e7c977d04ac2f73be9b8572561822551f214cc53608c09b230a9df',
+      environment.ft_client_id,
     );
     formData.append(
       'client_secret',
-      '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',
+      environment.ft_client_secret,
     );
     formData.append('code', code);
     formData.append('redirect_uri', 'http://localhost:8080/login');
