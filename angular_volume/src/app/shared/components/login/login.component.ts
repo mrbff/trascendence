@@ -4,7 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from 'src/app/core/auth/auth.service';
 import { UserService } from 'src/app/core/services/user.service';
 import { OAuth2Service } from 'src/app/core/auth/oauth2.service';
-import { SocketService } from 'src/app/core/services/socket.service';
+import { SocketService } from '../../../socket.service';
 import { Subscription } from 'rxjs';
 
 @Component({
