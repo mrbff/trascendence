@@ -9,7 +9,7 @@ import { FeaturesModule } from './features/features.module';
 
 import { CoreModule } from './core/core.module';
 import { HeaderInterceptor } from './core/interceptors/header.interceptor';
-import { SocketService } from './socket.service';
+import { SocketService } from './core/services/socket.service';
 
 @NgModule({
   declarations: [AppComponent],
