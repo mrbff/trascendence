@@ -12,6 +12,7 @@ import { Observable, map, firstValueFrom, lastValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import querystring from 'querystring';
 import { UsersService } from 'src/users/users.service';
+import { environment } from 'src/environment/environment';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +23,7 @@ export class AuthService {
     private usersService: UsersService
   ) {}
 
-  async login(email: string, password: string): Promise<AuthEntity> {
+  async login(email: string, password: string): Promise<AuthEntity | number> {
     
     const user = await this.prisma.user.findUnique({ where: { email: email } });
 
@@ -37,14 +38,16 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid password');
     }
-
-    return {
-      username: user.username,
-      accessToken: this.jwtService.sign({ userId: user.id }),
-    };
+    if (user.is2faEnabled == false)
+      return {
+        username: user.username,
+        accessToken: this.jwtService.sign({ userId: user.id }),
+      };
+    else
+      return user.id;
   }
 
-  async login42(profile: any): Promise<any> {
+  async login42(profile: any): Promise<AuthEntity | number> {
   
     let user = await this.prisma.user.findUnique({ where: { email: profile.email } });
 
@@ -52,15 +55,18 @@ export class AuthService {
       user = await this.usersService.create({
         email: profile.email,
         username: profile.login,
-        password: 'culocalo',
+        password: 'blank',
       });
     }
     user.img = profile.image.link;
-    //TO DO update
-    return {
-      username: user.username,
-      accessToken: this.jwtService.sign({ userId: user.id }),
-    };
+    
+    if (user.is2faEnabled == false)
+      return {
+        username: user.username,
+        accessToken: this.jwtService.sign({ userId: user.id }),
+      };
+    else
+      return user.id;
   }
 
   async exchangeCodeForAccessToken(code: string): Promise<any> {
@@ -68,11 +74,11 @@ export class AuthService {
     formData.append('grant_type', 'authorization_code');
     formData.append(
       'client_id',
-      'u-s4t2ud-7cad452637e7c977d04ac2f73be9b8572561822551f214cc53608c09b230a9df',
+      environment.ft_client_id,
     );
     formData.append(
       'client_secret',
-      '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',
+      environment.ft_client_secret,
     );
     formData.append('code', code);
     formData.append('redirect_uri', 'http://localhost:8080/login');
@@ -94,5 +100,19 @@ export class AuthService {
     );
 
     return response.data;
+  }
+
+  async login2fa(id: number): Promise<AuthEntity> {
+    
+    const user = await this.prisma.user.findUnique({ where: { id: id } });
+
+    if (!user) {
+      throw new NotFoundException(`No user found.`);
+    }
+
+    return {
+      username: user.username,
+      accessToken: this.jwtService.sign({ userId: id }),
+    };
   }
 }

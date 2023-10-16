@@ -4,6 +4,7 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server } from 'socket.io';
+import { environment } from 'src/environment/environment';
 
 @WebSocketGateway({
   namespace: '/',
@@ -18,7 +19,7 @@ export class RedirectionGateway {
 
   @SubscribeMessage('messageRequest')
   handleMessage(client: any, payload: any): void {
-    const message = process.env.FT_API_URL as string;
+    const message = environment.ft_api_url;
     this.server.emit('textMessage', { message });
   }
 }

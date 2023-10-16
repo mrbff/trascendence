@@ -3,10 +3,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { roundsOfHashing } from './users.module';
+import { TwoFactorAuthService } from '../auth/two-factor-auth/two-factor-auth.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly twoFactorAuthService: TwoFactorAuthService
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     const bcrypt = require("bcryptjs");
@@ -55,5 +59,19 @@ export class UsersService {
 
   remove(id: number) {
     return this.prisma.user.delete({ where: { id } });
+  }
+
+  async generateTwoFactorSecret(id: number) {
+    const { secretKey, otpauthUrl } = this.twoFactorAuthService.generateTwoFactorSecret();
+    this.prisma.user.update({ where: { id }, data: {is2faEnabled: true, secret2fa: secretKey} });
+    return this.twoFactorAuthService.getTwoFactorAuthenticationCode(secretKey);
+  }
+
+  async validateTwoFactorCode(id: number, token: string) {
+    const user = await this.prisma.user.findUnique({ where: { id }});
+    if (user?.secret2fa == null)
+      return false;
+    const secretKey = user?.secret2fa as string;
+    return this.twoFactorAuthService.validateTwoFactorCode(secretKey, token);
   }
 }
