@@ -99,4 +99,12 @@ export class UsersController {
   async remove(@Param('id', ParseIntPipe) id: number) {
     return new UserEntity(await this.usersService.remove(id));
   }
+
+  @Post('2fa-generate')
+  @UseGuards(JwtAuthGuard)
+  @ApiOkResponse()
+  async generateTwoFactorSecret(@Body('userId') userId: string) {
+    const id = Number(userId);
+    return this.usersService.generateTwoFactorSecret(id);
+  }
 }

@@ -33,13 +33,6 @@ export class AuthController {
     return entity;
   }
 
-  @Post('2fa-generate')
-  @ApiOkResponse()
-  async generateTwoFactorSecret(@Body('userId') userId: string) {
-    const id = Number(userId);
-    return this.usersService.generateTwoFactorSecret(id);
-  }
-
   @Post('2fa-validate')
   @ApiOkResponse()
   async validateTwoFactorToken(
