@@ -24,7 +24,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private readonly auth: AuthService,
     private readonly Oauth2: OAuth2Service,
     private readonly route: ActivatedRoute,
-    private socketService: SocketService
+    private readonly socketService: SocketService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -34,7 +34,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // SUBSCRIBE FOR REDIRECT MESSAGE (OBSERVABLE)
+    // SUBSCRIBE FOR REDIRECT MESSAGE FROM SOCKET (OBSERVABLE)
     this.subscription.add(
       this.socketService.onTextMessage().subscribe({
         next: (response) => {

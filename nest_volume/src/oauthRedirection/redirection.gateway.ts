@@ -1,12 +1,16 @@
-import { SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import {
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
+} from '@nestjs/websockets';
 import { Server } from 'socket.io';
 
 @WebSocketGateway({
   namespace: '/',
   cors: {
     origin: '*',
-    credentials: true
-  }
+    credentials: true,
+  },
 })
 export class RedirectionGateway {
   @WebSocketServer()

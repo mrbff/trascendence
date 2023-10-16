@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { io, Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +9,7 @@ export class SocketService {
   private socket;
 
   constructor() {
-    this.socket = io('http://localhost:3000');
+    this.socket = io('/', { path: '/socket.io/' });
   }
 
   sendMessageRequest() {
@@ -17,7 +17,7 @@ export class SocketService {
   }
 
   onTextMessage() {
-    return new Observable(observer => {
+    return new Observable((observer) => {
       this.socket.on('textMessage', (data) => {
         observer.next(data.message);
       });
