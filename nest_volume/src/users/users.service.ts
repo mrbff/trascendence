@@ -82,7 +82,8 @@ export class UsersService {
 
   async validateTwoFactorCode(id: number, token: string) {
     const user = await this.prisma.user.findUnique({ where: { id } });
-    if (user?.secret2fa == null) return false;
+    if (user == null || user.is2faEnabled == false || user?.secret2fa == null)
+      return false;
     const secretKey = user?.secret2fa as string;
     return this.twoFactorAuthService.validateTwoFactorCode(secretKey, token);
   }
