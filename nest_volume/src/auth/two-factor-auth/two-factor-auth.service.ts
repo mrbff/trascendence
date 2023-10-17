@@ -19,7 +19,7 @@ export class TwoFactorAuthService {
       label: 'trascendence',
       issuer: 'fratCarnal',
     });
-    return qrcode.toDataURL(otpauthUrl);
+  return qrcode.toDataURL(otpauthUrl);
   }
 
   validateTwoFactorCode(secret: string, token: string) {
