@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -71,8 +71,13 @@ export class UsersService {
   }
 
   async generateTwoFactorSecret(id: number) {
-    const { secretKey, otpauthUrl } =
-      this.twoFactorAuthService.generateTwoFactorSecret();
+    
+    const user = await this.prisma.user.findUnique({ where: { id: id } });
+    if (!user) {
+      throw new NotFoundException(`No user found.`);
+    }
+    
+    const { secretKey, otpauthUrl } = this.twoFactorAuthService.generateTwoFactorSecret();
     this.prisma.user.update({
       where: { id },
       data: { is2faEnabled: true, secret2fa: secretKey },

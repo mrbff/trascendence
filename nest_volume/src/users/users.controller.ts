@@ -65,15 +65,15 @@ export class UsersController {
     return new UserEntity(await this.usersService.update(id, updateUserDto));
   }
 
-  @Patch(':id')
+  @Patch('img/:id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: UserEntity })
   async updateImg(
     @Param('id', ParseIntPipe) id: number,
-    @Body() newImg: string,
+    @Body() newImg: any,
   ) {
-    return new UserEntity(await this.usersService.updateImg(id, newImg));
+    return new UserEntity(await this.usersService.updateImg(id, newImg.newImg));
   }
 
   @Patch('online/:id')
@@ -89,16 +89,16 @@ export class UsersController {
     );
   }
 
-  @Patch(':id')
+  @Patch('is-playing/:id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: UserEntity })
   async updateIsPlaying(
     @Param('id', ParseIntPipe) id: number,
-    @Body() newStatus: boolean,
+    @Body() newStatus: any,
   ) {
     return new UserEntity(
-      await this.usersService.updateIsPlaying(id, newStatus),
+      await this.usersService.updateIsPlaying(id, newStatus.newStatus),
     );
   }
 
@@ -114,7 +114,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiOkResponse()
   async generateTwoFactorSecret(@Body('userId') userId: string) {
-    const id = Number(userId);
+    const id:number = Number(userId);
     return this.usersService.generateTwoFactorSecret(id);
   }
 }
