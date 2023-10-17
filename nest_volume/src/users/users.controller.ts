@@ -111,10 +111,10 @@ export class UsersController {
   }
 
   @Post('2fa-generate')
-  @UseGuards(JwtAuthGuard)
+ // @UseGuards(JwtAuthGuard)
   @ApiOkResponse()
   async generateTwoFactorSecret(@Body('userId') userId: string) {
     const id:number = Number(userId);
-    return this.usersService.generateTwoFactorSecret(id);
+    return {url: await this.usersService.generateTwoFactorSecret(id)};
   }
 }

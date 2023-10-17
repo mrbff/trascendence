@@ -23,7 +23,7 @@ export class AuthService {
     private usersService: UsersService
   ) {}
 
-  async login(email: string, password: string): Promise<AuthEntity | number> {
+  async login(email: string, password: string): Promise<any> {
     
     const user = await this.prisma.user.findUnique({ where: { email: email } });
 
@@ -44,10 +44,10 @@ export class AuthService {
         accessToken: this.jwtService.sign({ userId: user.id }),
       };
     else
-      return user.id;
+      return { id: user.id};
   }
 
-  async login42(profile: any): Promise<AuthEntity | number> {
+  async login42(profile: any): Promise<any> {
   
     let user = await this.prisma.user.findUnique({ where: { email: profile.email } });
 
@@ -66,7 +66,7 @@ export class AuthService {
         accessToken: this.jwtService.sign({ userId: user.id }),
       };
     else
-      return user.id;
+      return { id: user.id};
   }
 
   async exchangeCodeForAccessToken(code: string): Promise<any> {
