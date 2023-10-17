@@ -3,6 +3,7 @@ import { UserService } from 'src/app/core/services/user.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { Router } from '@angular/router';
 import { StatusService } from 'src/app/core/services/status.service';
+import { GoogleAuthService } from 'src/app/core/auth/google-auth.service';
 
 @Component({
   templateUrl: './profile.component.html',
@@ -13,6 +14,7 @@ export class ProfileComponent implements OnInit {
   profileImage!: string;
   win!: number;
   lose!: number;
+  qrCode!: string;
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
@@ -20,7 +22,8 @@ export class ProfileComponent implements OnInit {
     private readonly userService: UserService,
     private readonly auth: AuthService,
     private readonly router: Router,
-    private readonly status: StatusService
+    private readonly status: StatusService,
+    private readonly googleAuth: GoogleAuthService
   ) {}
 
   ngOnInit(): void {
@@ -61,5 +64,19 @@ export class ProfileComponent implements OnInit {
   addFriend() {
     let icon: any = document.querySelector('.friend');
     icon.style.color = 'grey';
+  }
+
+  onEnable2FA() {
+    const ID = this.userService.getUserId();
+    this.googleAuth
+      .getLink(ID)
+      .then((response) => {
+        console.log(`response: ${response.url}`);
+        this.qrCode = response.url;
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    //this.googleAuth.enable2fa();
   }
 }

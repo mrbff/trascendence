@@ -147,6 +147,14 @@
   cursor: pointer;
 }
 
+.google-auth {
+  grid-row: 4 / 4;
+  grid-column: 1 / 1;
+  margin-left: 30px;
+  margin-bottom: 30px;
+  cursor: pointer;
+}
+
 @media (max-width: 1255px) {
   .user-buttons {
     display: grid;

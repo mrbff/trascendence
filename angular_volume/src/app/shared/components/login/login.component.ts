@@ -6,6 +6,7 @@ import { UserService } from 'src/app/core/services/user.service';
 import { OAuth2Service } from 'src/app/core/auth/oauth2.service';
 import { Subscription } from 'rxjs';
 import { SocketService } from 'src/app/core/services/socket.service';
+import { GoogleAuthService } from 'src/app/core/auth/google-auth.service';
 
 @Component({
   selector: 'app-login',
@@ -24,7 +25,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     private readonly auth: AuthService,
     private readonly Oauth2: OAuth2Service,
     private readonly route: ActivatedRoute,
-    private readonly socketService: SocketService
+    private readonly socketService: SocketService,
+    private readonly googleAuth: GoogleAuthService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -106,6 +108,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   private initUser(response: any) {
+    if (response.id !== '') {
+    }
     this.auth.saveToken(response.accessToken);
     this.userService.setUserId(this.auth.decodeToken(response.accessToken));
     this.userService.setUser(response.username);

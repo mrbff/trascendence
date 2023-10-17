@@ -69,10 +69,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: UserEntity })
-  async updateImg(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() newImg: any,
-  ) {
+  async updateImg(@Param('id', ParseIntPipe) id: number, @Body() newImg: any) {
     return new UserEntity(await this.usersService.updateImg(id, newImg.newImg));
   }
 
@@ -111,10 +108,10 @@ export class UsersController {
   }
 
   @Post('2fa-generate')
- // @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOkResponse()
   async generateTwoFactorSecret(@Body('userId') userId: string) {
-    const id:number = Number(userId);
-    return {url: await this.usersService.generateTwoFactorSecret(id)};
+    const id: number = Number(userId);
+    return { url: await this.usersService.generateTwoFactorSecret(id) };
   }
 }

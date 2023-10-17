@@ -49,8 +49,14 @@
         {{ lose }}
       </div>
     </div>
+    <div class="qr">
+      <img [src]="[qrCode]" />
+    </div>
     <div class="logout">
       <button class="logout-bt" (click)="logout()">LOGOUT</button>
+    </div>
+    <div class="google-auth" (click)="onEnable2FA()">
+      <i class="fa-sharp fa-solid fa-shield-halved fa-2xl"> 2FA</i>
     </div>
   </div>
 </div>

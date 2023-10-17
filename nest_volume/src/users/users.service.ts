@@ -71,15 +71,15 @@ export class UsersService {
   }
 
   async generateTwoFactorSecret(id: number) {
-    
     const user = await this.prisma.user.findUnique({ where: { id: id } });
     if (!user) {
       throw new NotFoundException(`No user found.`);
     }
-    
-    const { secretKey, otpauthUrl } = this.twoFactorAuthService.generateTwoFactorSecret();
-    this.prisma.user.update({
-      where: { id },
+
+    const { secretKey, otpauthUrl } =
+      this.twoFactorAuthService.generateTwoFactorSecret();
+    await this.prisma.user.update({
+      where: { id: id },
       data: { is2faEnabled: true, secret2fa: secretKey },
     });
     return this.twoFactorAuthService.getTwoFactorAuthenticationCode(secretKey);
