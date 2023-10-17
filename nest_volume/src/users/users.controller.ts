@@ -12,7 +12,12 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UserEntity } from './entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 
@@ -42,10 +47,11 @@ export class UsersController {
   @ApiOkResponse({ type: UserEntity })
   async findOne(@Param('id', ParseIntPipe) id: number) {
     const user = await this.usersService.findOne(id);
-  if (user !== null)
-    return null;
-  else
-    return user;
+    if (user !== null) {
+      return user;
+    } else {
+      return null;
+    }
   }
 
   @Patch(':id')
@@ -70,15 +76,17 @@ export class UsersController {
     return new UserEntity(await this.usersService.updateImg(id, newImg));
   }
 
-  @Patch(':id')
+  @Patch('online/:id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: UserEntity })
   async updateOnline(
     @Param('id', ParseIntPipe) id: number,
-    @Body() newStatus: boolean,
+    @Body() newStatus: any,
   ) {
-    return new UserEntity(await this.usersService.updateOnline(id, newStatus));
+    return new UserEntity(
+      await this.usersService.updateOnline(id, newStatus.newStatus),
+    );
   }
 
   @Patch(':id')
@@ -89,7 +97,9 @@ export class UsersController {
     @Param('id', ParseIntPipe) id: number,
     @Body() newStatus: boolean,
   ) {
-    return new UserEntity(await this.usersService.updateIsPlaying(id, newStatus));
+    return new UserEntity(
+      await this.usersService.updateIsPlaying(id, newStatus),
+    );
   }
 
   @Delete(':id')

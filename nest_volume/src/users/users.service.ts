@@ -9,18 +9,18 @@ import { TwoFactorAuthService } from '../auth/two-factor-auth/two-factor-auth.se
 export class UsersService {
   constructor(
     private prisma: PrismaService,
-    private readonly twoFactorAuthService: TwoFactorAuthService
+    private readonly twoFactorAuthService: TwoFactorAuthService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const bcrypt = require("bcryptjs");
-  
+    const bcrypt = require('bcryptjs');
+
     const pwHash = await bcrypt.hash(createUserDto.password, roundsOfHashing);
     return this.prisma.user.create({
-      data: { 
+      data: {
         username: createUserDto.username,
         email: createUserDto.email,
-        hash: pwHash
+        hash: pwHash,
       },
     });
   }
@@ -38,23 +38,32 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const bcrypt = require("bcryptjs");
+    const bcrypt = require('bcryptjs');
     if (updateUserDto.password) {
-      updateUserDto.password = await bcrypt.hash(updateUserDto.password, roundsOfHashing,);
+      updateUserDto.password = await bcrypt.hash(
+        updateUserDto.password,
+        roundsOfHashing,
+      );
     }
     return this.prisma.user.update({ where: { id }, data: updateUserDto });
   }
 
   async updateImg(id: number, newImg: string) {
-    return this.prisma.user.update({ where: { id }, data: {img: newImg} });
+    return this.prisma.user.update({ where: { id }, data: { img: newImg } });
   }
 
   async updateOnline(id: number, newStatus: boolean) {
-    return this.prisma.user.update({ where: { id }, data: {isOnline: newStatus} });
+    return this.prisma.user.update({
+      where: { id },
+      data: { isOnline: newStatus },
+    });
   }
 
   async updateIsPlaying(id: number, newStatus: boolean) {
-    return this.prisma.user.update({ where: { id }, data: {isPlaying: newStatus} });
+    return this.prisma.user.update({
+      where: { id },
+      data: { isPlaying: newStatus },
+    });
   }
 
   remove(id: number) {
@@ -62,15 +71,18 @@ export class UsersService {
   }
 
   async generateTwoFactorSecret(id: number) {
-    const { secretKey, otpauthUrl } = this.twoFactorAuthService.generateTwoFactorSecret();
-    this.prisma.user.update({ where: { id }, data: {is2faEnabled: true, secret2fa: secretKey} });
+    const { secretKey, otpauthUrl } =
+      this.twoFactorAuthService.generateTwoFactorSecret();
+    this.prisma.user.update({
+      where: { id },
+      data: { is2faEnabled: true, secret2fa: secretKey },
+    });
     return this.twoFactorAuthService.getTwoFactorAuthenticationCode(secretKey);
   }
 
   async validateTwoFactorCode(id: number, token: string) {
-    const user = await this.prisma.user.findUnique({ where: { id }});
-    if (user?.secret2fa == null)
-      return false;
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (user?.secret2fa == null) return false;
     const secretKey = user?.secret2fa as string;
     return this.twoFactorAuthService.validateTwoFactorCode(secretKey, token);
   }

@@ -6,10 +6,11 @@ import {
   HttpInterceptor,
 } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class HeaderInterceptor implements HttpInterceptor {
-  constructor() {}
+  constructor(private readonly auth: AuthService) {}
 
   intercept(
     request: HttpRequest<unknown>,
@@ -19,6 +20,7 @@ export class HeaderInterceptor implements HttpInterceptor {
       setHeaders: {
         'Content-Type': 'application/json',
         accept: 'application/json',
+        Authorization: `Bearer ${this.auth.getToken()}`,
       },
     });
     return next.handle(modifiedRequest);

@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
 import { AuthService } from '../../../core/auth/auth.service';
 import { Router } from '@angular/router';
+import { StatusService } from 'src/app/core/services/status.service';
 
 @Component({
   templateUrl: './profile.component.html',
@@ -18,7 +19,8 @@ export class ProfileComponent implements OnInit {
   constructor(
     private readonly userService: UserService,
     private readonly auth: AuthService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly status: StatusService
   ) {}
 
   ngOnInit(): void {
@@ -33,6 +35,8 @@ export class ProfileComponent implements OnInit {
   }
 
   logout() {
+    const ID = this.userService.getUserId();
+    this.status.setStatus(ID, false);
     this.auth.removeToken();
     this.userService.removeUser();
     this.userService.removeUserAvatar();

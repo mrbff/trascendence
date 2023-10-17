@@ -38,7 +38,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.socketService.onTextMessage().subscribe({
         next: (response) => {
-          console.log(response);
           this.Oauth2.redirectUser(response as string);
         },
         error: (error) => {
@@ -63,23 +62,20 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
+  on42AuthClick() {
+    this.socketService.sendMessageRequest();
+  }
+
   //SEND CODE TO BACKEND FOR 42 API WORKFLOW (PROMISE)
   private onAuth42(code: string) {
     this.Oauth2.codeForAccessToken(code)
       .then((response) => {
-        this.auth.saveToken(response.accessToken);
-        this.userService.setUserId(this.auth.decodeToken(response.accessToken));
-        this.userService.setUser(response.username);
-        //this.userService.setUserAvatar(response.image.link);
+        this.initUser(response);
         this.router.navigate(['home']);
       })
       .catch(() => {
         this.errorMsg = `42 Api error. Try again`;
       });
-  }
-
-  on42AuthClick() {
-    this.socketService.sendMessageRequest();
   }
 
   onSubmit() {
@@ -99,8 +95,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.userService
       .login(formValue.email, formValue.password)
       .then((response) => {
-        this.auth.saveToken(response.accessToken);
-        this.userService.setUser(response.username);
+        this.initUser(response);
         this.loginForm.reset();
         this.router.navigate(['home']);
       })
@@ -108,6 +103,12 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.errorMsg = 'Invalid credentials';
         this.loginForm.reset();
       });
+  }
+
+  private initUser(response: any) {
+    this.auth.saveToken(response.accessToken);
+    this.userService.setUserId(this.auth.decodeToken(response.accessToken));
+    this.userService.setUser(response.username);
   }
 
   private isFieldEmpty(field: string): boolean {
