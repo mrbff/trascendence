@@ -7,6 +7,7 @@ import { OAuth2Service } from 'src/app/core/auth/oauth2.service';
 import { Subscription } from 'rxjs';
 import { SocketService } from 'src/app/core/services/socket.service';
 import { GoogleAuthService } from 'src/app/core/auth/google-auth.service';
+import { CodeService } from '../../services/code.service';
 
 @Component({
   selector: 'app-login',
@@ -17,6 +18,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
   errorMsg!: string;
   private subscription: Subscription;
+  openPopUp: boolean;
+  secret2fa: string;
 
   constructor(
     private readonly userService: UserService,
@@ -26,13 +29,16 @@ export class LoginComponent implements OnInit, OnDestroy {
     private readonly Oauth2: OAuth2Service,
     private readonly route: ActivatedRoute,
     private readonly socketService: SocketService,
-    private readonly googleAuth: GoogleAuthService
+    private readonly googleAuth: GoogleAuthService,
+    private readonly codeService: CodeService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]],
     });
     this.subscription = new Subscription();
+    this.openPopUp = false;
+    this.secret2fa = '';
   }
 
   ngOnInit(): void {
@@ -72,11 +78,11 @@ export class LoginComponent implements OnInit, OnDestroy {
   private onAuth42(code: string) {
     this.Oauth2.codeForAccessToken(code)
       .then((response) => {
-        this.initUser(response);
-        this.router.navigate(['home']);
+        this.loginFlow(response);
       })
-      .catch(() => {
+      .catch((error) => {
         this.errorMsg = `42 Api error. Try again`;
+        console.error(error);
       });
   }
 
@@ -97,9 +103,9 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.userService
       .login(formValue.email, formValue.password)
       .then((response) => {
-        this.initUser(response);
+        console.log(response);
+        this.loginFlow(response);
         this.loginForm.reset();
-        this.router.navigate(['home']);
       })
       .catch(() => {
         this.errorMsg = 'Invalid credentials';
@@ -107,12 +113,29 @@ export class LoginComponent implements OnInit, OnDestroy {
       });
   }
 
-  private initUser(response: any) {
-    if (response.id !== '') {
+  private async loginFlow(response: any) {
+    // IF NOT USERNAME AWAIT CODE FROM CHILD AND GOOGLE 2FA
+    if (!response.username) {
+      this.openPopUp = true;
+      const code = await this.codeService.emitCode();
+      this.googleAuth.validate2fa(response.id, code).then((response) => {
+        if (response.status === 401) {
+          this.errorMsg = 'Invalid code';
+          return;
+        }
+        this.errorMsg = '';
+        this.initUser(response);
+      });
+    } else {
+      this.initUser(response);
     }
+  }
+
+  private initUser(response: any) {
     this.auth.saveToken(response.accessToken);
     this.userService.setUserId(this.auth.decodeToken(response.accessToken));
     this.userService.setUser(response.username);
+    this.router.navigate(['home']);
   }
 
   private isFieldEmpty(field: string): boolean {

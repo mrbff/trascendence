@@ -1,5 +1,5 @@
-<div class="login-container">
-  <div class="login-box">
+<div [ngClass]="{ 'login-container': !openPopUp, off: openPopUp }">
+  <div [ngClass]="{ 'login-box': !openPopUp, off: openPopUp }">
     <h1 class="login-title">TRASCENDENCE</h1>
     <form id="loginForm" [formGroup]="loginForm">
       <div>
@@ -28,3 +28,4 @@
     </div>
   </div>
 </div>
+<app-popup [isOpen]="openPopUp" (isOpenChange)="openPopUp = $event"></app-popup>

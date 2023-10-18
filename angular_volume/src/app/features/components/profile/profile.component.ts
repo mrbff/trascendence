@@ -77,6 +77,5 @@ export class ProfileComponent implements OnInit {
       .catch((error) => {
         console.error(error);
       });
-    //this.googleAuth.enable2fa();
   }
 }
