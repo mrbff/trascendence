@@ -57,7 +57,7 @@ export class AuthService {
         password: 'blank',
       });
     }
-    user.img = profile.image.link;
+    await this.usersService.updateImg(user.id, profile.image.link);
 
     if (user.is2faEnabled == false)
       return {

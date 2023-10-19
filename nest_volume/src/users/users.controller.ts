@@ -157,4 +157,12 @@ export class UsersController {
       );
     }
   }
+
+  @Get('2fa-qr')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOkResponse()
+  async get2faQr(@GetUser() user: User) {
+    return user.qrcode2fa;
+  }
 }
