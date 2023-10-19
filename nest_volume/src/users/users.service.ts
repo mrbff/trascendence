@@ -90,7 +90,7 @@ export class UsersService {
         where: { id: id },
         data: { secret2fa: secretKey, qrcode2fa: qrUrl },
       });
-    return qrUrl;
+    return { qrUrl: qrUrl};
   }
 
   async validateTwoFactorCode(id: number, token: string) {
