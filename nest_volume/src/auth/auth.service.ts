@@ -31,8 +31,7 @@ export class AuthService {
     }
 
     const bcrypt = require('bcryptjs');
-    let hashedPass = await bcrypt.hash(password, roundsOfHashing);
-    const isPasswordValid = await bcrypt.compare(user.hash, hashedPass);
+    const isPasswordValid = await bcrypt.compare(password, user.hash);
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid password');

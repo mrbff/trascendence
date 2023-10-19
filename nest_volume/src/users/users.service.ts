@@ -14,7 +14,6 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     const bcrypt = require('bcryptjs');
-
     const pwHash = await bcrypt.hash(createUserDto.password, roundsOfHashing);
     return this.prisma.user.create({
       data: {
@@ -49,7 +48,10 @@ export class UsersService {
   }
 
   async updateImg(id: number, newImg: string) {
-    return this.prisma.user.update({ where: { id: id }, data: { img: newImg } });
+    return this.prisma.user.update({
+      where: { id: id },
+      data: { img: newImg },
+    });
   }
 
   async updateOnline(id: number, newStatus: boolean) {
@@ -72,8 +74,7 @@ export class UsersService {
         where: { id: id },
         data: { is2faEnabled: true },
       });
-    }
-    else {
+    } else {
       return this.prisma.user.update({
         where: { id: id },
         data: { is2faEnabled: false, qrcode2fa: null, secret2fa: null },
@@ -93,12 +94,13 @@ export class UsersService {
 
     const { secretKey, otpauthUrl } =
       this.twoFactorAuthService.generateTwoFactorSecret();
-      const qrUrl = await this.twoFactorAuthService.getTwoFactorAuthenticationCode(secretKey);
-      await this.prisma.user.update({
-        where: { id: id },
-        data: { secret2fa: secretKey, qrcode2fa: qrUrl },
-      });
-    return { qrUrl: qrUrl};
+    const qrUrl =
+      await this.twoFactorAuthService.getTwoFactorAuthenticationCode(secretKey);
+    await this.prisma.user.update({
+      where: { id: id },
+      data: { secret2fa: secretKey, qrcode2fa: qrUrl },
+    });
+    return { qrUrl: qrUrl };
   }
 
   async validateTwoFactorCode(id: number, token: string) {
