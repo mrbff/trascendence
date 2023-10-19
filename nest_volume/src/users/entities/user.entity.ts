@@ -49,4 +49,7 @@ export class UserEntity implements User {
   
   @Exclude()
   secret2fa:             string | null;
+
+  @Exclude()
+  qrcode2fa:              string | null;
 }

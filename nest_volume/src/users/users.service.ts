@@ -85,11 +85,12 @@ export class UsersService {
 
     const { secretKey, otpauthUrl } =
       this.twoFactorAuthService.generateTwoFactorSecret();
-    await this.prisma.user.update({
-      where: { id: id },
-      data: { is2faEnabled: true, secret2fa: secretKey },
-    });
-    return this.twoFactorAuthService.getTwoFactorAuthenticationCode(secretKey);
+      const qrUrl = await this.twoFactorAuthService.getTwoFactorAuthenticationCode(secretKey);
+      await this.prisma.user.update({
+        where: { id: id },
+        data: { secret2fa: secretKey, qrcode2fa: qrUrl },
+      });
+    return qrUrl;
   }
 
   async validateTwoFactorCode(id: number, token: string) {

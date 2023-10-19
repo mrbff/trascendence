@@ -29,7 +29,7 @@ model User {
 
   is2faEnabled          Boolean @default(false)
   secret2fa             String?
-//  qrcode2fa             String?
+  qrcode2fa             String?
 
   @@map("users")
 }

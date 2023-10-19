@@ -17,7 +17,6 @@ export class StatusService {
   }
 
   async set2fa(id: string, status: boolean) {
-    this.http.patch(`/nest/users/2fa-status/${id}`, { newStatus: status })
-    //.subscribe((res: any) => {console.log(res); });
+    this.http.patch(`/nest/users/2fa-status/${id}`, { newStatus: status });
   }
 }
