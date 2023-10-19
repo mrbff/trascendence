@@ -30,11 +30,11 @@ export class UsersService {
   }
 
   findOne(id: number) {
-    return this.prisma.user.findUnique({ where: { id } });
+    return this.prisma.user.findUnique({ where: { id: id } });
   }
 
   findOneByEmail(email: string) {
-    return this.prisma.user.findUnique({ where: { email } });
+    return this.prisma.user.findUnique({ where: { email: email } });
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
@@ -45,24 +45,31 @@ export class UsersService {
         roundsOfHashing,
       );
     }
-    return this.prisma.user.update({ where: { id }, data: updateUserDto });
+    return this.prisma.user.update({ where: { id: id }, data: updateUserDto });
   }
 
   async updateImg(id: number, newImg: string) {
-    return this.prisma.user.update({ where: { id }, data: { img: newImg } });
+    return this.prisma.user.update({ where: { id: id }, data: { img: newImg } });
   }
 
   async updateOnline(id: number, newStatus: boolean) {
     return this.prisma.user.update({
-      where: { id },
+      where: { id: id },
       data: { isOnline: newStatus },
     });
   }
 
   async updateIsPlaying(id: number, newStatus: boolean) {
     return this.prisma.user.update({
-      where: { id },
+      where: { id: id },
       data: { isPlaying: newStatus },
+    });
+  }
+
+  async update2faStatus(id: number, newStatus: boolean) {
+    return this.prisma.user.update({
+      where: { id: id },
+      data: { is2faEnabled: newStatus },
     });
   }
 
