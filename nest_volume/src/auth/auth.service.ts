@@ -20,11 +20,10 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private httpService: HttpService,
-    private usersService: UsersService
+    private usersService: UsersService,
   ) {}
 
   async login(email: string, password: string): Promise<any> {
-    
     const user = await this.prisma.user.findUnique({ where: { email: email } });
 
     if (!user) {
@@ -33,7 +32,7 @@ export class AuthService {
 
     const bcrypt = require('bcryptjs');
     let hashedPass = await bcrypt.hash(password, roundsOfHashing);
-    const isPasswordValid = bcrypt.compare(user.hash, hashedPass);
+    const isPasswordValid = await bcrypt.compare(user.hash, hashedPass);
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid password');
@@ -43,13 +42,13 @@ export class AuthService {
         username: user.username,
         accessToken: this.jwtService.sign({ userId: user.id }),
       };
-    else
-      return { id: user.id};
+    else return { id: user.id };
   }
 
   async login42(profile: any): Promise<any> {
-  
-    let user = await this.prisma.user.findUnique({ where: { email: profile.email } });
+    let user = await this.prisma.user.findUnique({
+      where: { email: profile.email },
+    });
 
     if (!user) {
       user = await this.usersService.create({
@@ -59,27 +58,20 @@ export class AuthService {
       });
     }
     user.img = profile.image.link;
-    
+
     if (user.is2faEnabled == false)
       return {
         username: user.username,
         accessToken: this.jwtService.sign({ userId: user.id }),
       };
-    else
-      return { id: user.id};
+    else return { id: user.id };
   }
 
   async exchangeCodeForAccessToken(code: string): Promise<any> {
     const formData = new FormData();
     formData.append('grant_type', 'authorization_code');
-    formData.append(
-      'client_id',
-      environment.ft_client_id,
-    );
-    formData.append(
-      'client_secret',
-      environment.ft_client_secret,
-    );
+    formData.append('client_id', environment.ft_client_id);
+    formData.append('client_secret', environment.ft_client_secret);
     formData.append('code', code);
     formData.append('redirect_uri', 'http://localhost:8080/login');
 
@@ -94,7 +86,7 @@ export class AuthService {
     const headers = {
       Authorization: `Bearer ${accessToken}`,
     };
-  
+
     const response = await lastValueFrom(
       this.httpService.get(url, { headers }),
     );
@@ -103,7 +95,6 @@ export class AuthService {
   }
 
   async login2fa(id: number): Promise<AuthEntity> {
-    
     const user = await this.prisma.user.findUnique({ where: { id: id } });
 
     if (!user) {

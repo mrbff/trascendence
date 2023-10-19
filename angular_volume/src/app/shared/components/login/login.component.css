@@ -7,7 +7,13 @@
   user-select: none;
 }
 
+.off {
+  display: none;
+}
+
 .login-box {
+  top: 50%;
+  left: 50%;
   padding: 30px;
   border-radius: 8px;
   color: orange;

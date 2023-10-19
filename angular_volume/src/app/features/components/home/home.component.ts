@@ -20,7 +20,6 @@ export class HomeComponent implements OnInit {
     this.userService
       .getUserInfo(ID)
       .then((user) => {
-        console.log(user);
         this.userService.setUserAvatar(user.img);
       })
       .catch((error) => {
