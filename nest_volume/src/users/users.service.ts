@@ -67,10 +67,18 @@ export class UsersService {
   }
 
   async update2faStatus(id: number, newStatus: boolean) {
-    return this.prisma.user.update({
-      where: { id: id },
-      data: { is2faEnabled: newStatus },
-    });
+    if (newStatus == true) {
+      return this.prisma.user.update({
+        where: { id: id },
+        data: { is2faEnabled: true },
+      });
+    }
+    else {
+      return this.prisma.user.update({
+        where: { id: id },
+        data: { is2faEnabled: false, qrcode2fa: null, secret2fa: null },
+      });
+    }
   }
 
   remove(id: number) {
