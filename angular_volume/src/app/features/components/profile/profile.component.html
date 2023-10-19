@@ -49,8 +49,21 @@
         {{ lose }}
       </div>
     </div>
-    <div class="qr">
-      <img [src]="[qrCode]" />
+    <div class="qr" *ngIf="qrCode !== '' && !twofa">
+      <p class="warning">ATTENTION! SCAN YOUR QR CODE BEFORE CONFIRM</p>
+      <img class="popup" [src]="[qrCode]" />
+      <div class="buttons">
+        <button class="left" (click)="onConfirm2FA()">CONFIRM</button>
+        <button class="right" (click)="onReject2FA()">REJECT</button>
+      </div>
+    </div>
+    <div class="qr" *ngIf="qrCode !== '' && twofa">
+      <p class="warning">YOUR QR CODE</p>
+      <img class="popup" [src]="[qrCode]" />
+      <div class="buttons">
+        <button class="left" (click)="closeQr()">CLOSE</button>
+        <button class="right" (click)="onReject2FA()">DISABLE 2FA</button>
+      </div>
     </div>
     <div class="logout">
       <button class="logout-bt" (click)="logout()">LOGOUT</button>

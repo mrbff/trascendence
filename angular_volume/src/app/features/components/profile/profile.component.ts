@@ -4,6 +4,7 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { Router } from '@angular/router';
 import { StatusService } from 'src/app/core/services/status.service';
 import { GoogleAuthService } from 'src/app/core/auth/google-auth.service';
+import { error } from 'console';
 
 @Component({
   templateUrl: './profile.component.html',
@@ -14,7 +15,9 @@ export class ProfileComponent implements OnInit {
   profileImage!: string;
   win!: number;
   lose!: number;
-  qrCode!: string;
+  qrCode: string;
+  private id: string;
+  twofa: boolean;
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
@@ -24,7 +27,11 @@ export class ProfileComponent implements OnInit {
     private readonly router: Router,
     private readonly status: StatusService,
     private readonly googleAuth: GoogleAuthService
-  ) {}
+  ) {
+    this.qrCode = '';
+    this.id = this.userService.getUserId();
+    this.twofa = false;
+  }
 
   ngOnInit(): void {
     this.user = this.userService.getUser()
@@ -38,8 +45,7 @@ export class ProfileComponent implements OnInit {
   }
 
   logout() {
-    const ID = this.userService.getUserId();
-    this.status.setStatus(ID, false);
+    this.status.setStatus(this.id, false);
     this.auth.removeToken();
     this.userService.removeUser();
     this.userService.removeUserAvatar();
@@ -66,16 +72,36 @@ export class ProfileComponent implements OnInit {
     icon.style.color = 'grey';
   }
 
-  onEnable2FA() {
-    const ID = this.userService.getUserId();
-    this.googleAuth
-      .getLink(ID)
-      .then((response) => {
-        console.log(`response: ${response.url}`);
-        this.qrCode = response.url;
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+  async onEnable2FA() {
+    const userInfo = await this.userService.getUserInfo(this.id);
+    console.log(userInfo);
+    if (userInfo.is2faEnabled === false) {
+      this.twofa = false;
+      this.googleAuth
+        .getLink(this.id)
+        .then((response) => {
+          this.qrCode = response.url.qrUrl;
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    } else {
+      this.twofa = true;
+      this.qrCode = userInfo.qrcode2fa;
+    }
+  }
+
+  async onConfirm2FA() {
+    this.qrCode = '';
+    await this.status.set2fa(this.id, true);
+  }
+
+  async onReject2FA() {
+    this.qrCode = '';
+    await this.status.set2fa(this.id, false);
+  }
+
+  closeQr() {
+    this.qrCode = '';
   }
 }
