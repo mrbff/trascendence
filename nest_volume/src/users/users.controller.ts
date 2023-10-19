@@ -20,6 +20,8 @@ import {
 } from '@nestjs/swagger';
 import { UserEntity } from './entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { User } from '@prisma/client';
+import { GetUser } from './users.decorator';
 
 @Controller('users')
 @ApiTags('users')
@@ -59,18 +61,27 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: UserEntity })
   async update(
+    @GetUser() user: User,
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return new UserEntity(await this.usersService.update(id, updateUserDto));
+    if (user.id == id) {
+      return new UserEntity(await this.usersService.update(id, updateUserDto));
+    }
   }
 
   @Patch('img/:id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: UserEntity })
-  async updateImg(@Param('id', ParseIntPipe) id: number, @Body() newImg: any) {
-    return new UserEntity(await this.usersService.updateImg(id, newImg.newImg));
+  async updateImg(
+    @GetUser() user: User,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() newImg: any
+  ) {
+    if (user.id == id) {
+      return new UserEntity(await this.usersService.updateImg(id, newImg.newImg));
+    }
   }
 
   @Patch('online/:id')
@@ -78,12 +89,15 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: UserEntity })
   async updateOnline(
+    @GetUser() user: User,
     @Param('id', ParseIntPipe) id: number,
     @Body() newStatus: any,
   ) {
-    return new UserEntity(
-      await this.usersService.updateOnline(id, newStatus.newStatus),
-    );
+    if (user.id == id) {
+      return new UserEntity(
+        await this.usersService.updateOnline(id, newStatus.newStatus),
+      );
+    }
   }
 
   @Patch('is-playing/:id')
@@ -91,27 +105,56 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiCreatedResponse({ type: UserEntity })
   async updateIsPlaying(
+    @GetUser() user: User,
     @Param('id', ParseIntPipe) id: number,
     @Body() newStatus: any,
   ) {
-    return new UserEntity(
-      await this.usersService.updateIsPlaying(id, newStatus.newStatus),
-    );
+    if (user.id == id) {
+      return new UserEntity(
+        await this.usersService.updateIsPlaying(id, newStatus.newStatus),
+      );
+    }
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse({ type: UserEntity })
-  async remove(@Param('id', ParseIntPipe) id: number) {
-    return new UserEntity(await this.usersService.remove(id));
+  async remove(
+    @GetUser() user: User,
+    @Param('id', ParseIntPipe) id: number
+  ) {
+    if (id == user.id) {
+      return new UserEntity(await this.usersService.remove(id));
+    }
   }
 
   @Post('2fa-generate')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @ApiOkResponse()
-  async generateTwoFactorSecret(@Body('userId') userId: string) {
+  async generateTwoFactorSecret(
+    @GetUser() user: User,
+    @Body('userId') userId: string
+  ) {
     const id: number = Number(userId);
-    return { url: await this.usersService.generateTwoFactorSecret(id) };
+    if (user.id == id) {
+      return { url: await this.usersService.generateTwoFactorSecret(id) };
+    }
+  }
+
+  @Patch('2fa-status/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiCreatedResponse({ type: UserEntity })
+  async change2faStatu(
+    @GetUser() user: User,
+    @Param('id', ParseIntPipe) id: number,
+    @Body('newStatus') newStatus: boolean,
+  ) {
+    if (user.id == id) {
+      return new UserEntity(
+        await this.usersService.update2faStatus(id, newStatus),
+      );
+    }
   }
 }

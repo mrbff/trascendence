@@ -28,6 +28,8 @@ model User {
   Losses                Int     @default(0)
 
   is2faEnabled          Boolean @default(false)
-  secret2fa               String?
+  secret2fa             String?
+  qrcode2fa             String?
+
   @@map("users")
 }
