@@ -8,6 +8,7 @@ import { UserService } from 'src/app/core/services/user.service';
 })
 export class NavbarComponent implements OnInit {
   user!: string;
+  icon!: any;
 
   constructor(private readonly userService: UserService) {}
 
@@ -16,5 +17,14 @@ export class NavbarComponent implements OnInit {
       this.userService.getUser() === ''
         ? 'PROFILE'
         : this.userService.getUser();
+  }
+
+  onMenuClick() {
+    this.icon = document.querySelector('.responsive');
+    if (this.icon.style.display === 'none') {
+      this.icon.style.display = 'block';
+    } else {
+      this.icon.style.display = 'none';
+    }
   }
 }

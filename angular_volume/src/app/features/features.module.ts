@@ -6,6 +6,7 @@ import { HomeComponent } from './components/home/home.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { ChangeImageDirective } from './components/profile/change-image.directive';
+import { FriendsComponent } from './components/friends/friends.component';
 
 @NgModule({
   declarations: [
@@ -13,6 +14,7 @@ import { ChangeImageDirective } from './components/profile/change-image.directiv
     HomeComponent,
     ProfileComponent,
     ChangeImageDirective,
+    FriendsComponent,
   ],
   imports: [CommonModule, FeaturesRoutingModule],
 })

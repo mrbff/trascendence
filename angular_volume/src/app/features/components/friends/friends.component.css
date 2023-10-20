@@ -1,0 +1,28 @@
+.friend-container {
+  font-family: Azonix;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  user-select: none;
+}
+
+.friend-box {
+  display: flex;
+  border-radius: 8px;
+  color: orange;
+  margin-bottom: 90px;
+  width: 95%;
+  height: 85%;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(40px);
+}
+
+.friend-list {
+  position: absolute;
+  width: 100%;
+  top: 4vh;
+  text-align: center;
+  font-size: 40px;
+}

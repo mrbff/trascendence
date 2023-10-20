@@ -4,7 +4,6 @@ import { AuthService } from '../../../core/auth/auth.service';
 import { Router } from '@angular/router';
 import { StatusService } from 'src/app/core/services/status.service';
 import { GoogleAuthService } from 'src/app/core/auth/google-auth.service';
-import { error } from 'console';
 
 @Component({
   templateUrl: './profile.component.html',

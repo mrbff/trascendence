@@ -5,6 +5,7 @@ import { LoginComponent } from './shared/components/login/login.component';
 import { ProfileComponent } from './features/components/profile/profile.component';
 import { authGuard } from './core/guards/auth.guard';
 import { SignupComponent } from './shared/components/signup/signup.component';
+import { FriendsComponent } from './features/components/friends/friends.component';
 
 const routes: Routes = [
   { pathMatch: 'full', path: '', component: LoginComponent },
@@ -19,6 +20,12 @@ const routes: Routes = [
     pathMatch: 'full',
     path: 'profile',
     component: ProfileComponent,
+    canActivate: [authGuard],
+  },
+  {
+    pathMatch: 'full',
+    path: 'friends',
+    component: FriendsComponent,
     canActivate: [authGuard],
   },
   { pathMatch: 'full', path: '**', redirectTo: '' },
