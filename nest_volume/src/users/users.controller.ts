@@ -55,6 +55,16 @@ export class UsersController {
     }
   }
 
+  @Get(':username')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOkResponse()
+  async findUserPublicData(
+    @Param('username', ParseIntPipe) username: string
+  ) {
+    return await this.usersService.findUserPublicData(username);
+  }
+
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
