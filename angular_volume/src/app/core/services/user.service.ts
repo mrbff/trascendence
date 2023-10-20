@@ -27,18 +27,6 @@ export class UserService {
     this.cookieService.delete('user');
   }
 
-  setUserAvatar(link: string) {
-    this.cookieService.set('avatar', link);
-  }
-
-  getUserAvatar(): string {
-    return this.cookieService.get('avatar');
-  }
-
-  removeUserAvatar() {
-    this.cookieService.delete('avatar');
-  }
-
   setUserId(decodedJwt: any) {
     this.cookieService.set('id', decodedJwt.userId);
   }
