@@ -36,6 +36,21 @@ export class UsersService {
     return this.prisma.user.findUnique({ where: { email: email } });
   }
 
+  async findUserPublicData(username: string) {
+    const user = await this.prisma.user.findUniqueOrThrow({ where: { username: username } });
+    return {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      img: user.img,
+      isOnline: user.isOnline,
+      isPlaying: user.isPlaying,
+      wins: user.Wins,
+      losses: user.Losses,
+      played: user.Played
+    }
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto) {
     const bcrypt = require('bcryptjs');
     if (updateUserDto.password) {
