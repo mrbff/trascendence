@@ -14,16 +14,5 @@ export class HomeComponent implements OnInit {
     private readonly status: StatusService
   ) {}
 
-  ngOnInit(): void {
-    const ID = this.userService.getUserId();
-    this.status.setStatus(ID, true);
-    this.userService
-      .getUserInfo(ID)
-      .then((user) => {
-        this.userService.setUserAvatar(user.img);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
+  ngOnInit(): void {}
 }
