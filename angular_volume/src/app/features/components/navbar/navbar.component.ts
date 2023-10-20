@@ -19,16 +19,4 @@ export class NavbarComponent implements OnInit {
         ? 'PROFILE'
         : this.userService.getUser();
   }
-
-  onMenuClick() {
-    this.icon = document.querySelector('.responsive');
-    this.background = document.querySelector('.backresp');
-    if (this.icon.style.display === 'none') {
-      this.icon.style.display = 'block';
-      this.background.style.display = 'block';
-    } else {
-      this.icon.style.display = 'none';
-      this.background.style.display = 'none';
-    }
-  }
 }

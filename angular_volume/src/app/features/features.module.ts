@@ -8,6 +8,7 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { ChangeImageDirective } from './components/profile/change-image.directive';
 import { FriendsComponent } from './components/friends/friends.component';
 import { DropmenuDirective } from './components/navbar/dropmenu.directive';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,6 @@ import { DropmenuDirective } from './components/navbar/dropmenu.directive';
     FriendsComponent,
     DropmenuDirective,
   ],
-  imports: [CommonModule, FeaturesRoutingModule],
+  imports: [CommonModule, FeaturesRoutingModule, FormsModule],
 })
 export class FeaturesModule {}

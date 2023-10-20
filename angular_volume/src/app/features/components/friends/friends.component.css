@@ -8,7 +8,9 @@
 }
 
 .friend-box {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
   border-radius: 8px;
   color: orange;
   margin-bottom: 90px;
@@ -19,10 +21,43 @@
   backdrop-filter: blur(40px);
 }
 
-.friend-list {
+.input-container {
   position: absolute;
-  width: 100%;
-  top: 4vh;
-  text-align: center;
-  font-size: 40px;
+  top: 25%;
+  left: 50%;
+  width: 90%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  grid-row: 1 / 1;
+  grid-template-columns: 2fr 2fr 2fr;
+  grid-template-rows: 2fr;
+}
+
+.friend-input {
+  grid-column: 1 / end;
+  font-family: Newake;
+  border-radius: 80px;
+  max-height: 20px;
+  margin-bottom: 15px;
+  border: 2px solid orange;
+  color: orange;
+  background: black;
+  text-indent: 20px;
+  outline: none;
+  font-size: 15px;
+  padding: 15px;
+}
+
+.input-container button {
+  grid-column: 3 / end;
+  position: absolute;
+  right: 0;
+  font-family: Azonix;
+  border: none;
+  color: black;
+  font-size: 15px;
+  cursor: pointer;
+  border-radius: 50px;
+  padding: 17px;
+  background-color: orange;
 }
