@@ -74,4 +74,28 @@ export class FriendsController {
   ) {
     return await this.friendsService.getSentFriendRequests(user.id);
   }
+
+  @Post('block')
+  @UseGuards(JwtAuthGuard)
+  @ApiOkResponse()
+  async blockUser(
+    @GetUser() user: User,
+    @Body('toBlock') toBlock: string
+  ) {
+    const blocked = await this.usersService.findUserByName(toBlock);
+    this.friendsService.blockUser(user.id, blocked.id);
+    return `${toBlock} has been blocked`;
+  }
+
+  @Post('unblock')
+  @UseGuards(JwtAuthGuard)
+  @ApiOkResponse()
+  async unblockUser(
+    @GetUser() user: User,
+    @Body('toUnblock') toUnblock: string
+  ) {
+    const blocked = await this.usersService.findUserByName(toUnblock);
+    this.friendsService.unblockUser(user.id, blocked.id);
+    return `${toUnblock} has been unblocked`;
+  }
 }

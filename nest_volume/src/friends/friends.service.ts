@@ -143,4 +143,78 @@ export class FriendsService {
     return friends;
   }
 
+  async areUsersFriends(user1Id:number, user2Id: number): Promise<boolean> {
+    let res = await this.prisma.friendship.findUnique({
+      where: {
+        senderId_receiverId: {
+          senderId: user1Id, 
+          receiverId: user2Id
+        }
+      }
+    });
+    if (res === null) {
+      res = await this.prisma.friendship.findUnique({
+        where: {
+          senderId_receiverId: {
+            senderId: user2Id, 
+            receiverId: user1Id
+          }
+        }
+      });
+    }
+
+    if (res === null)
+      return false;
+    return true;
+  }
+
+  async blockUser(blockerId: number, blockedId: number): Promise<void> {
+    if (blockerId === blockedId) {
+      throw new Error('You cannot block yourself');
+    }
+    if (await this.isUserBlocked(blockerId, blockedId)) {
+      throw new Error('User already blocked');
+    }
+    if (await this.areUsersFriends(blockerId, blockedId)) {
+      await this.removeFriendship(blockerId, blockedId);
+    }
+
+    await this.prisma.blockedUser.create({
+      data: {
+        blockerId: blockerId,
+        blockedId: blockedId
+      }
+    });
+  }
+
+  async isUserBlocked(userId:number, otherId:number): Promise<boolean> {
+    let res = await this.prisma.blockedUser.findUnique({
+      where: {
+        blockerId_blockedId: {
+          blockerId: userId, 
+          blockedId: otherId
+        }
+      }
+    });
+
+    if (res === null)
+      return false;
+    return true;
+  }
+
+  async unblockUser(blockerId: number, blockedId: number): Promise<void> {
+    if (!(await this.isUserBlocked(blockerId, blockedId))) {
+      throw new Error('User not blocked');
+    }
+
+    await this.prisma.blockedUser.delete({
+      where: {
+        blockerId_blockedId: {
+          blockerId: blockerId, 
+          blockedId: blockedId
+        }
+      }
+    });
+  }
+
 }
