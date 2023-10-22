@@ -24,14 +24,14 @@
 .profile-image {
   grid-row: 1 / 1;
   grid-column: 1 / 1;
-  border: 2px solid;
+  border: 4px solid;
   border-radius: 50%;
   width: 250px;
   height: 250px;
   display: block;
+  color: red;
   margin-left: 4vh;
   margin-top: 4vh;
-  display: block;
   overflow: hidden;
   object-fit: cover;
   object-position: center center;
@@ -272,7 +272,7 @@
   .profile-image {
     grid-row: 1 / 1;
     grid-column: 1 / 1;
-    border: 2px solid;
+
     border-radius: 50%;
     width: 150px;
     height: 150px;

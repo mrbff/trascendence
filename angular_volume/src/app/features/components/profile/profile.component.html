@@ -9,19 +9,19 @@
       appChangeImage
     />
     <input
+      *ngIf="currentUser"
       type="file"
       accept="image/*"
       (change)="onFileSelected($event)"
       style="display: none"
       #fileInput
-      *ngIf="currentUser"
     />
     <button
+      *ngIf="currentUser"
       (click)="onFileSelected($event)"
       appChangeImage
       id="text"
       class="profile-image change-text"
-      *ngIf="currentUser"
     >
       Change Image
     </button>

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { lastValueFrom } from 'rxjs';
+import { lastValueFrom, firstValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -8,8 +8,10 @@ import { lastValueFrom } from 'rxjs';
 export class StatusService {
   constructor(private readonly http: HttpClient) {}
 
-  async setStatus(id: string, status: boolean) {
-    this.http.patch(`/nest/users/online/${id}`, { newStatus: status });
+  setStatus(id: string, status: boolean) {
+    firstValueFrom(
+      this.http.patch(`/nest/users/online/${id}`, { newStatus: status })
+    );
   }
 
   async setPlaying(id: string, status: boolean) {

@@ -9,7 +9,7 @@ export class AuthService {
 
   saveToken(token: string) {
     if (token !== undefined) {
-      this.cookieService.set('token', token);
+      this.cookieService.set('token', token, 1 / 24);
     }
   }
 
@@ -18,7 +18,8 @@ export class AuthService {
   }
 
   removeToken() {
-    this.cookieService.delete('token');
+    let name = '';
+    this.cookieService.set('token', name, 1 / 86400);
   }
 
   decodeToken(token: string): any {

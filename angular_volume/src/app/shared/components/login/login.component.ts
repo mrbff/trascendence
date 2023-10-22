@@ -8,6 +8,7 @@ import { Subscription } from 'rxjs';
 import { SocketService } from 'src/app/core/services/socket.service';
 import { GoogleAuthService } from 'src/app/core/auth/google-auth.service';
 import { CodeService } from '../../services/code.service';
+import { StatusService } from 'src/app/core/services/status.service';
 
 @Component({
   selector: 'app-login',
@@ -30,7 +31,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     private readonly route: ActivatedRoute,
     private readonly socketService: SocketService,
     private readonly googleAuth: GoogleAuthService,
-    private readonly codeService: CodeService
+    private readonly codeService: CodeService,
+    private readonly status: StatusService
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -118,24 +120,18 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (!response.username) {
       this.openPopUp = true;
       const code = await this.codeService.emitCode();
-      this.googleAuth.validate2fa(response.id, code).then((response) => {
+      await this.googleAuth.validate2fa(response.id, code).then((response) => {
         if (response.status === 401) {
           this.errorMsg = 'Invalid code';
           return;
         }
-        this.errorMsg = '';
-        this.initUser(response);
       });
-    } else {
-      this.initUser(response);
     }
-  }
-
-  private initUser(response: any) {
     this.auth.saveToken(response.accessToken);
     this.userService.setUserId(this.auth.decodeToken(response.accessToken));
     this.userService.setUser(response.username);
-    this.router.navigate(['home']);
+    this.status.setStatus(this.userService.getUserId(), true);
+    this.router.navigate(['/home']);
   }
 
   private isFieldEmpty(field: string): boolean {
