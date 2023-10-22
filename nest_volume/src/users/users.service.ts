@@ -29,11 +29,15 @@ export class UsersService {
   }
 
   findOne(id: number) {
-    return this.prisma.user.findUnique({ where: { id: id } });
+    return this.prisma.user.findUniqueOrThrow({ where: { id: id } });
   }
 
   findOneByEmail(email: string) {
-    return this.prisma.user.findUnique({ where: { email: email } });
+    return this.prisma.user.findUniqueOrThrow({ where: { email: email } });
+  }
+
+  findUserByName(name: string) {
+    return this.prisma.user.findUniqueOrThrow({ where: { username: name } });
   }
 
   async findUserPublicData(username: string) {
