@@ -10,7 +10,7 @@
 .friend-box {
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 2fr 2fr;
   border-radius: 8px;
   color: orange;
   margin-bottom: 90px;
@@ -23,7 +23,7 @@
 
 .input-container {
   position: absolute;
-  top: 30%;
+  top: 8vh;
   left: 50%;
   width: 90%;
   transform: translate(-50%, -50%);
@@ -66,4 +66,8 @@
   border-radius: 50px;
   padding: 17px;
   background-color: orange;
+}
+
+.card-box {
+  grid-row: 2 / 3;
 }

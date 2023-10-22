@@ -9,6 +9,7 @@ import { ChangeImageDirective } from './components/profile/change-image.directiv
 import { FriendsComponent } from './components/friends/friends.component';
 import { DropmenuDirective } from './components/navbar/dropmenu.directive';
 import { FormsModule } from '@angular/forms';
+import { FriendCardComponent } from './components/friend-card/friend-card.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { FormsModule } from '@angular/forms';
     ChangeImageDirective,
     FriendsComponent,
     DropmenuDirective,
+    FriendCardComponent,
   ],
   imports: [CommonModule, FeaturesRoutingModule, FormsModule],
 })
