@@ -13,10 +13,15 @@ export class FriendsService {
     if (userId === receiver.id) {
       throw new BadRequestException('You cannot send a friend request to yourself.');
     }
-/*  TO DO
-    check if user is blocked
-    check if the to users are already friends
-*/
+    
+    if (await this.areUsersFriends(userId, receiver.id)) {
+      throw new Error(`You and ${friendName} are already friends`);
+    } 
+
+    if (await this.isUserBlocked(userId, receiver.id)) {
+      throw new Error('This user is blocked');
+    }
+
     await this.prisma.friendship.create({
       data: {
         senderId: userId,
@@ -30,9 +35,10 @@ export class FriendsService {
     
     const sender = await this.prisma.user.findUniqueOrThrow({ where: {username: friendName}});
 
-/*  TO DO
-    check if user is blocked
-*/
+    if (await this.isUserBlocked(userId, sender.id)) {
+      throw new Error('This user is blocked');
+    } 
+
     return await this.prisma.friendship.update({
       where: {
         senderId_receiverId: {
