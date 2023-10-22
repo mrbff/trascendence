@@ -1,0 +1,179 @@
+.card-box {
+  position: absolute;
+  left: 8vh;
+  right: 8vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  border-radius: 8px;
+  color: orange;
+  width: 95%;
+  height: 85%;
+  background-image: url("../../../../assets/giphy2.gif");
+  border: 4px solid black;
+  backdrop-filter: blur(40px);
+  min-height: 350px;
+  max-height: 350px;
+  max-width: 300px;
+}
+
+.profile-img {
+  grid-row: 1 / 1;
+  grid-column: 2 / 2;
+  position: relative;
+  top: 2.5vh;
+  width: 120px;
+  height: 120px;
+  border: 2px solid;
+  border-radius: 50%;
+  display: block;
+  background-color: black;
+  overflow: hidden;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.username {
+  grid-row: 2 / 2;
+  grid-column: 1 / end;
+  position: absolute;
+  top: 50%; /* Muovi il 50% dall'alto */
+  left: 50%; /* Muovi il 50% dal sinistro */
+  transform: translate(-50%, -50%);
+
+  font-size: 30px;
+}
+
+.card-box::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: -1;
+}
+
+.play {
+  grid-row: 3 / 3;
+  grid-column: 1;
+  align-items: center;
+  align-content: center;
+}
+
+.play i {
+  grid-row: 3 / 3;
+  grid-column: 1;
+  position: absolute;
+  left: 4.8vh;
+  top: 3.5vh;
+  bottom: 30px;
+  font-size: 30px;
+}
+
+.pl {
+  grid-row: 3 / 3;
+  grid-column: 1 / 1;
+  position: absolute;
+  font-size: 20px;
+  left: 3.6vh;
+  top: 8vh;
+}
+
+.chat {
+  grid-row: 3 / 3;
+  grid-column: 2;
+  align-items: center;
+  align-content: center;
+}
+
+.chat i {
+  grid-row: 3 / 3;
+  grid-column: 2;
+  position: absolute;
+  left: 5.2vh;
+  top: 5vh;
+  bottom: 30px;
+  font-size: 30px;
+}
+
+.ct {
+  grid-row: 3 / 3;
+  grid-column: 2 / 2;
+  position: absolute;
+  font-size: 20px;
+  left: 3.8vh;
+  top: 8vh;
+}
+
+.profile {
+  grid-row: 3 / 3;
+  grid-column: 3;
+  align-items: center;
+  align-content: center;
+}
+
+.profile i {
+  grid-row: 3 / 3;
+  grid-column: 3;
+  position: absolute;
+  left: 1.5vh;
+  top: 3.5vh;
+  bottom: 30px;
+  font-size: 30px;
+}
+
+.profile span {
+  grid-row: 3 / 3;
+  grid-column: 3;
+  position: absolute;
+  font-size: 20px;
+  top: 8vh;
+}
+
+.matchbox {
+  grid-row: 2 / 2;
+  grid-column: 1 / end;
+  position: absolute;
+  top: 10vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-rows: 0.5fr;
+  align-items: center;
+  font-size: 40px;
+  margin-right: 0px;
+}
+
+.win {
+  grid-row: 1 / 1;
+  grid-column: 1 / 1;
+  text-align: center;
+  font-size: 25px;
+  margin-left: 35px;
+}
+
+.winRes {
+  grid-row: 1 / 1;
+  grid-column: 2 / 2;
+  text-align: center;
+  color: green;
+  padding-bottom: 0px;
+  font-size: 25px;
+}
+.lose {
+  grid-row: 1 / 1;
+  grid-column: 4 / 4;
+  text-align: center;
+  font-size: 25px;
+  margin-right: 15px;
+}
+
+.loseRes {
+  grid-row: 4 / 4;
+  grid-row: 1 / 1;
+  text-align: center;
+  color: red;
+  font-size: 25px;
+  padding-bottom: 0px;
+}
