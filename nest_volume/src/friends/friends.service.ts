@@ -25,4 +25,122 @@ export class FriendsService {
       }
     });
   }
+
+  async acceptFriendRequest(userId: number, friendName: string) : Promise<any> {
+    
+    const sender = await this.prisma.user.findUniqueOrThrow({ where: {username: friendName}});
+
+/*  TO DO
+    check if user is blocked
+*/
+    return await this.prisma.friendship.update({
+      where: {
+        senderId_receiverId: {
+          senderId: sender.id, 
+          receiverId: userId
+        }
+      },
+      data: {
+        status: 'ACCEPTED'
+      }
+    });
+  }
+
+  async removeFriendship(senderId: number, receiverId: number): Promise<void> {
+    await this.prisma.friendship.deleteMany({
+      where: {
+        OR: [
+          { senderId: senderId, receiverId: receiverId },
+          { senderId: receiverId, receiverId: senderId }
+        ]
+      }
+    });
+  }
+
+  async getReceivedFriendRequests(userId: number): Promise<any> {
+    const friendships = await this.prisma.friendship.findMany({
+      where: {
+        receiverId: userId,
+        status: 'PENDING'
+      },
+      include: {
+        sender: {
+          select: {
+            id: true,
+            username: true,
+            img: true,
+            isOnline: true,
+            isPlaying: true
+          }
+        }
+      }
+    });
+
+    const friendRequests = friendships.map(friendship => friendship.sender);
+    return friendRequests;
+  }
+
+  async getSentFriendRequests(userId: number): Promise<any> {
+    const friendship = await this.prisma.friendship.findMany({
+      where: {
+        senderId: userId,
+        status: 'PENDING'
+      },
+      include: {
+        receiver: {
+          select: {
+            id: true,
+            username: true,
+            img: true,
+            isOnline: true,
+            isPlaying: true
+          }
+        }
+      }
+    });
+
+    const friends = friendship.map(friendship => friendship.receiver);
+    return friends;
+  }
+
+  async getFriends(userId: number): Promise<any> {
+    const friendships = await this.prisma.friendship.findMany({
+      where: {
+        OR: [
+          { senderId: userId, status: 'ACCEPTED' },
+          { receiverId: userId, status: 'ACCEPTED' }
+        ]
+      },
+      include: {
+        sender: {
+          select: {
+            id: true,
+            username: true,
+            img: true,
+            isOnline: true,
+            isPlaying: true
+          }
+        },
+        receiver: {
+          select: {
+            id: true,
+            username: true,
+            img: true,
+            isOnline: true,
+            isPlaying: true
+          }
+        }
+      }
+    });
+
+    const friends = friendships.map(friendship => {
+      if (friendship.senderId === userId) {
+        return friendship.receiver;
+      } else {
+        return friendship.sender;
+      }
+    });
+    return friends;
+  }
+
 }
