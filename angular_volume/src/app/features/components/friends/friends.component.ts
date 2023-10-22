@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { UserService } from '../../../core/services/user.service';
+import { FriendsService } from '../../../core/services/friends.service';
 
 @Component({
   templateUrl: './friends.component.html',
@@ -8,12 +8,12 @@ import { UserService } from '../../../core/services/user.service';
 export class FriendsComponent {
   search: string;
 
-  constructor(private readonly userService: UserService) {
+  constructor(private readonly friendsService: FriendsService) {
     this.search = '';
   }
 
   async searchPlayer() {
-    await this.userService
+    await this.friendsService
       .getFriendInfo(this.search)
       .then((response) => console.log(response))
       .catch((err) => console.error(err));

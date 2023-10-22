@@ -58,9 +58,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse()
-  async findUserPublicData(
-    @Param('username', ParseIntPipe) username: string
-  ) {
+  async findUserPublicData(@Param('username') username: string) {
     return await this.usersService.findUserPublicData(username);
   }
 
@@ -85,7 +83,7 @@ export class UsersController {
   async updateImg(
     @GetUser() user: User,
     @Param('id', ParseIntPipe) id: number,
-    @Body() newImg: any
+    @Body() newImg: any,
   ) {
     if (user.id == id) {
       return await this.usersService.updateImg(id, newImg.newImg);
@@ -124,10 +122,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse()
-  async remove(
-    @GetUser() user: User,
-    @Param('id', ParseIntPipe) id: number
-  ) {
+  async remove(@GetUser() user: User, @Param('id', ParseIntPipe) id: number) {
     if (id == user.id) {
       return await this.usersService.remove(id);
     }
@@ -138,7 +133,7 @@ export class UsersController {
   @ApiOkResponse()
   async generateTwoFactorSecret(
     @GetUser() user: User,
-    @Body('userId') userId: string
+    @Body('userId') userId: string,
   ) {
     const id: number = Number(userId);
     if (user.id == id) {
