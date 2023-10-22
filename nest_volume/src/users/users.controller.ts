@@ -59,7 +59,7 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiOkResponse()
   async findUserPublicData(
-    @Param('username', ParseIntPipe) username: string
+    @Param('username') username: string
   ) {
     return await this.usersService.findUserPublicData(username);
   }

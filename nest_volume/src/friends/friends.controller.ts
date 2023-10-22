@@ -20,4 +20,16 @@ export class FriendsController {
     this.friendsService.inviteFriend(user.id, friendName);
     return `Friend request correctly sent to ${friendName}`;
   }
+
+  @Post('accept')
+  @UseGuards(JwtAuthGuard)
+  @ApiOkResponse()
+  async acceptFriendRequest(
+    @GetUser() user: User,
+    @Body('friend') friendName: string
+  ) {
+    this.friendsService.inviteFriend(user.id, friendName);
+    return `Friend request correctly sent to ${friendName}`;
+  }
+
 }
