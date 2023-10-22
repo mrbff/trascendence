@@ -1,14 +1,18 @@
-import { Body, Controller, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Patch, Post, UseGuards } from "@nestjs/common";
 import { FriendsService } from "./friends.service";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
 import { User } from "@prisma/client";
 import { GetUser } from "src/users/users.decorator";
+import { UsersService } from "src/users/users.service";
 
 @Controller('friends')
 @ApiTags('friends')
 export class FriendsController {
-  constructor(private readonly friendsService: FriendsService) {}
+  constructor(
+    private friendsService: FriendsService,
+    private usersService: UsersService
+  ) {}
   
   @Post('invite')
   @UseGuards(JwtAuthGuard)
@@ -29,9 +33,45 @@ export class FriendsController {
     @Body('friend') friendName: string
   ) {
     this.friendsService.inviteFriend(user.id, friendName);
-    return `Friend request correctly sent to ${friendName}`;
+    return `Now you and ${friendName} are friends`;
   }
 
-  
+  @Post('delete')
+  @UseGuards(JwtAuthGuard)
+  @ApiOkResponse()
+  async deleteFriend(
+    @GetUser() user: User,
+    @Body('friend') friendName: string
+  ) {
+    const friend = await this.usersService.findUserByName(friendName);
+    this.friendsService.removeFriendship(user.id, friend.id);
+    return `You removed ${friendName} from your friends`;
+  }
 
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiOkResponse()
+  async getFriends(
+    @GetUser() user: User
+  ) {
+    return await this.friendsService.getFriends(user.id);
+  }
+
+  @Get('requests/received')
+  @UseGuards(JwtAuthGuard)
+  @ApiOkResponse()
+  async getReceivedFriendRequests(
+    @GetUser() user: User
+  ) {
+    return await this.friendsService.getReceivedFriendRequests(user.id);
+  }
+
+  @Get('requests/sent')
+  @UseGuards(JwtAuthGuard)
+  @ApiOkResponse()
+  async getSentFriendRequests(
+    @GetUser() user: User
+  ) {
+    return await this.friendsService.getSentFriendRequests(user.id);
+  }
 }
