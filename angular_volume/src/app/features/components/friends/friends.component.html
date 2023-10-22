@@ -4,12 +4,13 @@
     <div class="input-container">
       <input
         class="friend-input"
+        type="text"
         [(ngModel)]="search"
         placeholder="Search player"
-        type="text"
-        (click)="searchPlayer()"
+        autocomplete="on"
+        spellcheck="false"
       />
-      <button>SEARCH</button>
+      <button (click)="searchPlayer()">SEARCH</button>
     </div>
   </div>
 </div>
