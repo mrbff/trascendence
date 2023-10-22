@@ -1,0 +1,17 @@
+<app-navbar></app-navbar>
+<div class="friend-container">
+  <div class="friend-box">
+    <div class="input-container">
+      <input
+        class="friend-input"
+        type="text"
+        [(ngModel)]="search"
+        placeholder="Search player"
+        autocomplete="on"
+        spellcheck="false"
+      />
+      <button (click)="searchPlayer()">SEARCH</button>
+    </div>
+    <div class="card-box"><app-friend-card class="card"></app-friend-card></div>
+  </div>
+</div>

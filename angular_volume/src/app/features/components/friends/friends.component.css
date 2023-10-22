@@ -1,0 +1,73 @@
+.friend-container {
+  font-family: Azonix;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  user-select: none;
+}
+
+.friend-box {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 2fr 2fr;
+  border-radius: 8px;
+  color: orange;
+  margin-bottom: 90px;
+  width: 95%;
+  height: 85%;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(40px);
+}
+
+.input-container {
+  position: absolute;
+  top: 8vh;
+  left: 50%;
+  width: 90%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  grid-row: 1 / 1;
+  grid-template-columns: 2fr 2fr 2fr;
+  grid-template-rows: 2fr;
+}
+
+.friend-input {
+  grid-column: 1 / end;
+  font-family: Newake;
+  border-radius: 80px;
+  max-height: 20px;
+  margin-bottom: 15px;
+  border: 2px solid orange;
+  color: orange;
+  background: black;
+  text-indent: 20px;
+  outline: none;
+  font-size: 15px;
+  padding: 15px;
+}
+
+.friend-input::placeholder {
+  color: orange;
+  background: transparent;
+  text-indent: 20px;
+}
+
+.input-container button {
+  grid-column: 3 / end;
+  position: absolute;
+  right: 0;
+  font-family: Azonix;
+  border: none;
+  color: black;
+  font-size: 15px;
+  cursor: pointer;
+  border-radius: 50px;
+  padding: 17px;
+  background-color: orange;
+}
+
+.card-box {
+  grid-row: 2 / 3;
+}

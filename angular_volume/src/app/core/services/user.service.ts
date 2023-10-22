@@ -27,18 +27,6 @@ export class UserService {
     this.cookieService.delete('user');
   }
 
-  setUserAvatar(link: string) {
-    this.cookieService.set('avatar', link);
-  }
-
-  getUserAvatar(): string {
-    return this.cookieService.get('avatar');
-  }
-
-  removeUserAvatar() {
-    this.cookieService.delete('avatar');
-  }
-
   setUserId(decodedJwt: any) {
     this.cookieService.set('id', decodedJwt.userId);
   }
@@ -63,5 +51,9 @@ export class UserService {
 
   async getUserInfo(id: string): Promise<any> {
     return lastValueFrom(this.http.get(`/nest/users/${id}`));
+  }
+
+  async getFriendInfo(username: string): Promise<any> {
+    return lastValueFrom(this.http.get(`/nest/friends/${username}`));
   }
 }

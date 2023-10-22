@@ -18,7 +18,6 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { UserEntity } from './entities/user.entity';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { User } from '@prisma/client';
 import { GetUser } from './users.decorator';
@@ -29,26 +28,25 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('signup')
-  @ApiCreatedResponse({ type: UserEntity })
+  @ApiCreatedResponse()
   async create(@Body() createUserDto: CreateUserDto) {
-    return new UserEntity(await this.usersService.create(createUserDto));
+    return await this.usersService.create(createUserDto);
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOkResponse({ type: UserEntity, isArray: true })
+  @ApiOkResponse()
   async findAll() {
     const users = await this.usersService.findAll();
-    return users.map((user) => new UserEntity(user));
+    return users;
   }
 
-  @Get(':id')
+  @Get('me')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOkResponse({ type: UserEntity })
-  async findOne(@Param('id', ParseIntPipe) id: number) {
-    const user = await this.usersService.findOne(id);
+  @ApiOkResponse()
+  async findMe(@GetUser() user: User) {
     if (user !== null) {
       return user;
     } else {
@@ -56,76 +54,82 @@ export class UsersController {
     }
   }
 
+  @Get(':username')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOkResponse()
+  async findUserPublicData(
+    @Param('username', ParseIntPipe) username: string
+  ) {
+    return await this.usersService.findUserPublicData(username);
+  }
+
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiCreatedResponse({ type: UserEntity })
+  @ApiOkResponse()
   async update(
     @GetUser() user: User,
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
     if (user.id == id) {
-      return new UserEntity(await this.usersService.update(id, updateUserDto));
+      return await this.usersService.update(id, updateUserDto);
     }
   }
 
   @Patch('img/:id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiCreatedResponse({ type: UserEntity })
+  @ApiOkResponse()
   async updateImg(
     @GetUser() user: User,
     @Param('id', ParseIntPipe) id: number,
     @Body() newImg: any
   ) {
     if (user.id == id) {
-      return new UserEntity(await this.usersService.updateImg(id, newImg.newImg));
+      return await this.usersService.updateImg(id, newImg.newImg);
     }
   }
 
   @Patch('online/:id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiCreatedResponse({ type: UserEntity })
+  @ApiOkResponse()
   async updateOnline(
     @GetUser() user: User,
     @Param('id', ParseIntPipe) id: number,
     @Body() newStatus: any,
   ) {
     if (user.id == id) {
-      return new UserEntity(
-        await this.usersService.updateOnline(id, newStatus.newStatus),
-      );
+      return await this.usersService.updateOnline(id, newStatus.newStatus);
     }
   }
 
   @Patch('is-playing/:id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiCreatedResponse({ type: UserEntity })
+  @ApiOkResponse()
   async updateIsPlaying(
     @GetUser() user: User,
     @Param('id', ParseIntPipe) id: number,
     @Body() newStatus: any,
   ) {
     if (user.id == id) {
-      return new UserEntity(
-        await this.usersService.updateIsPlaying(id, newStatus.newStatus),
-      );
+      return await this.usersService.updateIsPlaying(id, newStatus.newStatus);
     }
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOkResponse({ type: UserEntity })
+  @ApiOkResponse()
   async remove(
     @GetUser() user: User,
     @Param('id', ParseIntPipe) id: number
   ) {
     if (id == user.id) {
-      return new UserEntity(await this.usersService.remove(id));
+      return await this.usersService.remove(id);
     }
   }
 
@@ -145,16 +149,14 @@ export class UsersController {
   @Patch('2fa-status/:id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiCreatedResponse({ type: UserEntity })
+  @ApiOkResponse()
   async change2faStatu(
     @GetUser() user: User,
     @Param('id', ParseIntPipe) id: number,
     @Body('newStatus') newStatus: boolean,
   ) {
     if (user.id == id) {
-      return new UserEntity(
-        await this.usersService.update2faStatus(id, newStatus),
-      );
+      return await this.usersService.update2faStatus(id, newStatus);
     }
   }
 

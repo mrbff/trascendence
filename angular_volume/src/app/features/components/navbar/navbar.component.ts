@@ -8,6 +8,8 @@ import { UserService } from 'src/app/core/services/user.service';
 })
 export class NavbarComponent implements OnInit {
   user!: string;
+  icon!: any;
+  background!: any;
 
   constructor(private readonly userService: UserService) {}
 

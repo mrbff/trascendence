@@ -44,19 +44,109 @@
 }
 
 .navbar a:hover {
-  color: orange;
+  color: rgb(255, 165, 0);
 }
 
-/* @media (max-width: 765px) {
+.ham {
+  font-size: 40px;
+  display: none;
+  position: absolute;
+  top: 35px;
+  right: 2vh;
+  cursor: pointer;
+}
+
+.responsive {
+  display: none;
+  border-radius: 5px;
+  position: absolute;
+  z-index: 500000;
+  width: 90%;
+  height: 60%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.backresp {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-image: url("../../../../assets/giphy2.gif");
+}
+
+.backresp::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: -1;
+}
+
+.backresp {
+  display: none;
+  font-family: Azonix;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  user-select: none;
+  z-index: 499999;
+  backdrop-filter: blur(50px);
+}
+
+@media (min-width: 899px) {
+  .responsive {
+    display: none !important;
+  }
+
+  .responsive a {
+    display: none !important;
+  }
+
+  .backresp {
+    display: none !important;
+  }
+}
+
+@media (max-width: 900px) {
   .logo {
     position: absolute;
+    top: 22px;
+    left: 2vh;
     color: orange !important;
-    font-size: 30px !important;
-    padding-right: 50px;
-    left: 10px;
+    padding-right: 0px;
+    font-size: 35px !important;
+  }
+
+  .menu {
+    padding: 35px 50px;
   }
 
   .menu a {
     display: none;
   }
-} */
+
+  .ham {
+    display: flex;
+  }
+
+  .responsive a {
+    justify-content: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 80px;
+    font-size: 50px;
+    color: darkslateblue;
+    text-shadow: 0 0 10px #fff, 0 0 20px #00c4ff, 0 0 30px #00c4ff,
+      0 0 40px #00c4ff, 0 0 70px #00c4ff, 0 0 80px #00c4ff, 0 0 100px #00c4ff;
+  }
+
+  .navbar a:hover {
+    color: violet;
+  }
+}

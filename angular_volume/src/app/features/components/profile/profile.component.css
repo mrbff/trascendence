@@ -69,10 +69,9 @@
 }
 
 .logout-bt {
-  float: right;
   position: absolute;
-  bottom: 2vh;
-  right: 2vh;
+  bottom: 3vh;
+  right: 3vh;
   font-family: Azonix;
   border-radius: 50px;
   cursor: pointer;
@@ -148,11 +147,13 @@
 }
 
 .google-auth {
+  position: absolute;
+  left: 3vh;
+  bottom: 2vh;
   grid-row: 4 / 4;
   grid-column: 1 / 1;
-  margin-left: 30px;
-  margin-bottom: 30px;
   cursor: pointer;
+  color: red;
 }
 
 .qr {
@@ -380,7 +381,7 @@
 
   .logout-bt {
     position: absolute;
-    bottom: 2vh;
+    bottom: 3vh;
     right: 2vh;
     font-family: Azonix;
     border-radius: 50px;

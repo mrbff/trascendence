@@ -6,6 +6,10 @@ import { HomeComponent } from './components/home/home.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { ChangeImageDirective } from './components/profile/change-image.directive';
+import { FriendsComponent } from './components/friends/friends.component';
+import { DropmenuDirective } from './components/navbar/dropmenu.directive';
+import { FormsModule } from '@angular/forms';
+import { FriendCardComponent } from './components/friend-card/friend-card.component';
 
 @NgModule({
   declarations: [
@@ -13,7 +17,10 @@ import { ChangeImageDirective } from './components/profile/change-image.directiv
     HomeComponent,
     ProfileComponent,
     ChangeImageDirective,
+    FriendsComponent,
+    DropmenuDirective,
+    FriendCardComponent,
   ],
-  imports: [CommonModule, FeaturesRoutingModule],
+  imports: [CommonModule, FeaturesRoutingModule, FormsModule],
 })
 export class FeaturesModule {}
