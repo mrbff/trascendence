@@ -6,10 +6,10 @@ import { AfterViewInit, Directive, HostListener } from '@angular/core';
 export class DropmenuDirective implements AfterViewInit {
   private icon: any;
   private background: any;
-  private clickCount: number;
+  private click: boolean;
 
   constructor() {
-    this.clickCount = 0;
+    this.click = false;
   }
   ngAfterViewInit(): void {
     this.icon = document.querySelector('.responsive');
@@ -17,12 +17,12 @@ export class DropmenuDirective implements AfterViewInit {
   }
 
   @HostListener('click') onMouseClick() {
-    if (this.clickCount === 0) {
+    this.click = !this.click;
+    if (this.click === true) {
       this.showMenu();
-    } else if (this.clickCount === 1) {
+    } else {
       this.hideMenu();
     }
-    this.clickCount = (this.clickCount + 1) % 2;
   }
 
   showMenu() {

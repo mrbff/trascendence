@@ -9,9 +9,7 @@ export class StatusService {
   constructor(private readonly http: HttpClient) {}
 
   setStatus(id: string, status: boolean) {
-    firstValueFrom(
-      this.http.patch(`/nest/users/online/${id}`, { newStatus: status })
-    );
+    this.http.patch(`/nest/users/online/${id}`, { newStatus: status });
   }
 
   async setPlaying(id: string, status: boolean) {

@@ -3,6 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
@@ -12,12 +13,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { StatusService } from 'src/app/core/services/status.service';
 import { GoogleAuthService } from 'src/app/core/auth/google-auth.service';
 import { FriendsService } from '../../../core/services/friends.service';
+import { Subscription } from 'rxjs';
+import { NgxImageCompressService } from 'ngx-image-compress';
 
 @Component({
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
 })
-export class ProfileComponent implements OnInit, AfterViewInit {
+export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
   user!: string;
   userInfo!: any;
   profileImage!: string;
@@ -30,8 +33,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   currentUser: boolean;
   isOnline!: boolean;
   isPlaying!: boolean;
-  iconStatus: any;
-  iconColor!: string;
+  subs: Subscription;
 
   @ViewChild('fileInput') fileInput!: ElementRef;
 
@@ -42,50 +44,53 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     private readonly status: StatusService,
     private readonly googleAuth: GoogleAuthService,
     private readonly route: ActivatedRoute,
-    private readonly friendsService: FriendsService
+    private readonly friendsService: FriendsService,
+    private imageCompress: NgxImageCompressService
   ) {
     this.qrCode = '';
     this.id = this.userService.getUserId();
     this.twofa = false;
     this.currentUser = true;
+    this.subs = new Subscription();
   }
 
-  async ngOnInit() {
-    this.route.params.subscribe(async (params) => {
-      const username = params['username'];
-      if (username === this.userService.getUser()) {
-        this.userInfo = await this.userService.getUserInfo();
-        this.currentUser = true;
-      } else {
-        this.userInfo = await this.friendsService.getFriendInfo(username);
-        this.currentUser = false;
-        console.log();
-      }
-      console.log(this.userInfo);
-      this.user = this.userInfo.username ? this.userInfo.username : 'USER';
-      this.profileImage = this.userInfo.img
-        ? this.userInfo.img
-        : 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
-      this.win = this.userInfo.Wins;
-      this.lose = this.userInfo.Losses;
-      if (this.userInfo.is2faEnabled) {
-        this.icon2fa.style.color = 'green';
-      }
-      this.isPlaying = this.userInfo.isPlaying;
-      this.isOnline = this.userInfo.isOnline;
-      if (this.isOnline === true) {
-        this.iconStatus.style.color =
-          this.isPlaying === true ? 'orange' : 'green';
-        console.log(this.iconColor);
-      } else {
-        this.iconStatus.style.color = 'red';
-      }
-    });
+  ngOnInit() {
+    this.subs.add(
+      this.route.params.subscribe(async (params) => {
+        const username = params['username'];
+        await this.profileInit(username);
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subs.unsubscribe();
   }
 
   ngAfterViewInit() {
     this.icon2fa = document.querySelector('.google-auth');
-    this.iconStatus = document.querySelector('.profile-image');
+  }
+
+  private async profileInit(username: string) {
+    if (username === this.userService.getUser()) {
+      this.userInfo = await this.userService.getUserInfo();
+      this.currentUser = true;
+    } else {
+      this.userInfo = await this.friendsService.getFriendInfo(username);
+      this.currentUser = false;
+    }
+    this.user = this.userInfo.username ? this.userInfo.username : 'USER';
+    this.profileImage = this.userInfo.img
+      ? this.userInfo.img
+      : 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
+    this.win = this.userInfo.Wins;
+    this.lose = this.userInfo.Losses;
+    if (this.userInfo.is2faEnabled) {
+      this.icon2fa.style.color = 'green';
+    }
+    this.isPlaying = this.userInfo.isPlaying;
+    this.isOnline = this.userInfo.isOnline;
+    console.log(this.userInfo);
   }
 
   logout() {
@@ -104,8 +109,17 @@ export class ProfileComponent implements OnInit, AfterViewInit {
 
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = async (e) => {
         this.profileImage = e.target?.result as string;
+        await this.imageCompress
+          .compressFile(this.profileImage, -1, 50, 50)
+          .then((result) => {
+            this.profileImage = result;
+          });
+        this.userService
+          .setUserAvatar(this.id, this.profileImage)
+          .then((resp) => console.log(resp))
+          .catch((err) => console.error(err));
       };
       reader.readAsDataURL(file);
     }

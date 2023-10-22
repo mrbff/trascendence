@@ -6,8 +6,19 @@
       class="profile-image"
       [src]="profileImage"
       alt="Profile image"
+      [ngStyle]="{ color: isOnline ? 'green' : 'red' }"
+      [ngStyle]="{ color: isPlaying ? 'orange' : 'green' }"
+      *ngIf="currentUser; else elseBlock"
       appChangeImage
     />
+    <ng-template #elseBlock>
+      <img
+        id="image"
+        class="profile-image"
+        [src]="profileImage"
+        alt="Profile image"
+      />
+    </ng-template>
     <input
       *ngIf="currentUser"
       type="file"

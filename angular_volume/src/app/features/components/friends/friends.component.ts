@@ -20,7 +20,6 @@ export class FriendsComponent {
     await this.friendsService
       .getFriendInfo(this.search)
       .then((response) => {
-        console.log(response);
         this.router.navigate(['/profile', response.username]);
       })
       .catch((err) => console.error(err));

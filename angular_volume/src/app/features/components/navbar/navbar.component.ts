@@ -12,10 +12,7 @@ export class NavbarComponent implements OnInit {
   icon!: any;
   background!: any;
 
-  constructor(
-    private readonly userService: UserService,
-    private readonly router: Router
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
   ngOnInit(): void {
     this.user =
