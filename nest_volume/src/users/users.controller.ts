@@ -42,12 +42,11 @@ export class UsersController {
     return users;
   }
 
-  @Get(':id')
+  @Get('me')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse()
-  async findOne(@Param('id', ParseIntPipe) id: number) {
-    const user = await this.usersService.findOne(id);
+  async findMe(@GetUser() user: User) {
     if (user !== null) {
       return user;
     } else {
