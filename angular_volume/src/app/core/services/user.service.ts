@@ -16,7 +16,7 @@ export class UserService {
   ) {}
 
   setUser(name: string) {
-    this.cookieService.set('user', name);
+    this.cookieService.set('user', name, 1 / 24);
   }
 
   getUser(): string {
@@ -24,11 +24,12 @@ export class UserService {
   }
 
   removeUser() {
-    this.cookieService.delete('user');
+    let name = '';
+    this.cookieService.set('user', name, 1 / 86400);
   }
 
   setUserId(decodedJwt: any) {
-    this.cookieService.set('id', decodedJwt.userId);
+    this.cookieService.set('id', decodedJwt.userId, 1 / 24);
   }
 
   getUserId(): string {
@@ -36,7 +37,8 @@ export class UserService {
   }
 
   removeUserId() {
-    this.cookieService.delete('id');
+    let name = '';
+    this.cookieService.set('id', name, 1 / 86400);
   }
 
   async login(email: string, password: string): Promise<any> {

@@ -1,5 +1,6 @@
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   OnInit,
@@ -25,10 +26,12 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   qrCode: string;
   private id!: string;
   twofa: boolean;
-  icon2fa!: any;
+  private icon2fa!: any;
   currentUser: boolean;
   isOnline!: boolean;
   isPlaying!: boolean;
+  iconStatus: any;
+  iconColor!: string;
 
   @ViewChild('fileInput') fileInput!: ElementRef;
 
@@ -48,29 +51,41 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
-    const username = this.route.snapshot.params['username'];
-    if (username === 'me') {
-      this.userInfo = await this.userService.getUserInfo();
-      this.currentUser = true;
-    } else {
-      this.userInfo = await this.friendsService.getFriendInfo(username);
-      this.currentUser = false;
-    }
-    this.user = this.userInfo.username ? this.userService.getUser() : 'USER';
-    this.profileImage = this.userInfo.img
-      ? this.userInfo.img
-      : 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
-    this.win = this.userInfo.Wins;
-    this.lose = this.userInfo.Losses;
-    if (this.userInfo.is2faEnabled) {
-      this.icon2fa.style.color = 'green';
-    }
-    this.isPlaying = this.userInfo.isPlaying;
-    this.isOnline = this.userInfo.isOnline;
+    this.route.params.subscribe(async (params) => {
+      const username = params['username'];
+      if (username === this.userService.getUser()) {
+        this.userInfo = await this.userService.getUserInfo();
+        this.currentUser = true;
+      } else {
+        this.userInfo = await this.friendsService.getFriendInfo(username);
+        this.currentUser = false;
+        console.log();
+      }
+      console.log(this.userInfo);
+      this.user = this.userInfo.username ? this.userInfo.username : 'USER';
+      this.profileImage = this.userInfo.img
+        ? this.userInfo.img
+        : 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
+      this.win = this.userInfo.Wins;
+      this.lose = this.userInfo.Losses;
+      if (this.userInfo.is2faEnabled) {
+        this.icon2fa.style.color = 'green';
+      }
+      this.isPlaying = this.userInfo.isPlaying;
+      this.isOnline = this.userInfo.isOnline;
+      if (this.isOnline === true) {
+        this.iconStatus.style.color =
+          this.isPlaying === true ? 'orange' : 'green';
+        console.log(this.iconColor);
+      } else {
+        this.iconStatus.style.color = 'red';
+      }
+    });
   }
 
-  ngAfterViewInit(): void {
+  ngAfterViewInit() {
     this.icon2fa = document.querySelector('.google-auth');
+    this.iconStatus = document.querySelector('.profile-image');
   }
 
   logout() {
@@ -78,7 +93,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     this.auth.removeToken();
     this.userService.removeUser();
     this.userService.removeUserId();
-    this.router.navigate(['login']);
+    this.router.navigate(['/login']);
   }
 
   onFileSelected(event: Event) {
