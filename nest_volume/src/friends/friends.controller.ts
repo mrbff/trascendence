@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Patch, Post, UseGuards } from "@nestjs/common";
 import { FriendsService } from "./friends.service";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
@@ -21,7 +21,7 @@ export class FriendsController {
     return `Friend request correctly sent to ${friendName}`;
   }
 
-  @Post('accept')
+  @Patch('accept')
   @UseGuards(JwtAuthGuard)
   @ApiOkResponse()
   async acceptFriendRequest(
@@ -31,5 +31,7 @@ export class FriendsController {
     this.friendsService.inviteFriend(user.id, friendName);
     return `Friend request correctly sent to ${friendName}`;
   }
+
+  
 
 }
