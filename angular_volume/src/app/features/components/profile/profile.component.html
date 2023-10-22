@@ -14,19 +14,21 @@
       (change)="onFileSelected($event)"
       style="display: none"
       #fileInput
+      *ngIf="currentUser"
     />
     <button
-      (click)="fileInput.click()"
+      (click)="onFileSelected($event)"
       appChangeImage
       id="text"
       class="profile-image change-text"
+      *ngIf="currentUser"
     >
       Change Image
     </button>
     <div class="username-space">
       <span class="username">{{ user }}</span>
     </div>
-    <div class="user-buttons">
+    <div class="user-buttons" *ngIf="!currentUser">
       <div class="friend">
         <i class="fa-solid fa-user-plus fa-2xl"></i><br />
         <span>ADD FRIEND</span>
@@ -49,7 +51,7 @@
         {{ lose }}
       </div>
     </div>
-    <div class="qr" *ngIf="qrCode !== '' && !twofa">
+    <div class="qr" *ngIf="qrCode !== '' && !twofa && currentUser">
       <p class="warning">ATTENTION! SCAN YOUR QR CODE BEFORE CONFIRM</p>
       <img class="popup" [src]="[qrCode]" />
       <div class="buttons">
@@ -65,10 +67,10 @@
         <button class="right" (click)="onReject2FA()">DISABLE 2FA</button>
       </div>
     </div>
-    <div class="logout">
+    <div class="logout" *ngIf="currentUser">
       <button class="logout-bt" (click)="logout()">LOGOUT</button>
     </div>
-    <div class="google-auth" (click)="onEnable2FA()">
+    <div class="google-auth" (click)="onEnable2FA()" *ngIf="currentUser">
       <i class="fa-sharp fa-solid fa-shield-halved fa-2xl"> 2 FA</i>
     </div>
   </div>

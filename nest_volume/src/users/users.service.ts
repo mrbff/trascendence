@@ -37,7 +37,9 @@ export class UsersService {
   }
 
   async findUserPublicData(username: string) {
-    const user = await this.prisma.user.findUniqueOrThrow({ where: { username: username } });
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { username: username },
+    });
     return {
       id: user.id,
       username: user.username,
@@ -45,10 +47,10 @@ export class UsersService {
       img: user.img,
       isOnline: user.isOnline,
       isPlaying: user.isPlaying,
-      wins: user.Wins,
-      losses: user.Losses,
-      played: user.Played
-    }
+      Wins: user.Wins,
+      Losses: user.Losses,
+      played: user.Played,
+    };
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {

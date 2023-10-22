@@ -49,11 +49,7 @@ export class UserService {
     return lastValueFrom(this.http.post(`/nest/users/signup`, userData));
   }
 
-  async getUserInfo(id: string): Promise<any> {
-    return lastValueFrom(this.http.get(`/nest/users/${id}`));
-  }
-
-  async getFriendInfo(username: string): Promise<any> {
-    return lastValueFrom(this.http.get(`/nest/friends/${username}`));
+  async getUserInfo(): Promise<any> {
+    return lastValueFrom(this.http.get(`/nest/users/me`));
   }
 }
