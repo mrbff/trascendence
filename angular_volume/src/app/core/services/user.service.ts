@@ -1,9 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
-import { Observable, lastValueFrom } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 import { UserData } from 'src/app/models/user.model';
-import { AuthService } from '../auth/auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,8 +10,7 @@ import { AuthService } from '../auth/auth.service';
 export class UserService {
   constructor(
     private readonly http: HttpClient,
-    private readonly cookieService: CookieService,
-    private readonly auth: AuthService
+    private readonly cookieService: CookieService
   ) {}
 
   setUser(name: string) {
@@ -24,8 +22,8 @@ export class UserService {
   }
 
   removeUser() {
-    let name = '';
-    this.cookieService.set('user', name, 1 / 86400);
+    let bin = '';
+    this.cookieService.set('user', bin, 1 / 86400);
   }
 
   setUserId(decodedJwt: any) {
@@ -37,8 +35,14 @@ export class UserService {
   }
 
   removeUserId() {
-    let name = '';
-    this.cookieService.set('id', name, 1 / 86400);
+    let bin = '';
+    this.cookieService.set('id', bin, 1 / 86400);
+  }
+
+  setUserAvatar(id: string, img: string): Promise<any> {
+    return lastValueFrom(
+      this.http.patch(`/nest/users/img/${id}`, { newImg: img })
+    );
   }
 
   async login(email: string, password: string): Promise<any> {

@@ -27,6 +27,7 @@
     "dotenv": "^16.3.1",
     "ng-process-env": "^16.0.6",
     "ngx-cookie-service": "^16.0.1",
+    "ngx-image-compress": "^15.1.6",
     "node": "^20.7.0",
     "pg": "^8.11.3",
     "rxjs": "~7.8.0",
