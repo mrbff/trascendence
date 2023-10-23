@@ -11,6 +11,7 @@ import { DropmenuDirective } from './components/navbar/dropmenu.directive';
 import { FormsModule } from '@angular/forms';
 import { FriendCardComponent } from './components/friend-card/friend-card.component';
 import { CoreModule } from '../core/core.module';
+import { RequestCardComponent } from './components/request-card/request-card.component';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { CoreModule } from '../core/core.module';
     FriendsComponent,
     DropmenuDirective,
     FriendCardComponent,
+    RequestCardComponent,
   ],
   imports: [CommonModule, FeaturesRoutingModule, FormsModule, CoreModule],
 })

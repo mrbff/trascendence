@@ -69,7 +69,30 @@
 }
 
 .friend-request {
-  border: 2px solid red;
+  height: 50px;
+  display: grid;
+  grid-template-columns: 3fr 3fr;
+  grid-template-rows: 1fr 2fr;
+}
+
+.request-box {
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+
+  grid-row: 1 / 1;
+  grid-column: 1 / end;
+  background-color: transparent;
+  max-height: 35px;
+}
+
+.request-box span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .card-box {
@@ -79,6 +102,7 @@
   height: 100%;
   width: 100%;
   overflow-x: auto;
+  margin-bottom: 20px;
 }
 
 .card {
@@ -92,4 +116,15 @@
 
 .red::placeholder {
   color: red;
+}
+
+.no-friend {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

@@ -13,13 +13,19 @@
       />
       <button (click)="searchPlayer()">SEARCH</button>
     </div>
-    <div class="friend-request" *ngIf="friendRequest"></div>
     <div class="card-box" (wheel)="onMouseWheel($event)">
       <app-friend-card
         class="card"
         *ngFor="let user of users"
         [username]="user.name"
       ></app-friend-card>
+    </div>
+    <span class="no-friend" *ngIf="noFriends"
+      >ADD SOME FRIEND FROM SEARCHBAR</span
+    >
+    <div class="friend-request" *ngIf="friend">
+      <div class="request-box"><span>NEW FRIEND REQUEST</span></div>
+      <app-request-card></app-request-card>
     </div>
   </div>
 </div>

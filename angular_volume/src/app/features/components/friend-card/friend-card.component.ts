@@ -30,7 +30,7 @@ export class FriendCardComponent implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
-    this.userInfo = await this.friendsService.getFriendInfo(this.username);
+    /*  this.userInfo = await this.friendsService.getFriendInfo(this.username);
     this.profileImage = this.userInfo.img
       ? this.userInfo.img
       : 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
@@ -38,7 +38,7 @@ export class FriendCardComponent implements OnInit, AfterViewInit {
     this.lose = this.userInfo.Losses;
     this.isPlaying = this.userInfo.isPlaying;
     this.isOnline = this.userInfo.isOnline;
-    console.log(this.userInfo);
+    console.log(this.userInfo); */
   }
 
   ngAfterViewInit() {

@@ -148,4 +148,11 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   closeQr() {
     this.qrCode = '';
   }
+
+  async addFriend() {
+    this.friendsService
+      .addFriend(this.user)
+      .then((resp) => console.log(resp))
+      .catch((err) => console.error(err));
+  }
 }

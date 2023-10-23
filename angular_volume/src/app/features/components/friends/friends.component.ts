@@ -12,7 +12,9 @@ export class FriendsComponent implements OnInit, AfterViewInit {
   searchBox!: any;
   users: any;
   container!: any;
-  friendRequest: boolean;
+  friend: boolean;
+  noFriends: boolean;
+  friendRequests: any;
 
   constructor(
     private readonly friendsService: FriendsService,
@@ -21,14 +23,27 @@ export class FriendsComponent implements OnInit, AfterViewInit {
     this.search = '';
     this.placeholder = 'Search player';
     this.users = [{ name: 'franco' }, { name: 'marasco' }, { name: 'mimmo' }];
-    this.friendRequest = true;
+    this.friend = true;
+    this.noFriends = false;
   }
 
   async ngOnInit() {
-    /*  await this.friendsService
+    await this.friendsService
       .getFriends()
-      .then((resp) => console.log(resp))
-      .catch((err) => console.error(err)); */
+      .then((resp) => {
+        console.log(resp);
+        //this.noFriends = resp.length !== 0 ? false : true;
+        //this.users = resp;
+      })
+      .catch((err) => console.error(err));
+    await this.friendsService
+      .getFriendRequests()
+      .then((resp) => {
+        console.log(resp);
+        //this.friend = resp.length !== 0 ? false : true;
+        this.friendRequests = resp;
+      })
+      .catch((err) => console.error(err));
   }
 
   ngAfterViewInit(): void {
@@ -42,7 +57,7 @@ export class FriendsComponent implements OnInit, AfterViewInit {
       .then((response) => {
         this.router.navigate(['/profile', response.username]);
       })
-      .catch((err) => {
+      .catch(() => {
         this.placeholder = 'User not found';
         this.searchBox.classList.add('red');
         setTimeout(() => {
