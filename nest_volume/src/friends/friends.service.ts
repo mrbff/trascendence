@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { User } from "@prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
 
@@ -7,8 +7,12 @@ export class FriendsService {
   constructor( private prisma: PrismaService ) {}
 
   async inviteFriend(userId: number, friendName: string) : Promise<any> {
-    
-    const receiver = await this.prisma.user.findUniqueOrThrow({ where: {username: friendName}});
+    let receiver = null;
+    try {
+      receiver = await this.prisma.user.findUniqueOrThrow({ where: {username: friendName}});
+    } catch(error) {
+      throw new NotFoundException(`No user found with username: ${friendName}`);
+    }
 
     if (userId === receiver.id) {
       throw new BadRequestException('You cannot send a friend request to yourself.');
@@ -32,9 +36,13 @@ export class FriendsService {
   }
 
   async acceptFriendRequest(userId: number, friendName: string) : Promise<any> {
+    let sender = null;
+    try {
+      sender = await this.prisma.user.findUniqueOrThrow({ where: {username: friendName}});
+    } catch(error) {
+      throw new NotFoundException(`No user found with username: ${friendName}`);
+    }
     
-    const sender = await this.prisma.user.findUniqueOrThrow({ where: {username: friendName}});
-
     if (await this.isUserBlocked(userId, sender.id)) {
       throw new Error('This user is blocked');
     } 
