@@ -40,6 +40,7 @@ export class AuthController {
       token42.access_token,
     );
     const entity = await this.authService.login42(profile42data);
+    console.log(`\n\n\n${entity.accessToken}\n\n\n`);//for debug
     return entity;
   }
 
