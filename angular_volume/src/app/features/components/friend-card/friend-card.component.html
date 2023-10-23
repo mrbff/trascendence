@@ -1,26 +1,31 @@
 <div class="card-box">
-  <div class="profile-img"></div>
+  <div
+    class="profile-img"
+    [ngStyle]="{
+      color: isOnline ? (isPlaying ? 'orange' : 'green') : 'red'
+    }"
+  >
+    <img [src]="profileImage" />
+  </div>
   <div class="username">{{ username }}</div>
-  <div class="matchbox">
-    <div class="win">WIN</div>
-    <div class="winRes">
-      {{ win }}
+  <div class="user-buttons">
+    <div class="play">
+      <i class="fa-sharp fa-regular fa-circle-play"></i><br />
+      <span>PLAY</span>
     </div>
-    <div class="lose">LOSE</div>
-    <div class="loseRes">
-      {{ lose }}
+    <div class="chat">
+      <i class="fa-solid fa-headset"></i><br />
+      <span>CHAT</span>
+    </div>
+    <div class="profile" (click)="openFriendProfile()">
+      <i class="fa-regular fa-address-card"></i><br />
+      <span>USER</span>
     </div>
   </div>
-  <div class="play">
-    <i class="fa-sharp fa-regular fa-circle-play"></i><br />
-    <span class="pl">PLAY</span>
+  <div class="winRes">
+    {{ win }}
   </div>
-  <div class="chat">
-    <i class="fa-solid fa-headset fa-2xl"></i><br />
-    <span class="ct">CHAT</span>
-  </div>
-  <div class="profile">
-    <i class="fa-regular fa-address-card"></i><br />
-    <span>USER</span>
+  <div class="loseRes">
+    {{ lose }}
   </div>
 </div>

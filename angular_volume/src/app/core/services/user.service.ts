@@ -39,7 +39,7 @@ export class UserService {
     this.cookieService.set('id', bin, 1 / 86400);
   }
 
-  setUserAvatar(id: string, img: string): Promise<any> {
+  async setUserAvatar(id: string, img: string): Promise<any> {
     return lastValueFrom(
       this.http.patch(`/nest/users/img/${id}`, { newImg: img })
     );

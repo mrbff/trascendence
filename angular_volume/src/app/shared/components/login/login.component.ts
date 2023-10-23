@@ -84,6 +84,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       })
       .catch((error) => {
         this.errorMsg = `42 Api error. Try again`;
+        this.router.navigate(['/login']);
         console.error(error);
       });
   }
@@ -125,8 +126,14 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.errorMsg = 'Invalid code';
           return;
         }
+        this.initUser(response);
       });
+    } else {
+      this.initUser(response);
     }
+  }
+
+  private initUser(response: any) {
     this.auth.saveToken(response.accessToken);
     this.userService.setUserId(this.auth.decodeToken(response.accessToken));
     this.userService.setUser(response.username);

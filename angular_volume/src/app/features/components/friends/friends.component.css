@@ -9,8 +9,8 @@
 
 .friend-box {
   display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 1fr 2fr 2fr;
+  white-space: nowrap;
+  overflow-x: auto;
   border-radius: 8px;
   color: orange;
   margin-bottom: 90px;
@@ -68,6 +68,28 @@
   background-color: orange;
 }
 
+.friend-request {
+  border: 2px solid red;
+}
+
 .card-box {
-  grid-row: 2 / 3;
+  grid-row: 1 / 3;
+  white-space: nowrap;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.card {
+  display: inline-block;
+  margin-right: 40px;
+}
+
+.card:hover {
+  color: orange;
+}
+
+.red::placeholder {
+  color: red;
 }

@@ -11,4 +11,8 @@ export class FriendsService {
   async getFriendInfo(username: string): Promise<any> {
     return lastValueFrom(this.http.get(`/nest/users/${username}`));
   }
+
+  async getFriends(): Promise<any> {
+    return lastValueFrom(this.http.get(`/nest/friends/`));
+  }
 }

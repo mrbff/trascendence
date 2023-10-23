@@ -3,15 +3,23 @@
   <div class="friend-box">
     <div class="input-container">
       <input
+        id="search"
         class="friend-input"
         type="text"
         [(ngModel)]="search"
-        placeholder="Search player"
+        [placeholder]="placeholder"
         autocomplete="on"
         spellcheck="false"
       />
       <button (click)="searchPlayer()">SEARCH</button>
     </div>
-    <div class="card-box"><app-friend-card class="card"></app-friend-card></div>
+    <div class="friend-request" *ngIf="friendRequest"></div>
+    <div class="card-box" (wheel)="onMouseWheel($event)">
+      <app-friend-card
+        class="card"
+        *ngFor="let user of users"
+        [username]="user.name"
+      ></app-friend-card>
+    </div>
   </div>
 </div>

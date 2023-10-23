@@ -6,8 +6,9 @@
       class="profile-image"
       [src]="profileImage"
       alt="Profile image"
-      [ngStyle]="{ color: isOnline ? 'green' : 'red' }"
-      [ngStyle]="{ color: isPlaying ? 'orange' : 'green' }"
+      [ngStyle]="{
+        color: isOnline ? (isPlaying ? 'orange' : 'green') : 'red'
+      }"
       *ngIf="currentUser; else elseBlock"
       appChangeImage
     />

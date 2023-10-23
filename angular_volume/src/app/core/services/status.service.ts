@@ -8,12 +8,16 @@ import { lastValueFrom, firstValueFrom } from 'rxjs';
 export class StatusService {
   constructor(private readonly http: HttpClient) {}
 
-  setStatus(id: string, status: boolean) {
-    this.http.patch(`/nest/users/online/${id}`, { newStatus: status });
+  async setStatus(id: string, status: boolean) {
+    return firstValueFrom(
+      this.http.patch(`/nest/users/online/${id}`, { newStatus: status })
+    );
   }
 
   async setPlaying(id: string, status: boolean) {
-    this.http.patch(`/nest/users/${id}`, { newStatus: status });
+    return firstValueFrom(
+      this.http.patch(`/nest/users/${id}`, { newStatus: status })
+    );
   }
 
   async set2fa(id: string, status: boolean): Promise<any> {

@@ -175,6 +175,7 @@
   max-height: 400px;
   min-width: 250px;
   text-align: center;
+  border: 3px solid black;
 }
 
 .popup {

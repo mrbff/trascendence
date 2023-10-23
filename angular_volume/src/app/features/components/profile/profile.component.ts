@@ -1,9 +1,7 @@
 import {
   AfterViewInit,
-  ChangeDetectorRef,
   Component,
   ElementRef,
-  OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
@@ -20,9 +18,9 @@ import { NgxImageCompressService } from 'ngx-image-compress';
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
 })
-export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
+export class ProfileComponent implements OnInit, AfterViewInit {
   user!: string;
-  userInfo!: any;
+  private userInfo!: any;
   profileImage!: string;
   win!: number;
   lose!: number;
@@ -33,7 +31,6 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
   currentUser: boolean;
   isOnline!: boolean;
   isPlaying!: boolean;
-  subs: Subscription;
 
   @ViewChild('fileInput') fileInput!: ElementRef;
 
@@ -51,26 +48,21 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
     this.id = this.userService.getUserId();
     this.twofa = false;
     this.currentUser = true;
-    this.subs = new Subscription();
   }
 
   ngOnInit() {
-    this.subs.add(
-      this.route.params.subscribe(async (params) => {
-        const username = params['username'];
-        await this.profileInit(username);
-      })
-    );
-  }
-
-  ngOnDestroy(): void {
-    this.subs.unsubscribe();
+    // SEARCH USER FROM PARAM IN URL
+    this.route.params.subscribe(async (params) => {
+      const username = params['username'];
+      await this.profileInit(username);
+    });
   }
 
   ngAfterViewInit() {
     this.icon2fa = document.querySelector('.google-auth');
   }
 
+  // LOAD USER INFO FOR PROFILE PAGE
   private async profileInit(username: string) {
     if (username === this.userService.getUser()) {
       this.userInfo = await this.userService.getUserInfo();
@@ -101,9 +93,9 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate(['/login']);
   }
 
+  // SELECT NEW FILE, COMPRESS IMAGE BASE64 AND PATCH USER IMG
   onFileSelected(event: Event) {
     this.fileInput.nativeElement.click();
-    // WIP: LOGICA MOMENTANEA => DA INVIARE A BACKEND
     const inputElement = event.target as HTMLInputElement;
     const file = inputElement?.files?.[0];
 
@@ -113,12 +105,10 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
         this.profileImage = e.target?.result as string;
         await this.imageCompress
           .compressFile(this.profileImage, -1, 50, 50)
-          .then((result) => {
+          .then(async (result) => {
             this.profileImage = result;
-          });
-        this.userService
-          .setUserAvatar(this.id, this.profileImage)
-          .then((resp) => console.log(resp))
+            await this.userService.setUserAvatar(this.id, this.profileImage);
+          })
           .catch((err) => console.error(err));
       };
       reader.readAsDataURL(file);
@@ -126,6 +116,7 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   async onEnable2FA() {
+    // CHECK IF USER 2FA ENABLE AND OPEN NEW QR CODE OR LATEST
     if (this.userInfo.is2faEnabled === false) {
       this.twofa = false;
       this.googleAuth
