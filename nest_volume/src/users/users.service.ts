@@ -29,48 +29,31 @@ export class UsersService {
   }
 
   findOne(id: number) {
-    try {
-      return this.prisma.user.findUniqueOrThrow({ where: { id: id } });
-    } catch(error) {
-      throw new NotFoundException(`No user found with id: ${id}`);
-    }
+    return this.prisma.user.findUniqueOrThrow({ where: { id: id } });
   }
 
   findOneByEmail(email: string) {
-    try {
-      return this.prisma.user.findUniqueOrThrow({ where: { email: email } });
-    } catch(error) {
-      throw new NotFoundException(`No user found with email: ${email}`);
-    }
+    return this.prisma.user.findUniqueOrThrow({ where: { email: email } });
   }
 
   findUserByName(name: string) {
-    try {
-      return this.prisma.user.findUniqueOrThrow({ where: { username: name } });
-    } catch(error) {
-      throw new NotFoundException(`No user found with username: ${name}`);
-    }
+    return this.prisma.user.findUniqueOrThrow({ where: { username: name } });
   }
 
   async findUserPublicData(username: string) {
-    try {
-      const user = await this.prisma.user.findUniqueOrThrow({
-        where: { username: username },
-      });
-      return {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        img: user.img,
-        isOnline: user.isOnline,
-        isPlaying: user.isPlaying,
-        Wins: user.Wins,
-        Losses: user.Losses,
-        played: user.Played,
-      };
-    } catch(error) {
-      throw new NotFoundException(`No user found with username: ${username}`);
-    }
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { username: username },
+    });
+    return {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      isOnline: user.isOnline,
+      isPlaying: user.isPlaying,
+      Wins: user.Wins,
+      Losses: user.Losses,
+      played: user.Played,
+    };
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
