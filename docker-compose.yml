@@ -17,7 +17,6 @@ services:
     build:
       context: ./NestJS/
       dockerfile: Dockerfile
-      target: development
     depends_on:
       - postgres
     networks:
@@ -28,7 +27,6 @@ services:
       - .env
     volumes:
       - nest_volume:/usr/src/app/
-    command: npm run start:dev
     restart: unless-stopped
     ports:
       - "3000:3000"

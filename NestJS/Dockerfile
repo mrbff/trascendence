@@ -1,51 +1,11 @@
-###############################
-# BUILD FOR LOCAL DEVELOPMENT #
-###############################
-
-FROM node:20-alpine As development
+FROM node:20-alpine
 
 WORKDIR /usr/src/app
 
 #COPY package*.json ./
 
-#RUN npm ci
+#RUN npm install
 
 #COPY . .
 
-#USER node
-
-########################
-# BUILD FOR PRODUCTION #
-########################
-
-FROM node:20-alpine As build
-
-WORKDIR /usr/src/app
-
-COPY --chown=node:node package*.json ./
-
-COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
-
-COPY --chown=node:node . .
-
-RUN npm install
-
-RUN npm run build
-
-RUN npx prisma migrate dev
-#ENV NODE_ENV production
-
-RUN npm ci --only=production && npm cache clean --force
-
-USER node
-
-###################
-# 	PRODUCTION	  #
-###################
-
-#FROM node:20-alpine As production
-
-#COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
-#COPY --chown=node:node --from=build /usr/src/app/dist ./dist
-
-#CMD [ "node", "dist/main.js" ]
+CMD ["./start.sh"]
