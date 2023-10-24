@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Router } from '@angular/router';
 import { FriendsService } from 'src/app/core/services/friends.service';
 
 @Component({
@@ -31,12 +30,12 @@ export class RequestCardComponent implements OnInit {
   async onAccept() {
     await this.friendService
       .acceptFriend(this.username)
-      .catch(() => this.reload.emit());
+      .then(() => this.reload.emit());
   }
 
   async onRefuse() {
     await this.friendService
       .rejectFriend(this.username)
-      .catch(() => this.reload.emit());
+      .then(() => this.reload.emit());
   }
 }

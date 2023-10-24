@@ -4,6 +4,10 @@ import {
   ElementRef,
   OnInit,
   ViewChild,
+  EventEmitter,
+  OnChanges,
+  SimpleChanges,
+  DoCheck,
 } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -11,9 +15,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { StatusService } from 'src/app/core/services/status.service';
 import { GoogleAuthService } from 'src/app/core/auth/google-auth.service';
 import { FriendsService } from '../../../core/services/friends.service';
-import { Subscription } from 'rxjs';
 import { NgxImageCompressService } from 'ngx-image-compress';
-import { error } from 'console';
+import { profile } from 'console';
 
 @Component({
   templateUrl: './profile.component.html',
@@ -34,6 +37,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   isOnline!: boolean;
   isPlaying!: boolean;
   isFriend: boolean;
+  changeColor: any;
 
   @ViewChild('fileInput') fileInput!: ElementRef;
 
@@ -54,6 +58,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     this.is2faEnabled = false;
     this.userQr = '';
     this.isFriend = false;
+    this.changeColor = new EventEmitter<string>();
   }
 
   async ngOnInit() {
@@ -64,8 +69,12 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit() {
+  async ngAfterViewInit() {
     this.icon2fa = document.querySelector('.google-auth');
+    await this.changeColor.subscribe((resp: string) => {
+      let profileColor: any = document.querySelector('.profile-image');
+      profileColor.style.color = resp;
+    });
   }
 
   // LOAD USER INFO FOR PROFILE PAGE
@@ -85,7 +94,6 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       await this.friendsService
         .getFriends()
         .then((resp) => {
-          console.log(resp);
           for (let i = 0; i < resp.length; i++) {
             if (resp[i].username === this.user) {
               this.isFriend = true;
@@ -111,6 +119,13 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     }
     this.isPlaying = response.isPlaying;
     this.isOnline = response.isOnline;
+    if (this.isPlaying === true) {
+      this.changeColor.emit('orange');
+    } else if (this.isOnline === true) {
+      this.changeColor.emit('green');
+    } else {
+      this.changeColor.emit('red');
+    }
   }
 
   logout() {

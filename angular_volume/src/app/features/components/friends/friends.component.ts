@@ -1,7 +1,6 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FriendsService } from '../../../core/services/friends.service';
 import { Router } from '@angular/router';
-import { log } from 'console';
 
 @Component({
   templateUrl: './friends.component.html',
@@ -62,7 +61,6 @@ export class FriendsComponent implements OnInit, AfterViewInit {
     await this.friendsService
       .getFriends()
       .then((resp) => {
-        console.log(resp);
         this.noFriends = resp.length === 0 ? true : false;
         this.users = resp;
       })
@@ -70,7 +68,6 @@ export class FriendsComponent implements OnInit, AfterViewInit {
     await this.friendsService
       .getFriendRequests()
       .then((resp) => {
-        console.log(resp);
         this.friend = resp.length !== 0 ? true : false;
         this.friendRequests = resp;
       })
