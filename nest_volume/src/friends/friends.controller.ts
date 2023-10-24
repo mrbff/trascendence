@@ -32,7 +32,7 @@ export class FriendsController {
     @GetUser() user: User,
     @Body('friend') friendName: string
   ) {
-    this.friendsService.inviteFriend(user.id, friendName);
+    this.friendsService.acceptFriendRequest(user.id, friendName);
     return `Now you and ${friendName} are friends`;
   }
 
@@ -53,7 +53,7 @@ export class FriendsController {
   @ApiOkResponse()
   async getFriends(
     @GetUser() user: User
-  ) {
+  ): Promise<any> {
     return await this.friendsService.getFriends(user.id);
   }
 

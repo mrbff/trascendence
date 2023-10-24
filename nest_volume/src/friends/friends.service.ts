@@ -118,7 +118,7 @@ export class FriendsService {
   }
 
   async getFriends(userId: number): Promise<any> {
-    const friendships = await this.prisma.friendship.findMany({
+    let friendships = await this.prisma.friendship.findMany({
       where: {
         OR: [
           { senderId: userId, status: 'ACCEPTED' },
