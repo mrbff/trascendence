@@ -22,7 +22,7 @@ export class FriendsController {
     @Body('friend') friendName: string
   ) {
     this.friendsService.inviteFriend(user.id, friendName);
-    return `Friend request correctly sent to ${friendName}`;
+    return {okMessage: `Friend request correctly sent to ${friendName}`};
   }
 
   @Patch('accept')
@@ -33,10 +33,10 @@ export class FriendsController {
     @Body('friend') friendName: string
   ) {
     this.friendsService.acceptFriendRequest(user.id, friendName);
-    return `Now you and ${friendName} are friends`;
+    return {okMessage: `Now you and ${friendName} are friends`};
   }
 
-  @Patch('reject')
+  @Post('reject')
   @UseGuards(JwtAuthGuard)
   @ApiOkResponse()
   async rejectFriendRequest(
@@ -44,7 +44,7 @@ export class FriendsController {
     @Body('friend') friendName: string
   ) {
     this.friendsService.rejectFriendRequest(user.id, friendName);
-    return `Friend request from ${friendName} correctly rejected`;
+    return {okMessage: `Friend request from ${friendName} correctly rejected`};
   }
 
   @Post('delete')
@@ -56,7 +56,7 @@ export class FriendsController {
   ) {
     const friend = await this.usersService.findUserByName(friendName);
     this.friendsService.removeFriendship(user.id, friend.id);
-    return `You removed ${friendName} from your friends`;
+    return {okMessage: `You removed ${friendName} from your friends`};
   }
 
   @Get()
@@ -95,7 +95,7 @@ export class FriendsController {
   ) {
     const blocked = await this.usersService.findUserByName(toBlock);
     this.friendsService.blockUser(user.id, blocked.id);
-    return `${toBlock} has been blocked`;
+    return {okMessage: `${toBlock} has been blocked`};
   }
 
   @Post('unblock')
@@ -107,6 +107,6 @@ export class FriendsController {
   ) {
     const blocked = await this.usersService.findUserByName(toUnblock);
     this.friendsService.unblockUser(user.id, blocked.id);
-    return `${toUnblock} has been unblocked`;
+    return {okMessage: `${toUnblock} has been unblocked`};
   }
 }
