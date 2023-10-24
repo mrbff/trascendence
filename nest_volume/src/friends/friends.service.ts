@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { User } from "@prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
+import { receiveMessageOnPort } from "worker_threads";
 
 @Injectable()
 export class FriendsService {
@@ -19,11 +20,11 @@ export class FriendsService {
     }
     
     if (await this.areUsersFriends(userId, receiver.id)) {
-      throw new Error(`You and ${friendName} are already friends`);
+      throw new BadRequestException(`You and ${friendName} are already friends`);
     } 
 
     if (await this.isUserBlocked(userId, receiver.id)) {
-      throw new Error('This user is blocked');
+      throw new BadRequestException('This user is blocked');
     }
 
     await this.prisma.friendship.create({
@@ -43,8 +44,24 @@ export class FriendsService {
       throw new NotFoundException(`No user found with username: ${friendName}`);
     }
     
+    let friendship = null;
+    try {
+      friendship = await this.prisma.friendship.findUniqueOrThrow({
+        where: {
+          senderId_receiverId: {
+            senderId:sender.id,
+            receiverId:userId
+          }
+        }
+      });
+    } catch(error) {
+      throw new NotFoundException(`No friend request by ${friendName} was found`);
+    }
+    if (friendship.status === 'ACCEPTED')
+      throw new BadRequestException(`You and ${friendName} are already friends`);
+
     if (await this.isUserBlocked(userId, sender.id)) {
-      throw new Error('This user is blocked');
+      throw new BadRequestException('This user is blocked');
     } 
 
     return await this.prisma.friendship.update({
@@ -58,6 +75,33 @@ export class FriendsService {
         status: 'ACCEPTED'
       }
     });
+  }
+
+  async rejectFriendRequest(userId: number, friendName: string) {
+    let sender = null;
+    try {
+      sender = await this.prisma.user.findUniqueOrThrow({ where: {username: friendName}});
+    } catch(error) {
+      throw new NotFoundException(`No user found with username: ${friendName}`);
+    }
+
+    let friendship = null;
+    try {
+      friendship = await this.prisma.friendship.findUniqueOrThrow({
+        where: {
+          senderId_receiverId: {
+            senderId:sender.id,
+            receiverId:userId
+          }
+        }
+      });
+    } catch(error) {
+      throw new NotFoundException(`No friend request by ${friendName} was found`);
+    }
+    if (friendship.status === 'ACCEPTED')
+      throw new BadRequestException(`You and ${friendName} are already friends`);
+    
+      await this.removeFriendship(userId, sender.id);
   }
 
   async removeFriendship(senderId: number, receiverId: number): Promise<void> {

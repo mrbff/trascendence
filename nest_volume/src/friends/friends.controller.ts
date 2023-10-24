@@ -36,6 +36,17 @@ export class FriendsController {
     return `Now you and ${friendName} are friends`;
   }
 
+  @Patch('reject')
+  @UseGuards(JwtAuthGuard)
+  @ApiOkResponse()
+  async rejectFriendRequest(
+    @GetUser() user: User,
+    @Body('friend') friendName: string
+  ) {
+    this.friendsService.rejectFriendRequest(user.id, friendName);
+    return `Friend request from ${friendName} correctly rejected`;
+  }
+
   @Post('delete')
   @UseGuards(JwtAuthGuard)
   @ApiOkResponse()
