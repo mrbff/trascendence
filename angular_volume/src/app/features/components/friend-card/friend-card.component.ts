@@ -8,11 +8,10 @@ import { Router } from '@angular/router';
   styleUrls: ['./friend-card.component.css'],
 })
 export class FriendCardComponent implements OnInit, AfterViewInit {
-  @Input() username;
+  @Input() username: string;
 
   win!: string;
   lose!: string;
-  private userInfo!: any;
   profileImage!: string;
   isPlaying: boolean;
   isOnline: boolean;
@@ -22,7 +21,7 @@ export class FriendCardComponent implements OnInit, AfterViewInit {
     private readonly friendsService: FriendsService,
     private readonly router: Router
   ) {
-    this.username = 'FRANCO';
+    this.username = '';
     this.win = '0';
     this.lose = '0';
     this.isOnline = false;
@@ -30,15 +29,19 @@ export class FriendCardComponent implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
-    /*  this.userInfo = await this.friendsService.getFriendInfo(this.username);
-    this.profileImage = this.userInfo.img
-      ? this.userInfo.img
-      : 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
-    this.win = this.userInfo.Wins;
-    this.lose = this.userInfo.Losses;
-    this.isPlaying = this.userInfo.isPlaying;
-    this.isOnline = this.userInfo.isOnline;
-    console.log(this.userInfo); */
+    await this.friendsService
+      .getFriendInfo(this.username)
+      .then((response) => {
+        console.log(response);
+        this.profileImage = response.img
+          ? response.img
+          : 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
+        this.win = response.Wins;
+        this.lose = response.Losses;
+        this.isPlaying = response.isPlaying;
+        this.isOnline = response.isOnline;
+      })
+      .catch((err) => console.error(err));
   }
 
   ngAfterViewInit() {

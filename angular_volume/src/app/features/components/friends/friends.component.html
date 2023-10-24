@@ -17,7 +17,7 @@
       <app-friend-card
         class="card"
         *ngFor="let user of users"
-        [username]="user.name"
+        [username]="user.username"
       ></app-friend-card>
     </div>
     <span class="no-friend" *ngIf="noFriends"
@@ -25,7 +25,11 @@
     >
     <div class="friend-request" *ngIf="friend">
       <div class="request-box"><span>NEW FRIEND REQUEST</span></div>
-      <app-request-card></app-request-card>
+      <app-request-card
+        *ngFor="let request of friendRequests"
+        [username]="request.username"
+        (reload)="loadFriend()"
+      ></app-request-card>
     </div>
   </div>
 </div>

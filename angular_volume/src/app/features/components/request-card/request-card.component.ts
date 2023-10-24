@@ -1,4 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
+import { FriendsService } from 'src/app/core/services/friends.service';
 
 @Component({
   selector: 'app-request-card',
@@ -6,17 +8,35 @@ import { Component, Input, OnInit } from '@angular/core';
   styleUrls: ['./request-card.component.css'],
 })
 export class RequestCardComponent implements OnInit {
-  /* @Input() username: string; */
-  profileImage: string;
-  username: string;
+  @Input() username: string;
+  @Output() reload = new EventEmitter<void>();
+  profileImage!: string;
 
-  constructor() {
-    this.profileImage =
-      'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
-    this.username = 'MARASCO';
+  constructor(private readonly friendService: FriendsService) {
+    this.username = '';
   }
 
-  ngOnInit(): void {
-    throw new Error('Method not implemented.');
+  async ngOnInit() {
+    await this.friendService
+      .getFriendInfo(this.username)
+      .then((resp) => {
+        this.profileImage =
+          resp.img !== ''
+            ? resp.img
+            : 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
+      })
+      .catch((err) => console.error(err));
+  }
+
+  async onAccept() {
+    await this.friendService
+      .acceptFriend(this.username)
+      .catch(() => this.reload.emit());
+  }
+
+  async onRefuse() {
+    await this.friendService
+      .rejectFriend(this.username)
+      .catch(() => this.reload.emit());
   }
 }

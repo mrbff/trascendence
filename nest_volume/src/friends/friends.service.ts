@@ -1,27 +1,37 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { User } from "@prisma/client";
-import { PrismaService } from "src/prisma/prisma.service";
-import { receiveMessageOnPort } from "worker_threads";
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { User } from '@prisma/client';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { receiveMessageOnPort } from 'worker_threads';
 
 @Injectable()
 export class FriendsService {
-  constructor( private prisma: PrismaService ) {}
+  constructor(private prisma: PrismaService) {}
 
-  async inviteFriend(userId: number, friendName: string) : Promise<any> {
+  async inviteFriend(userId: number, friendName: string) {
     let receiver = null;
     try {
-      receiver = await this.prisma.user.findUniqueOrThrow({ where: {username: friendName}});
-    } catch(error) {
+      receiver = await this.prisma.user.findUniqueOrThrow({
+        where: { username: friendName },
+      });
+    } catch (error) {
       throw new NotFoundException(`No user found with username: ${friendName}`);
     }
 
     if (userId === receiver.id) {
-      throw new BadRequestException('You cannot send a friend request to yourself.');
+      throw new BadRequestException(
+        'You cannot send a friend request to yourself.',
+      );
     }
-    
+
     if (await this.areUsersFriends(userId, receiver.id)) {
-      throw new BadRequestException(`You and ${friendName} are already friends`);
-    } 
+      throw new BadRequestException(
+        `You and ${friendName} are already friends`,
+      );
+    }
 
     if (await this.isUserBlocked(userId, receiver.id)) {
       throw new BadRequestException('This user is blocked');
@@ -31,57 +41,65 @@ export class FriendsService {
       data: {
         senderId: userId,
         receiverId: receiver.id,
-        status: 'PENDING'
-      }
+        status: 'PENDING',
+      },
     });
   }
 
-  async acceptFriendRequest(userId: number, friendName: string) : Promise<any> {
+  async acceptFriendRequest(userId: number, friendName: string): Promise<any> {
     let sender = null;
     try {
-      sender = await this.prisma.user.findUniqueOrThrow({ where: {username: friendName}});
-    } catch(error) {
+      sender = await this.prisma.user.findUniqueOrThrow({
+        where: { username: friendName },
+      });
+    } catch (error) {
       throw new NotFoundException(`No user found with username: ${friendName}`);
     }
-    
+
     let friendship = null;
     try {
       friendship = await this.prisma.friendship.findUniqueOrThrow({
         where: {
           senderId_receiverId: {
-            senderId:sender.id,
-            receiverId:userId
-          }
-        }
+            senderId: sender.id,
+            receiverId: userId,
+          },
+        },
       });
-    } catch(error) {
-      throw new NotFoundException(`No friend request by ${friendName} was found`);
+    } catch (error) {
+      throw new NotFoundException(
+        `No friend request by ${friendName} was found`,
+      );
     }
     if (friendship.status === 'ACCEPTED')
-      throw new BadRequestException(`You and ${friendName} are already friends`);
+      throw new BadRequestException(
+        `You and ${friendName} are already friends`,
+      );
 
     if (await this.isUserBlocked(userId, sender.id)) {
       throw new BadRequestException('This user is blocked');
-    } 
+    }
 
     return await this.prisma.friendship.update({
       where: {
         senderId_receiverId: {
-          senderId: sender.id, 
-          receiverId: userId
-        }
+          senderId: sender.id,
+          receiverId: userId,
+        },
       },
       data: {
-        status: 'ACCEPTED'
-      }
+        status: 'ACCEPTED',
+      },
     });
   }
 
   async rejectFriendRequest(userId: number, friendName: string) {
     let sender = null;
     try {
-      sender = await this.prisma.user.findUniqueOrThrow({ where: {username: friendName}});
-    } catch(error) {
+      sender = await this.prisma.user.findUniqueOrThrow({
+        where: { username: friendName },
+      });
+    } catch (error) {
       throw new NotFoundException(`No user found with username: ${friendName}`);
     }
 
@@ -90,18 +108,22 @@ export class FriendsService {
       friendship = await this.prisma.friendship.findUniqueOrThrow({
         where: {
           senderId_receiverId: {
-            senderId:sender.id,
-            receiverId:userId
-          }
-        }
+            senderId: sender.id,
+            receiverId: userId,
+          },
+        },
       });
-    } catch(error) {
-      throw new NotFoundException(`No friend request by ${friendName} was found`);
+    } catch (error) {
+      throw new NotFoundException(
+        `No friend request by ${friendName} was found`,
+      );
     }
     if (friendship.status === 'ACCEPTED')
-      throw new BadRequestException(`You and ${friendName} are already friends`);
-    
-      await this.removeFriendship(userId, sender.id);
+      throw new BadRequestException(
+        `You and ${friendName} are already friends`,
+      );
+
+    await this.removeFriendship(userId, sender.id);
   }
 
   async removeFriendship(senderId: number, receiverId: number): Promise<void> {
@@ -109,9 +131,9 @@ export class FriendsService {
       where: {
         OR: [
           { senderId: senderId, receiverId: receiverId },
-          { senderId: receiverId, receiverId: senderId }
-        ]
-      }
+          { senderId: receiverId, receiverId: senderId },
+        ],
+      },
     });
   }
 
@@ -119,7 +141,7 @@ export class FriendsService {
     const friendships = await this.prisma.friendship.findMany({
       where: {
         receiverId: userId,
-        status: 'PENDING'
+        status: 'PENDING',
       },
       include: {
         sender: {
@@ -128,13 +150,13 @@ export class FriendsService {
             username: true,
             img: true,
             isOnline: true,
-            isPlaying: true
-          }
-        }
-      }
+            isPlaying: true,
+          },
+        },
+      },
     });
 
-    const friendRequests = friendships.map(friendship => friendship.sender);
+    const friendRequests = friendships.map((friendship) => friendship.sender);
     return friendRequests;
   }
 
@@ -142,7 +164,7 @@ export class FriendsService {
     const friendship = await this.prisma.friendship.findMany({
       where: {
         senderId: userId,
-        status: 'PENDING'
+        status: 'PENDING',
       },
       include: {
         receiver: {
@@ -151,13 +173,13 @@ export class FriendsService {
             username: true,
             img: true,
             isOnline: true,
-            isPlaying: true
-          }
-        }
-      }
+            isPlaying: true,
+          },
+        },
+      },
     });
 
-    const friends = friendship.map(friendship => friendship.receiver);
+    const friends = friendship.map((friendship) => friendship.receiver);
     return friends;
   }
 
@@ -166,8 +188,8 @@ export class FriendsService {
       where: {
         OR: [
           { senderId: userId, status: 'ACCEPTED' },
-          { receiverId: userId, status: 'ACCEPTED' }
-        ]
+          { receiverId: userId, status: 'ACCEPTED' },
+        ],
       },
       include: {
         sender: {
@@ -176,8 +198,8 @@ export class FriendsService {
             username: true,
             img: true,
             isOnline: true,
-            isPlaying: true
-          }
+            isPlaying: true,
+          },
         },
         receiver: {
           select: {
@@ -185,13 +207,13 @@ export class FriendsService {
             username: true,
             img: true,
             isOnline: true,
-            isPlaying: true
-          }
-        }
-      }
+            isPlaying: true,
+          },
+        },
+      },
     });
 
-    const friends = friendships.map(friendship => {
+    const friends = friendships.map((friendship) => {
       if (friendship.senderId === userId) {
         return friendship.receiver;
       } else {
@@ -201,28 +223,27 @@ export class FriendsService {
     return friends;
   }
 
-  async areUsersFriends(user1Id:number, user2Id: number): Promise<boolean> {
+  async areUsersFriends(user1Id: number, user2Id: number): Promise<boolean> {
     let res = await this.prisma.friendship.findUnique({
       where: {
         senderId_receiverId: {
-          senderId: user1Id, 
-          receiverId: user2Id
-        }
-      }
+          senderId: user1Id,
+          receiverId: user2Id,
+        },
+      },
     });
     if (res === null) {
       res = await this.prisma.friendship.findUnique({
         where: {
           senderId_receiverId: {
-            senderId: user2Id, 
-            receiverId: user1Id
-          }
-        }
+            senderId: user2Id,
+            receiverId: user1Id,
+          },
+        },
       });
     }
 
-    if (res === null)
-      return false;
+    if (res === null) return false;
     return true;
   }
 
@@ -240,23 +261,22 @@ export class FriendsService {
     await this.prisma.blockedUser.create({
       data: {
         blockerId: blockerId,
-        blockedId: blockedId
-      }
+        blockedId: blockedId,
+      },
     });
   }
 
-  async isUserBlocked(userId:number, otherId:number): Promise<boolean> {
+  async isUserBlocked(userId: number, otherId: number): Promise<boolean> {
     let res = await this.prisma.blockedUser.findUnique({
       where: {
         blockerId_blockedId: {
-          blockerId: userId, 
-          blockedId: otherId
-        }
-      }
+          blockerId: userId,
+          blockedId: otherId,
+        },
+      },
     });
 
-    if (res === null)
-      return false;
+    if (res === null) return false;
     return true;
   }
 
@@ -268,11 +288,10 @@ export class FriendsService {
     await this.prisma.blockedUser.delete({
       where: {
         blockerId_blockedId: {
-          blockerId: blockerId, 
-          blockedId: blockedId
-        }
-      }
+          blockerId: blockerId,
+          blockedId: blockedId,
+        },
+      },
     });
   }
-
 }

@@ -41,10 +41,17 @@
       <span class="username">{{ user }}</span>
     </div>
     <div class="user-buttons" *ngIf="!currentUser">
-      <div class="friend">
-        <i class="fa-solid fa-user-plus fa-2xl"></i><br />
+      <div class="friend" *ngIf="!isFriend; else addFriendTemplate">
+        <i class="fa-solid fa-user-plus fa-2xl" (click)="addFriend()"></i><br />
         <span (click)="addFriend()">ADD FRIEND</span>
       </div>
+      <ng-template #addFriendTemplate>
+        <div class="friend">
+          <i class="fa-solid fa-user-minus fa-2xl" (click)="removeFriend()"></i
+          ><br />
+          <span (click)="removeFriend()">REMOVE FRIEND</span>
+        </div>
+      </ng-template>
       <div class="chat">
         <i class="fa-solid fa-headset fa-2xl"></i><br /><span>CHAT</span>
       </div>

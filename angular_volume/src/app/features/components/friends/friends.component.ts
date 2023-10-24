@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FriendsService } from '../../../core/services/friends.service';
 import { Router } from '@angular/router';
+import { log } from 'console';
 
 @Component({
   templateUrl: './friends.component.html',
@@ -22,28 +23,12 @@ export class FriendsComponent implements OnInit, AfterViewInit {
   ) {
     this.search = '';
     this.placeholder = 'Search player';
-    this.users = [{ name: 'franco' }, { name: 'marasco' }, { name: 'mimmo' }];
     this.friend = true;
-    this.noFriends = false;
+    this.noFriends = true;
   }
 
   async ngOnInit() {
-    await this.friendsService
-      .getFriends()
-      .then((resp) => {
-        console.log(resp);
-        //this.noFriends = resp.length !== 0 ? false : true;
-        //this.users = resp;
-      })
-      .catch((err) => console.error(err));
-    await this.friendsService
-      .getFriendRequests()
-      .then((resp) => {
-        console.log(resp);
-        //this.friend = resp.length !== 0 ? false : true;
-        this.friendRequests = resp;
-      })
-      .catch((err) => console.error(err));
+    await this.loadFriend();
   }
 
   ngAfterViewInit(): void {
@@ -71,5 +56,24 @@ export class FriendsComponent implements OnInit, AfterViewInit {
   onMouseWheel(event: WheelEvent) {
     event.preventDefault();
     this.container.scrollLeft += event.deltaY;
+  }
+
+  async loadFriend() {
+    await this.friendsService
+      .getFriends()
+      .then((resp) => {
+        console.log(resp);
+        this.noFriends = resp.length === 0 ? true : false;
+        this.users = resp;
+      })
+      .catch((err) => console.error(err));
+    await this.friendsService
+      .getFriendRequests()
+      .then((resp) => {
+        console.log(resp);
+        this.friend = resp.length !== 0 ? true : false;
+        this.friendRequests = resp;
+      })
+      .catch((err) => console.error(err));
   }
 }

@@ -44,6 +44,10 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // STOP USER GET BACK TO LOGIN
+    if (this.auth.getToken()) {
+      this.router.navigate(['home']);
+    }
     // SUBSCRIBE FOR REDIRECT MESSAGE FROM SOCKET (OBSERVABLE)
     this.subscription.add(
       this.socketService.onTextMessage().subscribe({
@@ -62,10 +66,6 @@ export class LoginComponent implements OnInit, OnDestroy {
         this.onAuth42(code);
       }
     });
-    // STOP USER GET BACK TO LOGIN
-    if (this.auth.getToken()) {
-      this.router.navigate(['home']);
-    }
   }
 
   ngOnDestroy(): void {
