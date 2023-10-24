@@ -1,25 +1,25 @@
-import { Body, Controller, Get, Patch, Post, UseGuards } from "@nestjs/common";
-import { FriendsService } from "./friends.service";
-import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
-import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
-import { User } from "@prisma/client";
-import { GetUser } from "src/users/users.decorator";
-import { UsersService } from "src/users/users.service";
+import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
+import { FriendsService } from './friends.service';
+import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { User } from '@prisma/client';
+import { GetUser } from 'src/users/users.decorator';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('friends')
 @ApiTags('friends')
 export class FriendsController {
   constructor(
     private friendsService: FriendsService,
-    private usersService: UsersService
+    private usersService: UsersService,
   ) {}
-  
+
   @Post('invite')
   @UseGuards(JwtAuthGuard)
   @ApiOkResponse()
   async inviteFriend(
     @GetUser() user: User,
-    @Body('friend') friendName: string
+    @Body('friend') friendName: string,
   ) {
     this.friendsService.inviteFriend(user.id, friendName);
     return `Friend request correctly sent to ${friendName}`;
@@ -30,18 +30,18 @@ export class FriendsController {
   @ApiOkResponse()
   async acceptFriendRequest(
     @GetUser() user: User,
-    @Body('friend') friendName: string
+    @Body('friend') friendName: string,
   ) {
     this.friendsService.acceptFriendRequest(user.id, friendName);
     return `Now you and ${friendName} are friends`;
   }
 
-  @Patch('reject')
+  @Post('reject')
   @UseGuards(JwtAuthGuard)
   @ApiOkResponse()
   async rejectFriendRequest(
     @GetUser() user: User,
-    @Body('friend') friendName: string
+    @Body('friend') friendName: string,
   ) {
     this.friendsService.rejectFriendRequest(user.id, friendName);
     return `Friend request from ${friendName} correctly rejected`;
@@ -52,7 +52,7 @@ export class FriendsController {
   @ApiOkResponse()
   async deleteFriend(
     @GetUser() user: User,
-    @Body('friend') friendName: string
+    @Body('friend') friendName: string,
   ) {
     const friend = await this.usersService.findUserByName(friendName);
     this.friendsService.removeFriendship(user.id, friend.id);
@@ -62,37 +62,28 @@ export class FriendsController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiOkResponse()
-  async getFriends(
-    @GetUser() user: User
-  ): Promise<any> {
+  async getFriends(@GetUser() user: User): Promise<any> {
     return await this.friendsService.getFriends(user.id);
   }
 
   @Get('requests/received')
   @UseGuards(JwtAuthGuard)
   @ApiOkResponse()
-  async getReceivedFriendRequests(
-    @GetUser() user: User
-  ) {
+  async getReceivedFriendRequests(@GetUser() user: User) {
     return await this.friendsService.getReceivedFriendRequests(user.id);
   }
 
   @Get('requests/sent')
   @UseGuards(JwtAuthGuard)
   @ApiOkResponse()
-  async getSentFriendRequests(
-    @GetUser() user: User
-  ) {
+  async getSentFriendRequests(@GetUser() user: User) {
     return await this.friendsService.getSentFriendRequests(user.id);
   }
 
   @Post('block')
   @UseGuards(JwtAuthGuard)
   @ApiOkResponse()
-  async blockUser(
-    @GetUser() user: User,
-    @Body('toBlock') toBlock: string
-  ) {
+  async blockUser(@GetUser() user: User, @Body('toBlock') toBlock: string) {
     const blocked = await this.usersService.findUserByName(toBlock);
     this.friendsService.blockUser(user.id, blocked.id);
     return `${toBlock} has been blocked`;
@@ -103,7 +94,7 @@ export class FriendsController {
   @ApiOkResponse()
   async unblockUser(
     @GetUser() user: User,
-    @Body('toUnblock') toUnblock: string
+    @Body('toUnblock') toUnblock: string,
   ) {
     const blocked = await this.usersService.findUserByName(toUnblock);
     this.friendsService.unblockUser(user.id, blocked.id);

@@ -13,6 +13,7 @@ import { GoogleAuthService } from 'src/app/core/auth/google-auth.service';
 import { FriendsService } from '../../../core/services/friends.service';
 import { Subscription } from 'rxjs';
 import { NgxImageCompressService } from 'ngx-image-compress';
+import { error } from 'console';
 
 @Component({
   templateUrl: './profile.component.html',
@@ -20,17 +21,19 @@ import { NgxImageCompressService } from 'ngx-image-compress';
 })
 export class ProfileComponent implements OnInit, AfterViewInit {
   user!: string;
-  private userInfo!: any;
   profileImage!: string;
   win!: number;
   lose!: number;
   qrCode: string;
+  userQr: string;
   private id!: string;
   twofa: boolean;
+  private is2faEnabled: boolean;
   private icon2fa!: any;
   currentUser: boolean;
   isOnline!: boolean;
   isPlaying!: boolean;
+  isFriend: boolean;
 
   @ViewChild('fileInput') fileInput!: ElementRef;
 
@@ -48,9 +51,12 @@ export class ProfileComponent implements OnInit, AfterViewInit {
     this.id = this.userService.getUserId();
     this.twofa = false;
     this.currentUser = true;
+    this.is2faEnabled = false;
+    this.userQr = '';
+    this.isFriend = false;
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     // SEARCH USER FROM PARAM IN URL
     this.route.params.subscribe(async (params) => {
       const username = params['username'];
@@ -65,24 +71,46 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   // LOAD USER INFO FOR PROFILE PAGE
   private async profileInit(username: string) {
     if (username === this.userService.getUser()) {
-      this.userInfo = await this.userService.getUserInfo();
       this.currentUser = true;
+      await this.userService
+        .getUserInfo()
+        .then((response) => this.initProfile(response));
     } else {
-      this.userInfo = await this.friendsService.getFriendInfo(username);
       this.currentUser = false;
+      await this.friendsService
+        .getFriendInfo(username)
+        .then(async (response) => {
+          this.initProfile(response);
+        });
+      await this.friendsService
+        .getFriends()
+        .then((resp) => {
+          console.log(resp);
+          for (let i = 0; i < resp.length; i++) {
+            if (resp[i].username === this.user) {
+              this.isFriend = true;
+              break;
+            }
+          }
+        })
+        .catch((err) => console.error(err));
     }
-    this.user = this.userInfo.username ? this.userInfo.username : 'USER';
-    this.profileImage = this.userInfo.img
-      ? this.userInfo.img
+  }
+
+  private async initProfile(response: any) {
+    this.user = response.username ? response.username : 'USER';
+    this.profileImage = response.img
+      ? response.img
       : 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
-    this.win = this.userInfo.Wins;
-    this.lose = this.userInfo.Losses;
-    if (this.userInfo.is2faEnabled) {
+    this.win = response.Wins;
+    this.lose = response.Losses;
+    if (response.is2faEnabled) {
+      this.userQr = response.qrcode2fa;
+      this.is2faEnabled = true;
       this.icon2fa.style.color = 'green';
     }
-    this.isPlaying = this.userInfo.isPlaying;
-    this.isOnline = this.userInfo.isOnline;
-    console.log(this.userInfo);
+    this.isPlaying = response.isPlaying;
+    this.isOnline = response.isOnline;
   }
 
   logout() {
@@ -117,7 +145,7 @@ export class ProfileComponent implements OnInit, AfterViewInit {
 
   async onEnable2FA() {
     // CHECK IF USER 2FA ENABLE AND OPEN NEW QR CODE OR LATEST
-    if (this.userInfo.is2faEnabled === false) {
+    if (this.is2faEnabled === false) {
       this.twofa = false;
       this.googleAuth
         .getLink(this.id)
@@ -128,21 +156,21 @@ export class ProfileComponent implements OnInit, AfterViewInit {
           console.error(error);
         });
     } else {
+      this.qrCode = this.userQr;
       this.twofa = true;
-      this.qrCode = this.userInfo.qrcode2fa;
     }
   }
 
   async onConfirm2FA() {
     this.qrCode = '';
-    await this.status.set2fa(this.id, true);
     this.icon2fa.style.color = 'green';
+    await this.status.set2fa(this.id, true);
   }
 
   async onReject2FA() {
     this.qrCode = '';
-    await this.status.set2fa(this.id, false);
     this.icon2fa.style.color = 'red';
+    await this.status.set2fa(this.id, false);
   }
 
   closeQr() {
@@ -150,9 +178,12 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   }
 
   async addFriend() {
-    this.friendsService
-      .addFriend(this.user)
-      .then((resp) => console.log(resp))
-      .catch((err) => console.error(err));
+    this.isFriend = true;
+    await this.friendsService.addFriend(this.user);
+  }
+
+  async removeFriend() {
+    this.isFriend = false;
+    await this.friendsService.deleteFriend(this.user);
   }
 }

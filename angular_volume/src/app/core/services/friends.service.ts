@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { lastValueFrom } from 'rxjs';
+import { first, firstValueFrom, lastValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -24,5 +24,23 @@ export class FriendsService {
 
   async getFriendRequests(): Promise<any> {
     return lastValueFrom(this.http.get(`/nest/friends/requests/received/`));
+  }
+
+  async acceptFriend(username: string): Promise<any> {
+    return firstValueFrom(
+      this.http.patch(`/nest/friends/accept/`, { friend: username })
+    );
+  }
+
+  async deleteFriend(username: string): Promise<any> {
+    return lastValueFrom(
+      this.http.post(`/nest/friends/delete/`, { friend: username })
+    );
+  }
+
+  async rejectFriend(username: string): Promise<any> {
+    return lastValueFrom(
+      this.http.post(`/nest/friends/reject/`, { friend: username })
+    );
   }
 }
