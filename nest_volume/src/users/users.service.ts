@@ -48,6 +48,7 @@ export class UsersService {
       id: user.id,
       username: user.username,
       email: user.email,
+      img: user.img,
       isOnline: user.isOnline,
       isPlaying: user.isPlaying,
       Wins: user.Wins,
