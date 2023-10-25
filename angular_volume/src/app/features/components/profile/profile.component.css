@@ -176,6 +176,7 @@
   min-width: 250px;
   text-align: center;
   border: 3px solid black;
+  z-index: 10000000000000;
 }
 
 .popup {

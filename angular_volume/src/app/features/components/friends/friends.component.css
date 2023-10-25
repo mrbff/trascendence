@@ -9,6 +9,8 @@
 
 .friend-box {
   display: grid;
+  grid-template-columns: 3fr;
+  grid-template-rows: 1fr 2fr 1fr;
   white-space: nowrap;
   overflow-x: auto;
   border-radius: 8px;
@@ -69,30 +71,72 @@
 }
 
 .friend-request {
-  height: 50px;
+  grid-row: 3 / 3;
   display: grid;
   grid-template-columns: 3fr 3fr;
   grid-template-rows: 1fr 2fr;
 }
 
-.request-box {
+.new-request {
   position: relative;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 100%;
-
   grid-row: 1 / 1;
   grid-column: 1 / end;
   background-color: transparent;
   max-height: 35px;
 }
 
-.request-box span {
+.new-request span {
   position: absolute;
+  margin-top: 30px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  color: orange;
+  font-weight: bold;
+  font-size: 20px;
+  text-shadow: 0 0 10px #ffae42, 0 0 20px #ffae42, 0 0 30px #ffae42;
+  animation: flicker 1s infinite alternate;
+}
+
+.new-request .line-s {
+  position: absolute;
+  top: 50%;
+  left: 3vw;
+  margin-top: 28px;
+  width: 32vw;
+  height: 1px;
+  background-color: orange;
+  z-index: -100;
+}
+
+.new-request .line-e {
+  position: absolute;
+  top: 50%;
+  right: 3vw;
+  margin-top: 28px;
+  width: 32vw;
+  height: 1px;
+  background-color: orange;
+  z-index: -100;
+}
+
+.request-box {
+  grid-row: 2 / end;
+  grid-column: 1 / end;
+  white-space: nowrap;
+  overflow: hidden;
+  height: 100%;
+  width: 100%;
+  overflow-x: auto;
+}
+
+.request-card {
+  display: inline-block;
+  margin-right: 40px;
 }
 
 .card-box {
@@ -129,8 +173,52 @@
   justify-content: center;
 }
 
+@media (max-width: 1020px) {
+  .new-request .line-s {
+    width: 25vw;
+  }
+
+  .new-request .line-e {
+    width: 25vw;
+  }
+}
+
 @media (max-width: 765px) {
+  .new-request .line-s {
+    display: none;
+  }
+
+  .new-request .line-e {
+    display: none;
+  }
+
   .no-friend {
     font-size: 3vw;
+  }
+}
+
+@media (max-height: 650px) {
+  .new-request span {
+    display: none;
+  }
+
+  .request-box {
+    grid-row: 1 / end;
+    grid-column: 1 / end;
+    white-space: nowrap;
+    overflow: hidden;
+    height: 100%;
+    width: 100%;
+    overflow-x: auto;
+  }
+}
+
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
   }
 }

@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import { FriendsService } from 'src/app/core/services/friends.service';
 
 @Component({
@@ -11,7 +12,10 @@ export class RequestCardComponent implements OnInit {
   @Output() reload = new EventEmitter<void>();
   profileImage!: string;
 
-  constructor(private readonly friendService: FriendsService) {
+  constructor(
+    private readonly friendService: FriendsService,
+    private readonly router: Router
+  ) {
     this.username = '';
   }
 
@@ -37,5 +41,9 @@ export class RequestCardComponent implements OnInit {
     await this.friendService
       .rejectFriend(this.username)
       .then(() => this.reload.emit());
+  }
+
+  openProfile() {
+    this.router.navigate(['/profile', this.username]);
   }
 }

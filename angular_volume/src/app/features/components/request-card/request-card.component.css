@@ -1,15 +1,18 @@
 .card-box {
-  border: 2px solid orange;
-  max-width: 400px;
-  height: 70px;
-  background-color: black;
+  border: 3px solid black;
   border-radius: 50px;
+  width: 300px;
+  height: 70px;
+  background-image: url("../../../../assets/card_back.jpg");
+  background-size: cover;
+  background-position: center;
   position: relative;
   left: 4vh;
   top: 3vh;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr;
+  margin-bottom: 20px;
 }
 
 .profile-img {
@@ -17,12 +20,12 @@
   grid-row: 1;
   position: relative;
   top: 50%;
-  left: 30%;
+  left: 40%;
   transform: translate(-50%, -50%);
   width: 50px;
   height: 50px;
   border-radius: 50px;
-  border: 2px solid orange;
+  border: 2px solid chocolate;
   display: block;
   background-color: black;
   overflow: hidden;
@@ -41,9 +44,11 @@
   grid-row: 1;
   position: relative;
   top: 85%;
-  left: 30%;
+  left: 40%;
   transform: translate(-50%, -50%);
   font-size: 25px;
+  cursor: pointer;
+  color: white;
 }
 
 .buttons {

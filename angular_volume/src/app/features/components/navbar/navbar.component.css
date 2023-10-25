@@ -36,6 +36,7 @@
   color: orange !important;
   font-size: 30px !important;
   padding-right: 50px;
+  cursor: pointer;
 }
 
 .navbar a {

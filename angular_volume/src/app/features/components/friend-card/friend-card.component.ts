@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 })
 export class FriendCardComponent implements OnInit, AfterViewInit {
   @Input() username: string;
+  @Input() topVh: boolean;
 
   win!: string;
   lose!: string;
@@ -26,6 +27,7 @@ export class FriendCardComponent implements OnInit, AfterViewInit {
     this.lose = '0';
     this.isOnline = false;
     this.isPlaying = false;
+    this.topVh = true;
   }
 
   async ngOnInit() {
@@ -46,6 +48,14 @@ export class FriendCardComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.status = document.querySelector('.profile-img');
+    let height: any = document.querySelector('.card-box');
+
+    console.log(this.topVh);
+    if (this.topVh === true) {
+      height.style.top = '14vh';
+    } else {
+      height.style.top = '20vh';
+    }
   }
 
   openFriendProfile() {

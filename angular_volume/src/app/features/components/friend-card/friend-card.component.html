@@ -1,4 +1,4 @@
-<div class="card-box">
+<div class="card-box" [style.top]="topVh ? '14vh' : '20vh'">
   <div
     class="profile-img"
     [ngStyle]="{
@@ -17,9 +17,10 @@
       <i class="fa-solid fa-headset"></i><br />
       <span>CHAT</span>
     </div>
-    <div class="profile" (click)="openFriendProfile()">
-      <i class="fa-regular fa-address-card"></i><br />
-      <span>USER</span>
+    <div class="profile">
+      <i class="fa-regular fa-address-card" (click)="openFriendProfile()"></i
+      ><br />
+      <span (click)="openFriendProfile()">USER</span>
     </div>
   </div>
   <div class="winRes">
