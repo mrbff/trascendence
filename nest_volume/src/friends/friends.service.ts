@@ -294,4 +294,44 @@ export class FriendsService {
       },
     });
   }
+
+  async getBlockeds(userId: number): Promise<any> {
+    let blockeds = await this.prisma.blockedUser.findMany({
+      where: {
+        OR: [
+          { blockerId: userId },
+          { blockedId: userId },
+        ],
+      },
+      include: {
+        blocker: {
+          select: {
+            id: true,
+            username: true,
+            img: true,
+            isOnline: true,
+            isPlaying: true,
+          },
+        },
+        blocked: {
+          select: {
+            id: true,
+            username: true,
+            img: true,
+            isOnline: true,
+            isPlaying: true,
+          },
+        },
+      },
+    });
+
+    const blockList = blockeds.map((blockedUser) => {
+      if (blockedUser.blockerId === userId) {
+        return blockedUser.blocked;
+      } else {
+        return blockedUser.blocker;
+      }
+    });
+    return blockList;
+  }
 }

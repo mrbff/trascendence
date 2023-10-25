@@ -83,7 +83,10 @@ export class FriendsController {
   @Post('block')
   @UseGuards(JwtAuthGuard)
   @ApiOkResponse()
-  async blockUser(@GetUser() user: User, @Body('toBlock') toBlock: string) {
+  async blockUser (
+    @GetUser() user: User,
+    @Body('to_block') toBlock: string,
+  ) {
     const blocked = await this.usersService.findUserByName(toBlock);
     this.friendsService.blockUser(user.id, blocked.id);
     return {okMessage: `${toBlock} has been blocked`};
@@ -94,10 +97,19 @@ export class FriendsController {
   @ApiOkResponse()
   async unblockUser(
     @GetUser() user: User,
-    @Body('toUnblock') toUnblock: string,
+    @Body('to_unblock') toUnblock: string,
   ) {
     const blocked = await this.usersService.findUserByName(toUnblock);
     this.friendsService.unblockUser(user.id, blocked.id);
     return {okMessage: `${toUnblock} has been unblocked`};
+  }
+
+  @Get('blockeds')
+  @UseGuards(JwtAuthGuard)
+  @ApiOkResponse()
+  async getBlockeds(
+    @GetUser() user: User
+  ): Promise<any> {
+    return await this.friendsService.getBlockeds(user.id);
   }
 }

@@ -24,30 +24,31 @@ export class UsersService {
     });
   }
 
-  findAll() {
-    return this.prisma.user.findMany();
+  async findAll() {
+    return await this.prisma.user.findMany();
   }
 
-  findOne(id: number) {
+  async findOne(id: number) {
     try {
-      return this.prisma.user.findUniqueOrThrow({ where: { id: id } });
+      return await this.prisma.user.findUniqueOrThrow({ where: { id: id } });
     } catch(error) {
       throw new NotFoundException(`No user found with id: ${id}`);
     }
   }
 
-  findOneByEmail(email: string) {
+  async findOneByEmail(email: string) {
     try {
-      return this.prisma.user.findUniqueOrThrow({ where: { email: email } });
+      return await this.prisma.user.findUniqueOrThrow({ where: { email: email } });
     } catch(error) {
       throw new NotFoundException(`No user found with email: ${email}`);
     }
   }
 
-  findUserByName(name: string) {
+  async findUserByName(name: string) {
     try {
-      return this.prisma.user.findUniqueOrThrow({ where: { username: name } });
-    } catch {
+      const user = await this.prisma.user.findUniqueOrThrow({ where: { username: name } });
+      return user;
+    } catch(error) {
       throw new NotFoundException(`No user found with username: ${name}`);
     }
   }
@@ -120,7 +121,7 @@ export class UsersService {
     }
   }
 
-  remove(id: number) {
+  async remove(id: number) {
     return this.prisma.user.delete({ where: { id } });
   }
 
