@@ -49,8 +49,6 @@ export class FriendCardComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.status = document.querySelector('.profile-img');
     let height: any = document.querySelector('.card-box');
-
-    console.log(this.topVh);
     if (this.topVh === true) {
       height.style.top = '14vh';
     } else {

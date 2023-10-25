@@ -67,36 +67,38 @@
   align-items: center;
   align-content: center;
   margin-left: 15px;
-  cursor: pointer;
 }
 
 .play i {
   grid-column: 1 / 1;
   font-size: 25px;
   margin-bottom: 5px;
+  cursor: pointer;
 }
 
 .play span {
   grid-column: 1 / 1;
   font-size: 15px;
+  cursor: pointer;
 }
 
 .chat {
   grid-column: 2 / 2;
   align-items: center;
   align-content: center;
-  cursor: pointer;
 }
 
 .chat i {
   grid-column: 2;
   font-size: 25px;
   margin-bottom: 5px;
+  cursor: pointer;
 }
 
 .chat span {
   grid-column: 2 / 2;
   font-size: 15px;
+  cursor: pointer;
 }
 
 .profile {
@@ -104,18 +106,19 @@
   align-items: center;
   align-content: center;
   margin-right: 15px;
-  cursor: pointer;
 }
 
 .profile i {
   grid-column: 3;
   font-size: 25px;
   margin-bottom: 5px;
+  cursor: pointer;
 }
 
 .profile span {
   grid-column: 3;
   font-size: 15px;
+  cursor: pointer;
 }
 
 .winRes {

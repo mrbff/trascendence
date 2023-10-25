@@ -13,7 +13,11 @@
       />
       <button (click)="searchPlayer()">SEARCH</button>
     </div>
-    <div class="card-box" (wheel)="onMouseWheel($event, 'card')">
+    <div
+      class="card-box"
+      (wheel)="onMouseWheel($event, 'card')"
+      [style.grid-row]="friend ? '1 / 3' : '1 / end'"
+    >
       <app-friend-card
         [topVh]="friend"
         class="card"

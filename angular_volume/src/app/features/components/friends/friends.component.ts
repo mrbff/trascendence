@@ -23,7 +23,7 @@ export class FriendsComponent implements OnInit, AfterViewInit {
   ) {
     this.search = '';
     this.placeholder = 'Search player';
-    this.friend = true;
+    this.friend = false;
     this.noFriends = true;
   }
 

@@ -140,7 +140,7 @@
 }
 
 .card-box {
-  grid-row: 1 / 3;
+  grid-row: 1 / end;
   white-space: nowrap;
   overflow: hidden;
   height: 100%;
