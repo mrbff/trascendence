@@ -5,9 +5,6 @@ import {
   OnInit,
   ViewChild,
   EventEmitter,
-  OnChanges,
-  SimpleChanges,
-  DoCheck,
 } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
 import { AuthService } from '../../../core/auth/auth.service';
@@ -16,7 +13,6 @@ import { StatusService } from 'src/app/core/services/status.service';
 import { GoogleAuthService } from 'src/app/core/auth/google-auth.service';
 import { FriendsService } from '../../../core/services/friends.service';
 import { NgxImageCompressService } from 'ngx-image-compress';
-import { profile } from 'console';
 
 @Component({
   templateUrl: './profile.component.html',
@@ -200,5 +196,9 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   async removeFriend() {
     this.isFriend = false;
     await this.friendsService.deleteFriend(this.user);
+  }
+
+  async blockUser() {
+    await this.friendsService.blockUser(this.user);
   }
 }

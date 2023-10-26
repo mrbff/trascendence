@@ -29,7 +29,7 @@ body {
   height: 100%;
   background-image: url("assets/home_wall.gif");
   background-size: cover;
-  z-index: -1;
+  z-index: -1000;
 }
 
 .background::before {
@@ -40,7 +40,7 @@ body {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.7);
-  z-index: -1;
+  z-index: -1001;
 }
 
 input:-webkit-autofill,

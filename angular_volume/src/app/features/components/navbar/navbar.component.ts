@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { UserService } from 'src/app/core/services/user.service';
 
 @Component({
@@ -9,8 +8,6 @@ import { UserService } from 'src/app/core/services/user.service';
 })
 export class NavbarComponent implements OnInit {
   user!: string;
-  icon!: any;
-  background!: any;
 
   constructor(private readonly userService: UserService) {}
 

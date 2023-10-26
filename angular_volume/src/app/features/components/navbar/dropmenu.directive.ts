@@ -26,12 +26,10 @@ export class DropmenuDirective implements AfterViewInit {
   }
 
   showMenu() {
-    this.icon.style.display = 'block';
-    this.background.style.display = 'block';
+    this.background.style.transform = 'translateX(0)';
   }
 
   hideMenu() {
-    this.icon.style.display = 'none';
-    this.background.style.display = 'none';
+    this.background.style.transform = 'translateX(+100%)';
   }
 }

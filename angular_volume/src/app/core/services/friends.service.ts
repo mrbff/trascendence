@@ -43,4 +43,20 @@ export class FriendsService {
       this.http.post(`/nest/friends/reject/`, { friend: username })
     );
   }
+
+  async blockUser(username: string): Promise<any> {
+    return lastValueFrom(
+      this.http.post(`/nest/friends/block/`, { to_block: username })
+    );
+  }
+
+  async unblockUser(username: string): Promise<any> {
+    return lastValueFrom(
+      this.http.post(`/nest/friends/unblock/`, { to_unblock: username })
+    );
+  }
+
+  async getBlockedUsers() {
+    return lastValueFrom(this.http.get(`/nest/friends/blockeds/`));
+  }
 }

@@ -5,6 +5,12 @@
   text-decoration: none;
   font-family: Azonix;
   user-select: none;
+  position: relative;
+  z-index: 2147483646 !important;
+}
+
+.navbar {
+  height: 70px;
 }
 
 .navbar::before {
@@ -33,9 +39,10 @@
 }
 
 .logo {
+  position: relative;
+  top: 50%;
   color: orange !important;
   font-size: 30px !important;
-  padding-right: 50px;
   cursor: pointer;
 }
 
@@ -58,10 +65,8 @@
 }
 
 .responsive {
-  display: none;
   border-radius: 5px;
   position: absolute;
-  z-index: 500000;
   width: 90%;
   height: 60%;
   top: 50%;
@@ -70,32 +75,18 @@
 }
 
 .backresp {
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-image: url("../../../../assets/giphy2.gif");
-}
-
-.backresp::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: -1;
-}
-
-.backresp {
-  display: none;
   font-family: Azonix;
   justify-content: center;
   align-items: center;
   height: 100vh;
   user-select: none;
-  z-index: 499999;
   backdrop-filter: blur(50px);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-image: url("../../../../assets/giphy2.gif");
+  transition: transform 0.5s ease-out;
+  transform: translateX(+100%);
 }
 
 @media (min-width: 899px) {
@@ -115,7 +106,7 @@
 @media (max-width: 900px) {
   .logo {
     position: absolute;
-    top: 22px;
+    top: 25px;
     left: 2vh;
     color: orange !important;
     padding-right: 0px;
