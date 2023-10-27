@@ -41,6 +41,7 @@
 .logo {
   position: relative;
   top: 50%;
+  right: 1vw;
   color: orange !important;
   font-size: 30px !important;
   cursor: pointer;
@@ -89,7 +90,7 @@
   transform: translateX(+100%);
 }
 
-@media (min-width: 899px) {
+@media (min-width: 949px) {
   .responsive {
     display: none !important;
   }
@@ -103,11 +104,11 @@
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 950px) {
   .logo {
     position: absolute;
     top: 25px;
-    left: 2vh;
+    left: 2vw;
     color: orange !important;
     padding-right: 0px;
     font-size: 25px !important;
