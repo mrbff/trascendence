@@ -9,7 +9,13 @@
       </div>
       <div>
         <div class="profile-img">
-          <img [src]="player.img" />
+          <img
+            [src]="
+              player.img !== ''
+                ? player.img
+                : 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif'
+            "
+          />
         </div>
         <div class="username" (click)="openProfile(player.username)">
           {{ player.username }}
