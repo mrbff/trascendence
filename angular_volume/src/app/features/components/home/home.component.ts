@@ -1,5 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
 import { StatusService } from '../../../core/services/status.service';
 
@@ -15,4 +14,10 @@ export class HomeComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {}
+
+  @HostListener('document:keydown.enter', ['$event'])
+  enterKeyPressed(event: KeyboardEvent) {
+    event.preventDefault();
+    console.log('PRESSED');
+  }
 }

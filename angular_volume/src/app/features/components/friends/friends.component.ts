@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, HostListener, OnInit } from '@angular/core';
 import { FriendsService } from '../../../core/services/friends.service';
 import { Router } from '@angular/router';
 
@@ -16,6 +16,12 @@ export class FriendsComponent implements OnInit, AfterViewInit {
   friend: boolean;
   noFriends: boolean;
   friendRequests: any;
+
+  @HostListener('document:keydown.enter', ['$event'])
+  enterKeyPressed(event: KeyboardEvent) {
+    event.preventDefault();
+    this.searchPlayer();
+  }
 
   constructor(
     private readonly friendsService: FriendsService,
