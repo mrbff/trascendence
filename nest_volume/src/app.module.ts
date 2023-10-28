@@ -6,11 +6,11 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { HttpModule } from '@nestjs/axios';
 import { RedirectionGateway } from './oauthRedirection/redirection.gateway';
-import { FriendsController } from './friends/friends.controller';
 import { FriendsModule } from './friends/friends.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
-  imports: [PrismaModule, UsersModule, AuthModule, HttpModule, FriendsModule],
+  imports: [PrismaModule, UsersModule, AuthModule, HttpModule, FriendsModule, ChatModule],
   controllers: [AppController],
   providers: [AppService, RedirectionGateway],
 })
