@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { loginGuard } from './core/guards/login.guard';
 
 const routes: Routes = [
   {
@@ -13,6 +14,7 @@ const routes: Routes = [
   },
   {
     path: '',
+    canActivate: [loginGuard],
     loadChildren: () =>
       import('./shared/shared-routing.module').then(
         (mod) => mod.SharedRoutingModule

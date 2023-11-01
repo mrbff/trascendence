@@ -21,7 +21,7 @@ export class StatusService {
   }
 
   async set2fa(id: string, status: boolean): Promise<any> {
-    return lastValueFrom(
+    return firstValueFrom(
       this.http.patch(`/nest/users/2fa-status/${id}`, {
         newStatus: status,
       })

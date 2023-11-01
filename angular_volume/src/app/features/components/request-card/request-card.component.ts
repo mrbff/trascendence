@@ -23,10 +23,7 @@ export class RequestCardComponent implements OnInit {
     await this.friendService
       .getFriendInfo(this.username)
       .then((resp) => {
-        this.profileImage =
-          resp.img !== ''
-            ? resp.img
-            : 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
+        this.profileImage = resp.img;
       })
       .catch((err) => console.error(err));
   }
@@ -44,6 +41,6 @@ export class RequestCardComponent implements OnInit {
   }
 
   openProfile() {
-    this.router.navigate(['/profile', this.username]);
+    this.router.navigate(['/trascendence/profile', this.username]);
   }
 }

@@ -25,6 +25,6 @@ export class LeaderboardComponent implements OnInit {
   }
 
   openProfile(player: string) {
-    this.router.navigate(['/profile', player]);
+    this.router.navigate(['/trascendence/profile', player]);
   }
 }

@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from 'src/app/core/auth/auth.service';
 
 @Component({
   selector: 'app-signup',
@@ -18,8 +17,7 @@ export class SignupComponent {
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
-    private router: Router,
-    private auth: AuthService
+    private router: Router
   ) {
     this.errorMsg = '';
     this.showPassword = false;
@@ -32,12 +30,7 @@ export class SignupComponent {
     });
   }
 
-  ngOnInit(): void {
-    if (this.auth.getToken() !== '') {
-      this.router.navigate(['home']);
-      return;
-    }
-  }
+  ngOnInit(): void {}
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
@@ -98,8 +91,8 @@ export class SignupComponent {
         this.signupForm.reset();
         this.router.navigate(['login']);
       })
-      .catch((error) => {
-        this.errorMsg = `Error: ${error.status.toString()}. Try again`;
+      .catch(() => {
+        this.errorMsg = `Error. Try again`;
         this.signupForm.reset();
       });
   }

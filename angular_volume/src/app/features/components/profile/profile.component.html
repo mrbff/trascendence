@@ -1,20 +1,26 @@
 <app-navbar></app-navbar>
 <div class="profile-container">
-  <div class="profile-box">
+  <div class="profile-box" *ngIf="user">
     <img
       id="image"
       class="profile-image"
-      [src]="profileImage"
+      [src]="user.img"
       alt="Profile image"
       *ngIf="currentUser; else elseBlock"
       appChangeImage
+      [ngStyle]="{
+        color: user.isPlaying ? 'orange' : user.isOnline ? 'green' : 'red'
+      }"
     />
     <ng-template #elseBlock>
       <img
         id="image"
         class="profile-image"
-        [src]="profileImage"
+        [src]="user.img"
         alt="Profile image"
+        [ngStyle]="{
+          color: user.isPlaying ? 'orange' : user.isOnline ? 'green' : 'red'
+        }"
       />
     </ng-template>
     <input
@@ -35,7 +41,7 @@
       Change Image
     </button>
     <div class="username-space">
-      <span class="username">{{ user }}</span>
+      <span class="username">{{ user.username }}</span>
     </div>
     <div class="user-buttons" *ngIf="!currentUser">
       <div class="friend" *ngIf="!isFriend; else addFriendTemplate">
@@ -60,11 +66,11 @@
     <div class="matchbox">
       <div class="win">WIN</div>
       <div class="winRes">
-        {{ win }}
+        {{ user.Wins }}
       </div>
       <div class="lose">LOSE</div>
       <div class="loseRes">
-        {{ lose }}
+        {{ user.Losses }}
       </div>
     </div>
     <div class="qr" *ngIf="qrCode !== '' && !twofa && currentUser">
@@ -86,7 +92,14 @@
     <div class="logout" *ngIf="currentUser">
       <button class="logout-bt" (click)="logout()">LOGOUT</button>
     </div>
-    <div class="google-auth" (click)="onEnable2FA()" *ngIf="currentUser">
+    <div
+      class="google-auth"
+      (click)="onEnable2FA()"
+      *ngIf="currentUser"
+      [ngStyle]="{
+        color: user.is2faEnabled ? 'green' : 'red'
+      }"
+    >
       <i class="fa-sharp fa-solid fa-shield-halved fa-2xl"> 2 FA</i>
     </div>
   </div>

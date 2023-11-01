@@ -1,11 +1,11 @@
-<div class="card-box" [style.top]="topVh ? '14vh' : '20vh'">
+<div class="card-box" *ngIf="user" [style.top]="topVh ? '14vh' : '20vh'">
   <div
     class="profile-img"
     [ngStyle]="{
-      color: isOnline ? (isPlaying ? 'orange' : 'green') : 'red'
+      color: user.isOnline ? (user.isPlaying ? 'orange' : 'green') : 'red'
     }"
   >
-    <img [src]="profileImage" />
+    <img [src]="user.img" />
   </div>
   <div class="username">{{ username }}</div>
   <div class="user-buttons">
@@ -24,9 +24,9 @@
     </div>
   </div>
   <div class="winRes">
-    {{ win }}
+    {{ user.Wins }}
   </div>
   <div class="loseRes">
-    {{ lose }}
+    {{ user.Losses }}
   </div>
 </div>

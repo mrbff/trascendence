@@ -47,7 +47,7 @@ export class FriendsComponent implements OnInit, AfterViewInit {
     await this.friendsService
       .getFriendInfo(this.search)
       .then((response) => {
-        this.router.navigate(['/profile', response.username]);
+        this.router.navigate(['/trascendence/profile', response.username]);
       })
       .catch(() => {
         this.placeholder = 'User not found';

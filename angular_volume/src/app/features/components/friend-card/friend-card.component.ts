@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, AfterViewInit } from '@angular/core';
 import { FriendsService } from '../../../core/services/friends.service';
 import { Router } from '@angular/router';
+import { UserLoggedModel } from 'src/app/models/userLogged.model';
 
 @Component({
   selector: 'app-friend-card',
@@ -11,11 +12,8 @@ export class FriendCardComponent implements OnInit, AfterViewInit {
   @Input() username: string;
   @Input() topVh: boolean;
 
+  user!: UserLoggedModel;
   win!: string;
-  lose!: string;
-  profileImage!: string;
-  isPlaying: boolean;
-  isOnline: boolean;
   status!: any;
 
   constructor(
@@ -23,25 +21,14 @@ export class FriendCardComponent implements OnInit, AfterViewInit {
     private readonly router: Router
   ) {
     this.username = '';
-    this.win = '0';
-    this.lose = '0';
-    this.isOnline = false;
-    this.isPlaying = false;
     this.topVh = true;
   }
 
   async ngOnInit() {
     await this.friendsService
       .getFriendInfo(this.username)
-      .then((response) => {
-        console.log(response);
-        this.profileImage = response.img
-          ? response.img
-          : 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
-        this.win = response.Wins;
-        this.lose = response.Losses;
-        this.isPlaying = response.isPlaying;
-        this.isOnline = response.isOnline;
+      .then((user) => {
+        this.user = user;
       })
       .catch((err) => console.error(err));
   }
@@ -57,6 +44,6 @@ export class FriendCardComponent implements OnInit, AfterViewInit {
   }
 
   openFriendProfile() {
-    this.router.navigate(['/profile', this.username]);
+    this.router.navigate(['/trascendence/profile', this.username]);
   }
 }

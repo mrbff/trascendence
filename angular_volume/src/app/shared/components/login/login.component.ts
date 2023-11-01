@@ -18,9 +18,9 @@ import { StatusService } from 'src/app/core/services/status.service';
 export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup;
   errorMsg!: string;
-  private subscription: Subscription;
   openPopUp: boolean;
   secret2fa: string;
+  private subs: Subscription;
 
   constructor(
     private readonly userService: UserService,
@@ -38,54 +38,53 @@ export class LoginComponent implements OnInit, OnDestroy {
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]],
     });
-    this.subscription = new Subscription();
+    this.subs = new Subscription();
     this.openPopUp = false;
     this.secret2fa = '';
   }
 
   ngOnInit(): void {
-    // STOP USER GET BACK TO LOGIN
-    if (this.auth.getToken()) {
-      this.router.navigate(['/trascendence/home/']);
-    }
     // SUBSCRIBE FOR REDIRECT MESSAGE FROM SOCKET (OBSERVABLE)
-    this.subscription.add(
+    this.subs.add(
       this.socketService.onTextMessage().subscribe({
         next: (response) => {
           this.Oauth2.redirectUser(response as string);
         },
-        error: (error) => {
-          console.error(error);
+        error: () => {
+          this.errorMsg = `42 Api error. Try again`;
         },
       })
     );
-    // CHECK IF CODE IN URL QUERY
-    this.route.queryParams.subscribe((params) => {
-      const code = params['code'];
-      if (code) {
-        this.onAuth42(code);
-      }
-    });
+    // CHECK IF CODE IN URL QUERY (OBSERVABLE)
+    this.subs.add(
+      this.route.queryParams.subscribe((params) => {
+        const code = params['code'];
+        if (code) {
+          this.onAuth42(code);
+        }
+      })
+    );
   }
 
+  // NO LEAKS
   ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+    this.subs.unsubscribe();
   }
 
+  // REDIRECT FROM SOCKET
   on42AuthClick() {
     this.socketService.sendMessageRequest();
   }
 
-  //SEND CODE TO BACKEND FOR 42 API WORKFLOW (PROMISE)
+  //SEND CODE TO BACKEND FOR 42 API WORKFLOW
   private onAuth42(code: string) {
     this.Oauth2.codeForAccessToken(code)
       .then((response) => {
         this.loginFlow(response);
       })
-      .catch((error) => {
+      .catch(() => {
         this.errorMsg = `42 Api error. Try again`;
         this.router.navigate(['/login']);
-        console.error(error);
       });
   }
 
@@ -98,26 +97,21 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.errorMsg = 'Insert Password';
     } else {
       this.errorMsg = '';
-      this.onLogin(this.loginForm.value);
+      this.userService
+        .login(this.loginForm.value.email, this.loginForm.value.password)
+        .then((response) => {
+          this.loginFlow(response);
+          this.loginForm.reset();
+        })
+        .catch(() => {
+          this.errorMsg = 'Invalid credentials';
+          this.loginForm.reset();
+        });
     }
   }
 
-  private async onLogin(formValue: any) {
-    this.userService
-      .login(formValue.email, formValue.password)
-      .then((response) => {
-        console.log(response);
-        this.loginFlow(response);
-        this.loginForm.reset();
-      })
-      .catch(() => {
-        this.errorMsg = 'Invalid credentials';
-        this.loginForm.reset();
-      });
-  }
-
+  // IF NOT USERNAME AWAIT CODE FROM CHILD AND GOOGLE 2FA
   private async loginFlow(response: any) {
-    // IF NOT USERNAME AWAIT CODE FROM CHILD AND GOOGLE 2FA
     if (!response.username) {
       this.openPopUp = true;
       const code = await this.codeService.emitCode();
@@ -133,11 +127,20 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
   }
 
+  // USER INFO => COOKIE
   private initUser(response: any) {
     this.auth.saveToken(response.accessToken);
     this.userService.setUserId(this.auth.decodeToken(response.accessToken));
     this.userService.setUser(response.username);
     this.status.setStatus(this.userService.getUserId(), true);
+    this.userService.getUserInfo().then(async (resp) => {
+      // IF NO PROFILE IMAGE SET DEFAULT
+      if (resp.img === '') {
+        const img =
+          'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
+        await this.userService.setUserAvatar(resp.id, img);
+      }
+    });
     this.router.navigate(['/trascendence/home/']);
   }
 
