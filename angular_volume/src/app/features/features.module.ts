@@ -10,7 +10,6 @@ import { FriendsComponent } from './components/friends/friends.component';
 import { DropmenuDirective } from './components/navbar/dropmenu.directive';
 import { FormsModule } from '@angular/forms';
 import { FriendCardComponent } from './components/friend-card/friend-card.component';
-import { CoreModule } from '../core/core.module';
 import { RequestCardComponent } from './components/request-card/request-card.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
 
@@ -26,6 +25,6 @@ import { LeaderboardComponent } from './components/leaderboard/leaderboard.compo
     RequestCardComponent,
     LeaderboardComponent,
   ],
-  imports: [CommonModule, FeaturesRoutingModule, FormsModule, CoreModule],
+  imports: [CommonModule, FeaturesRoutingModule, FormsModule],
 })
 export class FeaturesModule {}

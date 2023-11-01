@@ -1,6 +1,4 @@
 import { Component, HostListener, OnInit } from '@angular/core';
-import { UserService } from 'src/app/core/services/user.service';
-import { StatusService } from '../../../core/services/status.service';
 
 @Component({
   selector: 'app-home',
@@ -8,10 +6,7 @@ import { StatusService } from '../../../core/services/status.service';
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit {
-  constructor(
-    private readonly userService: UserService,
-    private readonly status: StatusService
-  ) {}
+  constructor() {}
 
   ngOnInit(): void {}
 

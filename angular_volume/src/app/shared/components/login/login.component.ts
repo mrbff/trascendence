@@ -46,7 +46,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // STOP USER GET BACK TO LOGIN
     if (this.auth.getToken()) {
-      this.router.navigate(['home']);
+      this.router.navigate(['/trascendence/home/']);
     }
     // SUBSCRIBE FOR REDIRECT MESSAGE FROM SOCKET (OBSERVABLE)
     this.subscription.add(
@@ -138,7 +138,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.userService.setUserId(this.auth.decodeToken(response.accessToken));
     this.userService.setUser(response.username);
     this.status.setStatus(this.userService.getUserId(), true);
-    this.router.navigate(['/home']);
+    this.router.navigate(['/trascendence/home/']);
   }
 
   private isFieldEmpty(field: string): boolean {

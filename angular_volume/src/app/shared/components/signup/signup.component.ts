@@ -24,6 +24,12 @@ export class SignupComponent {
     this.errorMsg = '';
     this.showPassword = false;
     this.showConfirm = false;
+    this.signupForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      username: ['', [Validators.required]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
+    });
   }
 
   ngOnInit(): void {
@@ -31,12 +37,6 @@ export class SignupComponent {
       this.router.navigate(['home']);
       return;
     }
-    this.signupForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      username: ['', [Validators.required]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
-    });
   }
 
   togglePasswordVisibility() {

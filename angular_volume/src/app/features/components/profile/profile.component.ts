@@ -102,17 +102,6 @@ export class ProfileComponent implements OnInit, AfterViewInit {
   }
 
   private async initProfile(response: any) {
-    this.user = response.username ? response.username : 'USER';
-    this.profileImage = response.img
-      ? response.img
-      : 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
-    this.win = response.Wins;
-    this.lose = response.Losses;
-    if (response.is2faEnabled) {
-      this.userQr = response.qrcode2fa;
-      this.is2faEnabled = true;
-      this.icon2fa.style.color = 'green';
-    }
     this.isPlaying = response.isPlaying;
     this.isOnline = response.isOnline;
     if (this.isPlaying === true) {
@@ -121,6 +110,21 @@ export class ProfileComponent implements OnInit, AfterViewInit {
       this.changeColor.emit('green');
     } else {
       this.changeColor.emit('red');
+    }
+    this.user = response.username ? response.username : 'USER';
+    this.win = response.Wins;
+    this.lose = response.Losses;
+    if (response.is2faEnabled) {
+      this.userQr = response.qrcode2fa;
+      this.is2faEnabled = true;
+      this.icon2fa.style.color = 'green';
+    }
+    if (response.img === '') {
+      this.profileImage =
+        'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
+      this.userService.setUserAvatar(this.id, this.profileImage);
+    } else {
+      this.profileImage = response.img;
     }
   }
 

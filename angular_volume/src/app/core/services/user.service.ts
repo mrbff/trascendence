@@ -14,7 +14,7 @@ export class UserService {
   ) {}
 
   setUser(name: string) {
-    this.cookieService.set('user', name, 1 / 24);
+    this.cookieService.set('user', name, 1 / 24, '/');
   }
 
   getUser(): string {
@@ -23,11 +23,11 @@ export class UserService {
 
   removeUser() {
     let bin = '';
-    this.cookieService.set('user', bin, 1 / 86400);
+    this.cookieService.set('user', bin, 1 / 86400, '/');
   }
 
   setUserId(decodedJwt: any) {
-    this.cookieService.set('id', decodedJwt.userId, 1 / 24);
+    this.cookieService.set('id', decodedJwt.userId, 1 / 24, '/');
   }
 
   getUserId(): string {
@@ -36,7 +36,7 @@ export class UserService {
 
   removeUserId() {
     let bin = '';
-    this.cookieService.set('id', bin, 1 / 86400);
+    this.cookieService.set('id', bin, 1 / 86400, '/');
   }
 
   async setUserAvatar(id: string, img: string): Promise<any> {

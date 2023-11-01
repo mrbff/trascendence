@@ -1,19 +1,19 @@
 <div class="navbar">
   <nav class="menu">
-    <span class="logo" routerLink="/home">TRASCENDENCE</span>
+    <span class="logo" routerLink="/trascendence/home">TRASCENDENCE</span>
     <a routerLink="">CHAT</a>
-    <a routerLink="/leaderboard">LEADERBOARD</a>
-    <a routerLink="/friends">FRIENDS</a>
-    <a [routerLink]="['/profile', user]">{{ user }}</a>
+    <a routerLink="/trascendence/leaderboard">LEADERBOARD</a>
+    <a routerLink="/trascendence/friends">FRIENDS</a>
+    <a [routerLink]="['/trascendence/profile', user]">{{ user }}</a>
   </nav>
   <i class="fa-solid fa-bars fa-2xl ham" style="color: #ffa500" appDropmenu></i>
   <div class="backresp" appDropmenu>
     <div class="responsive">
       <nav>
         <a routerLink="">CHAT</a>
-        <a routerLink="/leaderboard">LEADERBOARD</a>
-        <a routerLink="/friends">FRIENDS</a>
-        <a [routerLink]="['/profile', user]">{{ user }}</a>
+        <a routerLink="/trascendence/leaderboard">LEADERBOARD</a>
+        <a routerLink="/trascendence/friends">FRIENDS</a>
+        <a [routerLink]="['/trascendence/profile', user]">{{ user }}</a>
       </nav>
     </div>
   </div>
