@@ -57,7 +57,7 @@ export class AuthController {
       id,
       token,
     )) as boolean;
-    if (response == true) return this.authService.login2fa(id);
+    if (response == true) return await this.authService.login2fa(id);
     else return new UnauthorizedException('Invalid 2fa code');
   }
 }

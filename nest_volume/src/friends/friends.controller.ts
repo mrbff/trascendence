@@ -21,7 +21,7 @@ export class FriendsController {
     @GetUser() user: User,
     @Body('friend') friendName: string,
   ) {
-    this.friendsService.inviteFriend(user.id, friendName);
+    await this.friendsService.inviteFriend(user.id, friendName);
     return {okMessage: `Friend request correctly sent to ${friendName}`};
   }
 
@@ -32,7 +32,7 @@ export class FriendsController {
     @GetUser() user: User,
     @Body('friend') friendName: string,
   ) {
-    this.friendsService.acceptFriendRequest(user.id, friendName);
+    await this.friendsService.acceptFriendRequest(user.id, friendName);
     return {okMessage: `Now you and ${friendName} are friends`};
   }
 
@@ -43,7 +43,7 @@ export class FriendsController {
     @GetUser() user: User,
     @Body('friend') friendName: string,
   ) {
-    this.friendsService.rejectFriendRequest(user.id, friendName);
+    await this.friendsService.rejectFriendRequest(user.id, friendName);
     return {okMessage: `Friend request from ${friendName} correctly rejected`};
   }
 
@@ -55,7 +55,7 @@ export class FriendsController {
     @Body('friend') friendName: string,
   ) {
     const friend = await this.usersService.findUserByName(friendName);
-    this.friendsService.removeFriendship(user.id, friend.id);
+    await this.friendsService.removeFriendship(user.id, friend.id);
     return {okMessage: `You removed ${friendName} from your friends`};
   }
 
@@ -88,7 +88,7 @@ export class FriendsController {
     @Body('to_block') toBlock: string,
   ) {
     const blocked = await this.usersService.findUserByName(toBlock);
-    this.friendsService.blockUser(user.id, blocked.id);
+    await this.friendsService.blockUser(user.id, blocked.id);
     return {okMessage: `${toBlock} has been blocked`};
   }
 
@@ -100,7 +100,7 @@ export class FriendsController {
     @Body('to_unblock') toUnblock: string,
   ) {
     const blocked = await this.usersService.findUserByName(toUnblock);
-    this.friendsService.unblockUser(user.id, blocked.id);
+    await this.friendsService.unblockUser(user.id, blocked.id);
     return {okMessage: `${toUnblock} has been unblocked`};
   }
 
