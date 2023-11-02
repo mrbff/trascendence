@@ -30,6 +30,10 @@
   margin-top: 10px;
 }
 
+.popup input::placeholder {
+  color: orange;
+}
+
 .popup button {
   width: 100%;
   color: white;

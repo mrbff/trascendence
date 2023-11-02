@@ -43,26 +43,34 @@
     <div class="username-space">
       <span class="username">{{ user.username }}</span>
     </div>
-    <div class="user-buttons" *ngIf="!currentUser">
-      <div class="friend" *ngIf="!isFriend; else addFriendTemplate">
-        <i class="fa-solid fa-user-plus fa-2xl" (click)="addFriend()"></i><br />
-        <span (click)="addFriend()">ADD FRIEND</span>
-      </div>
-      <ng-template #addFriendTemplate>
-        <div class="friend">
-          <i class="fa-solid fa-user-minus fa-2xl" (click)="removeFriend()"></i
-          ><br />
-          <span (click)="removeFriend()">REMOVE FRIEND</span>
+    <ng-container *ngIf="!currentUser">
+      <div class="user-buttons">
+        <ng-container *ngIf="!isFriend; else removeFriendTemplate">
+          <div class="friend">
+            <i class="fa-solid fa-user-plus fa-2xl" (click)="addFriend()"></i
+            ><br />
+            <span (click)="addFriend()">ADD FRIEND</span>
+          </div>
+        </ng-container>
+        <ng-template #removeFriendTemplate>
+          <div class="friend">
+            <i
+              class="fa-solid fa-user-minus fa-2xl"
+              (click)="removeFriend()"
+            ></i
+            ><br />
+            <span (click)="removeFriend()">REMOVE FRIEND</span>
+          </div>
+        </ng-template>
+        <div class="chat">
+          <i class="fa-solid fa-headset fa-2xl"></i><br /><span>CHAT</span>
         </div>
-      </ng-template>
-      <div class="chat">
-        <i class="fa-solid fa-headset fa-2xl"></i><br /><span>CHAT</span>
+        <div class="block">
+          <i class="fa-solid fa-ban fa-2xl" (click)="blockUser()"> </i><br />
+          <span (click)="blockUser()">BLOCK</span>
+        </div>
       </div>
-      <div class="block">
-        <i class="fa-solid fa-ban fa-2xl" (click)="blockUser()"> </i><br />
-        <span (click)="blockUser()">BLOCK</span>
-      </div>
-    </div>
+    </ng-container>
     <div class="matchbox">
       <div class="win">WIN</div>
       <div class="winRes">
@@ -73,22 +81,28 @@
         {{ user.Losses }}
       </div>
     </div>
-    <div class="qr" *ngIf="qrCode !== '' && !twofa && currentUser">
-      <p class="warning">ATTENTION! SCAN YOUR QR CODE BEFORE CONFIRM</p>
-      <img class="popup" [src]="[qrCode]" />
-      <div class="buttons">
-        <button class="left" (click)="onConfirm2FA()">CONFIRM</button>
-        <button class="right" (click)="onReject2FA()">REJECT</button>
-      </div>
-    </div>
-    <div class="qr" *ngIf="qrCode !== '' && twofa">
-      <p class="warning">YOUR QR CODE</p>
-      <img class="popup" [src]="[qrCode]" />
-      <div class="buttons">
-        <button class="left" (click)="closeQr()">CLOSE</button>
-        <button class="right" (click)="onReject2FA()">DISABLE 2FA</button>
-      </div>
-    </div>
+    <ng-container *ngIf="showQr">
+      <ng-container *ngIf="newQr && currentUser; else showCurrentQr">
+        <div class="qr">
+          <p class="warning">ATTENTION! SCAN YOUR QR CODE BEFORE CONFIRM</p>
+          <img class="popup" [src]="[user.qrcode2fa]" />
+          <div class="buttons">
+            <button class="left" (click)="onConfirm2FA()">CONFIRM</button>
+            <button class="right" (click)="onReject2FA()">REJECT</button>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #showCurrentQr>
+        <div class="qr" *ngIf="!newQr && currentUser">
+          <p class="warning">YOUR QR CODE</p>
+          <img class="popup" [src]="[user.qrcode2fa]" />
+          <div class="buttons">
+            <button class="left" (click)="closeQr()">CLOSE</button>
+            <button class="right" (click)="onReject2FA()">DISABLE 2FA</button>
+          </div>
+        </div>
+      </ng-template>
+    </ng-container>
     <div class="logout" *ngIf="currentUser">
       <button class="logout-bt" (click)="logout()">LOGOUT</button>
     </div>

@@ -74,16 +74,6 @@
   color: red;
 }
 
-.oauth {
-  font-family: Azonix;
-  margin-top: 5px;
-  border-radius: 50px;
-  padding: 15px 20px;
-  background-color: black;
-  color: #ffffff;
-  width: 100%;
-}
-
 .split-button {
   display: flex;
   overflow: hidden;

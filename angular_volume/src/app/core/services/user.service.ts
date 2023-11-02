@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { lastValueFrom } from 'rxjs';
@@ -21,11 +21,6 @@ export class UserService {
     return this.cookieService.get('user');
   }
 
-  removeUser() {
-    let bin = '';
-    this.cookieService.set('user', bin, 1 / 86400, '/');
-  }
-
   setUserId(decodedJwt: any) {
     this.cookieService.set('id', decodedJwt.userId, 1 / 24, '/');
   }
@@ -34,9 +29,8 @@ export class UserService {
     return this.cookieService.get('id');
   }
 
-  removeUserId() {
-    let bin = '';
-    this.cookieService.set('id', bin, 1 / 86400, '/');
+  deleteAllInfo() {
+    this.cookieService.deleteAll('/');
   }
 
   async setUserAvatar(id: string, img: string): Promise<any> {

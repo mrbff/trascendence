@@ -55,12 +55,20 @@ export class LoginComponent implements OnInit, OnDestroy {
         },
       })
     );
-    // CHECK IF CODE IN URL QUERY (OBSERVABLE)
+    // CHECK IF CODE IN URL QUERY FOR 42 AUTH (OBSERVABLE)
     this.subs.add(
       this.route.queryParams.subscribe((params) => {
         const code = params['code'];
         if (code) {
-          this.onAuth42(code);
+          //SEND CODE TO BACKEND FOR 42 API WORKFLOW
+          this.Oauth2.codeForAccessToken(code)
+            .then((response) => {
+              this.loginFlow(response);
+            })
+            .catch(() => {
+              this.errorMsg = `42 Api error. Try again`;
+              this.router.navigate(['/login']);
+            });
         }
       })
     );
@@ -74,18 +82,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   // REDIRECT FROM SOCKET
   on42AuthClick() {
     this.socketService.sendMessageRequest();
-  }
-
-  //SEND CODE TO BACKEND FOR 42 API WORKFLOW
-  private onAuth42(code: string) {
-    this.Oauth2.codeForAccessToken(code)
-      .then((response) => {
-        this.loginFlow(response);
-      })
-      .catch(() => {
-        this.errorMsg = `42 Api error. Try again`;
-        this.router.navigate(['/login']);
-      });
   }
 
   onSubmit() {

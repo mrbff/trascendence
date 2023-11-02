@@ -17,11 +17,6 @@ export class AuthService {
     return this.cookieService.get('token');
   }
 
-  removeToken() {
-    let name = '';
-    this.cookieService.set('token', name, 1 / 86400, '/');
-  }
-
   decodeToken(token: string): any {
     return JSON.parse(atob(token.split('.')[1]));
   }

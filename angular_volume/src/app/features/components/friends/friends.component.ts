@@ -61,17 +61,17 @@ export class FriendsComponent implements OnInit, AfterViewInit {
   }
 
   onMouseWheel(event: WheelEvent, containerType: string) {
+    event.preventDefault();
     if (containerType === 'card') {
       this.cardContainer.scrollLeft += event.deltaY;
     } else if (containerType === 'request') {
       this.requestContainer.scrollLeft += event.deltaY;
     }
-    event.preventDefault();
   }
 
   async loadFriend() {
     await this.friendsService
-      .getFriendRequests()
+      .getFriendRequestsRecv()
       .then((resp) => {
         this.friend = resp.length !== 0 ? true : false;
         this.friendRequests = resp;

@@ -1,6 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
-import { AuthService } from '../../../core/auth/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StatusService } from 'src/app/core/services/status.service';
 import { GoogleAuthService } from 'src/app/core/auth/google-auth.service';
@@ -14,30 +13,27 @@ import { UserLoggedModel } from 'src/app/models/userLogged.model';
 })
 export class ProfileComponent implements OnInit {
   user!: UserLoggedModel;
-  private is2faEnabled: boolean;
   currentUser: boolean;
   isFriend: boolean;
-  twofa: boolean;
-  qrCode: string;
+  newQr: boolean;
+  showQr: boolean;
 
   // FOR IMAGE CHANGE
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   constructor(
     private readonly userService: UserService,
-    private readonly auth: AuthService,
     private readonly router: Router,
     private readonly status: StatusService,
     private readonly googleAuth: GoogleAuthService,
     private readonly route: ActivatedRoute,
     private readonly friendsService: FriendsService,
-    private imageCompress: NgxImageCompressService
+    private readonly imageCompress: NgxImageCompressService
   ) {
     this.currentUser = true;
-    this.is2faEnabled = false;
     this.isFriend = false;
-    this.twofa = false;
-    this.qrCode = '';
+    this.newQr = false;
+    this.showQr = false;
   }
 
   ngOnInit() {
@@ -48,7 +44,7 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  // GET USER INFO FOR PROFILE PAGE
+  // GET USER OR FRIEND INFO FOR PROFILE PAGE
   private async profileInit(username: string) {
     if (username === this.userService.getUser()) {
       this.currentUser = true;
@@ -56,25 +52,13 @@ export class ProfileComponent implements OnInit {
     } else {
       this.currentUser = false;
       this.user = await this.friendsService.getFriendInfo(username);
-      /* await this.friendsService
-        .getFriends()
-        .then((resp) => {
-          for (let i = 0; i < resp.length; i++) {
-            if (resp[i].username === this.user) {
-              this.isFriend = true;
-              break;
-            }
-          }
-        })
-        .catch((err) => console.error(err)); */
+      this.isFriend = await this.friendsService.isFriend(username);
     }
   }
 
   logout() {
     this.status.setStatus(this.user.id, false);
-    this.auth.removeToken();
-    this.userService.removeUser();
-    this.userService.removeUserId();
+    this.userService.deleteAllInfo();
     this.router.navigate(['/login']);
   }
 
@@ -100,50 +84,47 @@ export class ProfileComponent implements OnInit {
     }
   }
 
+  // CHECK IF USER 2FA ENABLE AND OPEN NEW QR CODE OR LATEST
   async onEnable2FA() {
-    // CHECK IF USER 2FA ENABLE AND OPEN NEW QR CODE OR LATEST
-    if (this.is2faEnabled === false) {
-      this.twofa = false;
-      this.googleAuth
-        .getLink(this.user.id)
-        .then((response) => {
-          this.qrCode = response.url.qrUrl;
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+    this.showQr = true;
+    if (this.user.is2faEnabled === false) {
+      await this.googleAuth.getLink(this.user.id).then((response) => {
+        this.user.qrcode2fa = response.url.qrUrl;
+        this.newQr = true;
+      });
     } else {
-      this.qrCode = this.user.qrcode2fa;
-      this.twofa = true;
+      this.newQr = false;
     }
   }
 
   async onConfirm2FA() {
-    this.qrCode = '';
-    let icon2fa: any = document.querySelector('.google-auth');
-    icon2fa.style.color = 'green';
-    await this.status.set2fa(this.user.id, true);
+    this.user.is2faEnabled = true;
+    await this.status.set2fa(this.user.id, true).then(() => {
+      this.showQr = false;
+    });
   }
 
   async onReject2FA() {
-    this.qrCode = '';
-    let icon2fa: any = document.querySelector('.google-auth');
-    icon2fa.style.color = 'red';
-    await this.status.set2fa(this.user.id, false);
+    this.user.is2faEnabled = false;
+    await this.status.set2fa(this.user.id, false).then(() => {
+      this.showQr = false;
+    });
   }
 
   closeQr() {
-    this.qrCode = '';
+    this.showQr = false;
   }
 
   async addFriend() {
-    this.isFriend = true;
-    await this.friendsService.addFriend(this.user.username);
+    await this.friendsService
+      .addFriend(this.user.username)
+      .then(() => (this.isFriend = true));
   }
 
   async removeFriend() {
-    this.isFriend = false;
-    await this.friendsService.deleteFriend(this.user.username);
+    await this.friendsService
+      .deleteFriend(this.user.username)
+      .then(() => (this.isFriend = false));
   }
 
   async blockUser() {

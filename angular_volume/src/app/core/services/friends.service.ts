@@ -16,14 +16,42 @@ export class FriendsService {
     return lastValueFrom(this.http.get(`/nest/friends/`));
   }
 
+  async isFriend(friend: string): Promise<boolean> {
+    const friends = await this.getFriends();
+    for (let i = 0; i < friends.length; i++) {
+      if (friends[i].username === friend) {
+        return true;
+      }
+    }
+    const friendsRequestSend = await this.getFriendRequestsSend();
+    for (let i = 0; i < friendsRequestSend.length; i++) {
+      if (friendsRequestSend[i].username === friend) {
+        console.log(friendsRequestSend[i].username);
+        return true;
+      }
+    }
+    const friendsRequestRecv = await this.getFriendRequestsRecv();
+    for (let i = 0; i < friendsRequestRecv.length; i++) {
+      if (friendsRequestRecv[i].username === friend) {
+        console.log(friendsRequestRecv[i].username);
+        return true;
+      }
+    }
+    return false;
+  }
+
   async addFriend(username: string): Promise<any> {
     return lastValueFrom(
       this.http.post(`/nest/friends/invite/`, { friend: username })
     );
   }
 
-  async getFriendRequests(): Promise<any> {
+  async getFriendRequestsRecv(): Promise<any> {
     return lastValueFrom(this.http.get(`/nest/friends/requests/received/`));
+  }
+
+  async getFriendRequestsSend(): Promise<any> {
+    return lastValueFrom(this.http.get(`/nest/friends/requests/sent/`));
   }
 
   async acceptFriend(username: string): Promise<any> {
