@@ -18,25 +18,17 @@ export class FriendsService {
 
   async isFriend(friend: string): Promise<boolean> {
     const friends = await this.getFriends();
-    for (let i = 0; i < friends.length; i++) {
-      if (friends[i].username === friend) {
-        return true;
-      }
-    }
+    for (let i = 0; i < friends.length; i++)
+      if (friends[i].username === friend) return true;
+
     const friendsRequestSend = await this.getFriendRequestsSend();
-    for (let i = 0; i < friendsRequestSend.length; i++) {
-      if (friendsRequestSend[i].username === friend) {
-        console.log(friendsRequestSend[i].username);
-        return true;
-      }
-    }
+    for (let i = 0; i < friendsRequestSend.length; i++)
+      if (friendsRequestSend[i].username === friend) return true;
+
     const friendsRequestRecv = await this.getFriendRequestsRecv();
-    for (let i = 0; i < friendsRequestRecv.length; i++) {
-      if (friendsRequestRecv[i].username === friend) {
-        console.log(friendsRequestRecv[i].username);
-        return true;
-      }
-    }
+    for (let i = 0; i < friendsRequestRecv.length; i++)
+      if (friendsRequestRecv[i].username === friend) return true;
+
     return false;
   }
 
@@ -84,7 +76,14 @@ export class FriendsService {
     );
   }
 
-  async getBlockedUsers() {
+  async getBlockedUsers(): Promise<any> {
     return lastValueFrom(this.http.get(`/nest/friends/blockeds/`));
+  }
+
+  async isBlocked(user: string): Promise<boolean> {
+    const blockedUsers = await this.getBlockedUsers();
+    for (let i = 0; i < blockedUsers.length; i++)
+      if (blockedUsers[i].username === user) return true;
+    return false;
   }
 }

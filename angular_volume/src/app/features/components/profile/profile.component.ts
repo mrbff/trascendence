@@ -17,6 +17,7 @@ export class ProfileComponent implements OnInit {
   isFriend: boolean;
   newQr: boolean;
   showQr: boolean;
+  isBlocked: boolean;
 
   // FOR IMAGE CHANGE
   @ViewChild('fileInput') fileInput!: ElementRef;
@@ -34,6 +35,7 @@ export class ProfileComponent implements OnInit {
     this.isFriend = false;
     this.newQr = false;
     this.showQr = false;
+    this.isBlocked = false;
   }
 
   ngOnInit() {
@@ -51,9 +53,28 @@ export class ProfileComponent implements OnInit {
       this.user = await this.userService.getUserInfo();
     } else {
       this.currentUser = false;
-      this.user = await this.friendsService.getFriendInfo(username);
-      this.isFriend = await this.friendsService.isFriend(username);
+      // CHECK IF USER BLOCKED
+      this.isBlocked = await this.friendsService.isBlocked(username);
+      if (!this.isBlocked) {
+        this.user = await this.friendsService.getFriendInfo(username);
+        this.isFriend = await this.friendsService.isFriend(username);
+      } else {
+        this.blockedUserFakeInfo(username);
+      }
     }
+  }
+
+  // PLACEHOLDER INFOS
+  blockedUserFakeInfo(username: string) {
+    const partialUser: Partial<UserLoggedModel> = {
+      username: username,
+      Wins: '0',
+      Losses: '0',
+      img: 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif',
+      isOnline: false,
+      isPlaying: false,
+    };
+    this.user = { ...this.user, ...partialUser };
   }
 
   logout() {
@@ -78,7 +99,7 @@ export class ProfileComponent implements OnInit {
             this.user.img = result;
             await this.userService.setUserAvatar(this.user.id, this.user.img);
           })
-          .catch((err) => console.error(err));
+          .catch(() => alert('IMAGE LOADING FAILED. TRY AGAIN'));
       };
       reader.readAsDataURL(file);
     }
@@ -128,6 +149,14 @@ export class ProfileComponent implements OnInit {
   }
 
   async blockUser() {
-    await this.friendsService.blockUser(this.user.username);
+    await this.friendsService
+      .blockUser(this.user.username)
+      .then(() => (this.isBlocked = true));
+  }
+
+  async unblockUser() {
+    await this.friendsService
+      .unblockUser(this.user.username)
+      .then(() => (this.isBlocked = false));
   }
 }

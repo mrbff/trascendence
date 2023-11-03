@@ -65,10 +65,19 @@
         <div class="chat">
           <i class="fa-solid fa-headset fa-2xl"></i><br /><span>CHAT</span>
         </div>
-        <div class="block">
-          <i class="fa-solid fa-ban fa-2xl" (click)="blockUser()"> </i><br />
-          <span (click)="blockUser()">BLOCK</span>
-        </div>
+        <ng-container *ngIf="!isBlocked; else userBlocked">
+          <div class="block">
+            <i class="fa-solid fa-ban fa-2xl" (click)="blockUser()"> </i><br />
+            <span (click)="blockUser()">BLOCK</span>
+          </div>
+        </ng-container>
+        <ng-template #userBlocked>
+          <div class="block">
+            <i class="fa-solid fa-handshake fa-2xl" (click)="unblockUser()"> </i
+            ><br />
+            <span (click)="unblockUser()">UNBLOCK</span>
+          </div>
+        </ng-template>
       </div>
     </ng-container>
     <div class="matchbox">
