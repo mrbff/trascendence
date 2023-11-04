@@ -5,7 +5,7 @@ import { io } from 'socket.io-client';
 @Injectable({
   providedIn: 'root',
 })
-export class SocketService {
+export class RedirectionGateway {
   private socket;
 
   /*   TO DO     // Crea la connessione WebSocket con il token nell'URL
@@ -26,20 +26,4 @@ const socket = new WebSocket(`ws://example.com/socket?token=${jwtToken}`); */
       });
     });
   }
-  
-  /*------------------------CHAT-------------------------------*/
-
-  chatBroadcastChannel() {
-    this.socket.emit('BroadcastChannel', {});
-  }
-
-  chatBroadcastUsers() {
-    this.socket.emit('BroadcastUsers', {});
-  }
-
-  chatPrivMsg() {
-    this.socket.emit('PrivMsg', {});
-  }
-
-
 }

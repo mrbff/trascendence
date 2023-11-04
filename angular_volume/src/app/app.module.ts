@@ -9,7 +9,7 @@ import { FeaturesModule } from './features/features.module';
 
 import { CoreModule } from './core/core.module';
 import { HeaderInterceptor } from './core/interceptors/header.interceptor';
-import { SocketService } from './core/services/socket.service';
+import { RedirectionGateway } from './core/services/redirection.gateway';
 
 @NgModule({
   declarations: [AppComponent],
@@ -27,7 +27,7 @@ import { SocketService } from './core/services/socket.service';
       useClass: HeaderInterceptor,
       multi: true,
     },
-    SocketService,
+    RedirectionGateway,
   ],
   bootstrap: [AppComponent],
 })
