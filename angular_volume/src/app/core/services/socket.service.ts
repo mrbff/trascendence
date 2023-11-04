@@ -12,7 +12,7 @@ export class SocketService {
 const socket = new WebSocket(`ws://example.com/socket?token=${jwtToken}`); */
 
   constructor() {
-    this.socket = io('/', { path: '/socket.io/' });
+    this.socket = io('/redirection', { path: '/socket.io/' });
   }
 
   sendMessageRequest() {
@@ -26,4 +26,20 @@ const socket = new WebSocket(`ws://example.com/socket?token=${jwtToken}`); */
       });
     });
   }
+  
+  /*------------------------CHAT-------------------------------*/
+
+  chatBroadcastChannel() {
+    this.socket.emit('BroadcastChannel', {});
+  }
+
+  chatBroadcastUsers() {
+    this.socket.emit('BroadcastUsers', {});
+  }
+
+  chatPrivMsg() {
+    this.socket.emit('PrivMsg', {});
+  }
+
+
 }

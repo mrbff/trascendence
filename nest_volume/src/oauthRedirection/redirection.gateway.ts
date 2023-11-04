@@ -7,7 +7,7 @@ import { Server } from 'socket.io';
 import { environment } from 'src/environment/environment';
 
 @WebSocketGateway({
-  namespace: '/',
+  namespace: '/redirection',
   cors: {
     origin: '*',
     credentials: true,

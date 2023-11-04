@@ -9,7 +9,7 @@ import {
   import { Server, Socket } from 'socket.io';
   
   @WebSocketGateway({
-    namespace: '/',
+    namespace: '/chat',
     cors: {
       origin: '*',
       credentials: true,
@@ -33,5 +33,12 @@ import {
     @SubscribeMessage('message')
     handleMessage(client: Socket, payload: any): string {
         return 'Hello world!';
+    }
+
+    @SubscribeMessage('BroadcastChannel')
+    handleBroadcastChannel(client: Socket, payload: any): boolean {
+      //send privmsg to all users of the channel
+      //save the message on the db
+      return true;
     }
 }
