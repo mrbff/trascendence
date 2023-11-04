@@ -3,15 +3,18 @@ import { CommonModule } from '@angular/common';
 
 import { FeaturesRoutingModule } from './features-routing.module';
 import { HomeComponent } from './components/home/home.component';
-import { NavbarComponent } from './components/navbar/navbar.component';
+import { NavbarComponent } from '../shared/components/navbar/navbar.component';
 import { ProfileComponent } from './components/profile/profile.component';
-import { ChangeImageDirective } from './components/profile/change-image.directive';
+import { ChangeImageDirective } from './components/profile/components/profile-image/change-image.directive';
 import { FriendsComponent } from './components/friends/friends.component';
-import { DropmenuDirective } from './components/navbar/dropmenu.directive';
+import { DropmenuDirective } from '../shared/components/navbar/dropmenu.directive';
 import { FormsModule } from '@angular/forms';
-import { FriendCardComponent } from './components/friend-card/friend-card.component';
-import { RequestCardComponent } from './components/request-card/request-card.component';
+import { FriendCardComponent } from './components/friends/components/friend-card/friend-card.component';
+import { RequestCardComponent } from './components/friends/components/request-card/request-card.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
+import { TwoFactorAuthComponent } from './components/profile/components/two-factor-auth/two-factor-auth.component';
+import { UserButtonsComponent } from './components/profile/components/user-buttons/user-buttons.component';
+import { ProfileImageComponent } from './components/profile/components/profile-image/profile-image.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +27,9 @@ import { LeaderboardComponent } from './components/leaderboard/leaderboard.compo
     FriendCardComponent,
     RequestCardComponent,
     LeaderboardComponent,
+    TwoFactorAuthComponent,
+    UserButtonsComponent,
+    ProfileImageComponent,
   ],
   imports: [CommonModule, FeaturesRoutingModule, FormsModule],
 })

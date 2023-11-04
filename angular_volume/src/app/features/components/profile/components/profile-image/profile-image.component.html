@@ -1,0 +1,40 @@
+<ng-container *ngIf="currentUser; else elseBlock">
+  <div class="profile-image-container">
+    <img
+      id="image"
+      class="profile-image"
+      [src]="user.img"
+      appChangeImage
+      [ngStyle]="{
+        color: user.isPlaying ? 'orange' : user.isOnline ? 'green' : 'red'
+      }"
+    />
+    <input
+      type="file"
+      accept="image/*"
+      (change)="onFileSelected($event)"
+      style="display: none"
+      #fileInput
+    />
+    <button
+      (click)="onFileSelected($event)"
+      appChangeImage
+      id="text"
+      class="change-text"
+    >
+      Change Image
+    </button>
+  </div></ng-container
+>
+<ng-template #elseBlock>
+  <div class="profile-image-container">
+    <img
+      id="image"
+      class="profile-image"
+      [src]="user.img"
+      [ngStyle]="{
+        color: user.isPlaying ? 'orange' : user.isOnline ? 'green' : 'red'
+      }"
+    />
+  </div>
+</ng-template>
