@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
 import { io } from 'socket.io-client';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ChatSocketService {
+export class ChatService {
   private socket;
 
   constructor() {
@@ -23,5 +22,4 @@ export class ChatSocketService {
   chatPrivMsg() {
     this.socket.emit('PrivMsg', {});
   }
-
 }

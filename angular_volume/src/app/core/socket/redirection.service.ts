@@ -5,7 +5,7 @@ import { io } from 'socket.io-client';
 @Injectable({
   providedIn: 'root',
 })
-export class RedirectionGateway {
+export class RedirectionService {
   private socket;
 
   /*   TO DO     // Crea la connessione WebSocket con il token nell'URL

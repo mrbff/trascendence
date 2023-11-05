@@ -3,7 +3,10 @@ import { UserService } from 'src/app/core/services/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StatusService } from 'src/app/core/services/status.service';
 import { FriendsService } from '../../../core/services/friends.service';
-import { UserLoggedModel } from 'src/app/models/userLogged.model';
+import {
+  BLOCKED_USER_INFO,
+  UserLoggedModel,
+} from 'src/app/models/userLogged.model';
 
 @Component({
   templateUrl: './profile.component.html',
@@ -50,22 +53,12 @@ export class ProfileComponent implements OnInit {
         this.user = await this.friendsService.getFriendInfo(username);
         this.isFriend = await this.friendsService.isFriend(username);
       } else {
-        this.blockedUserFakeInfo(username);
+        this.user = {
+          username: username,
+          ...BLOCKED_USER_INFO,
+        } as UserLoggedModel;
       }
     }
-  }
-
-  // PLACEHOLDER INFOS
-  blockedUserFakeInfo(username: string) {
-    const partialUser: Partial<UserLoggedModel> = {
-      username: username,
-      Wins: '0',
-      Losses: '0',
-      img: 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif',
-      isOnline: false,
-      isPlaying: false,
-    };
-    this.user = { ...this.user, ...partialUser };
   }
 
   logout() {

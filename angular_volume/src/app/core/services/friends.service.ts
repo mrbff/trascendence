@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { first, firstValueFrom, lastValueFrom } from 'rxjs';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { UserLoggedModel } from 'src/app/models/userLogged.model';
 
 @Injectable({
   providedIn: 'root',
@@ -8,8 +9,10 @@ import { first, firstValueFrom, lastValueFrom } from 'rxjs';
 export class FriendsService {
   constructor(private readonly http: HttpClient) {}
 
-  async getFriendInfo(username: string): Promise<any> {
-    return lastValueFrom(this.http.get(`/nest/users/${username}`));
+  async getFriendInfo(username: string): Promise<UserLoggedModel> {
+    return lastValueFrom(
+      this.http.get<UserLoggedModel>(`/nest/users/${username}`)
+    );
   }
 
   async getFriends(): Promise<any> {
@@ -17,19 +20,12 @@ export class FriendsService {
   }
 
   async isFriend(friend: string): Promise<boolean> {
-    const friends = await this.getFriends();
-    for (let i = 0; i < friends.length; i++)
-      if (friends[i].username === friend) return true;
-
-    const friendsRequestSend = await this.getFriendRequestsSend();
-    for (let i = 0; i < friendsRequestSend.length; i++)
-      if (friendsRequestSend[i].username === friend) return true;
-
-    const friendsRequestRecv = await this.getFriendRequestsRecv();
-    for (let i = 0; i < friendsRequestRecv.length; i++)
-      if (friendsRequestRecv[i].username === friend) return true;
-
-    return false;
+    const friends = await Promise.all([
+      this.getFriends(),
+      this.getFriendRequestsSend(),
+      this.getFriendRequestsRecv(),
+    ]);
+    return friends.flat().some((f) => f.username === friend);
   }
 
   async addFriend(username: string): Promise<any> {
@@ -82,8 +78,6 @@ export class FriendsService {
 
   async isBlocked(user: string): Promise<boolean> {
     const blockedUsers = await this.getBlockedUsers();
-    for (let i = 0; i < blockedUsers.length; i++)
-      if (blockedUsers[i].username === user) return true;
-    return false;
+    return blockedUsers.some((f: any) => f.username === user);
   }
 }

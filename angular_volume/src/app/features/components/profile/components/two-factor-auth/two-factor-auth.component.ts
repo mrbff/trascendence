@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { UserLoggedModel } from 'src/app/models/userLogged.model';
 import { GoogleAuthService } from '../../../../../core/auth/google-auth.service';
 import { StatusService } from 'src/app/core/services/status.service';
@@ -18,7 +18,7 @@ export class TwoFactorAuthComponent {
     private readonly status: StatusService
   ) {
     this.showQr = false;
-    this.newQr = false;
+    this.newQr = true;
   }
 
   // CHECK IF USER 2FA ENABLE AND OPEN NEW QR CODE OR LATEST
@@ -35,16 +35,16 @@ export class TwoFactorAuthComponent {
   }
 
   async onConfirm2FA() {
-    this.user.is2faEnabled = true;
+    this.showQr = false;
     await this.status.set2fa(this.user.id, true).then(() => {
-      this.showQr = false;
+      this.user.is2faEnabled = true;
     });
   }
 
   async onReject2FA() {
-    this.user.is2faEnabled = false;
+    this.showQr = false;
     await this.status.set2fa(this.user.id, false).then(() => {
-      this.showQr = false;
+      this.user.is2faEnabled = false;
     });
   }
 

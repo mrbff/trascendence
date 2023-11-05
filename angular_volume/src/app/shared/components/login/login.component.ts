@@ -5,7 +5,7 @@ import { AuthService } from 'src/app/core/auth/auth.service';
 import { UserService } from 'src/app/core/services/user.service';
 import { OAuth2Service } from 'src/app/core/auth/oauth2.service';
 import { Subscription } from 'rxjs';
-import { RedirectionGateway } from 'src/app/core/services/redirection.gateway';
+import { RedirectionService } from 'src/app/core/socket/redirection.service';
 import { GoogleAuthService } from 'src/app/core/auth/google-auth.service';
 import { CodeService } from '../../services/code.service';
 import { StatusService } from 'src/app/core/services/status.service';
@@ -16,11 +16,10 @@ import { StatusService } from 'src/app/core/services/status.service';
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit, OnDestroy {
+  private subs: Subscription;
   loginForm: FormGroup;
   errorMsg!: string;
   openPopUp: boolean;
-  secret2fa: string;
-  private subs: Subscription;
 
   constructor(
     private readonly userService: UserService,
@@ -29,7 +28,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private readonly auth: AuthService,
     private readonly Oauth2: OAuth2Service,
     private readonly route: ActivatedRoute,
-    private readonly redirectionGateway: RedirectionGateway,
+    private readonly redirectionService: RedirectionService,
     private readonly googleAuth: GoogleAuthService,
     private readonly codeService: CodeService,
     private readonly status: StatusService
@@ -40,13 +39,12 @@ export class LoginComponent implements OnInit, OnDestroy {
     });
     this.subs = new Subscription();
     this.openPopUp = false;
-    this.secret2fa = '';
   }
 
   ngOnInit(): void {
     // SUBSCRIBE FOR REDIRECT MESSAGE FROM SOCKET (OBSERVABLE)
     this.subs.add(
-      this.redirectionGateway.onTextMessage().subscribe({
+      this.redirectionService.onTextMessage().subscribe({
         next: (response) => {
           this.Oauth2.redirectUser(response as string);
         },
@@ -81,28 +79,27 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   // REDIRECT FROM SOCKET
   on42AuthClick() {
-    this.redirectionGateway.sendMessageRequest();
+    this.redirectionService.sendMessageRequest();
   }
 
   onSubmit() {
     if (this.isFieldEmpty('email')) {
       this.errorMsg = 'Insert Email';
-    } else if (this.loginForm.get('email')?.hasError('email')) {
-      this.errorMsg = 'Insert Valid Email';
     } else if (this.isFieldEmpty('password')) {
       this.errorMsg = 'Insert Password';
+    } else if (this.loginForm.get('email')?.hasError('email')) {
+      this.errorMsg = 'Insert Valid Email';
     } else {
       this.errorMsg = '';
       this.userService
         .login(this.loginForm.value.email, this.loginForm.value.password)
         .then((response) => {
           this.loginFlow(response);
-          this.loginForm.reset();
         })
         .catch(() => {
           this.errorMsg = 'Invalid credentials';
-          this.loginForm.reset();
         });
+      this.loginForm.reset();
     }
   }
 
@@ -110,20 +107,23 @@ export class LoginComponent implements OnInit, OnDestroy {
   private async loginFlow(response: any) {
     if (!response.username) {
       this.openPopUp = true;
-      const code = await this.codeService.emitCode();
-      await this.googleAuth.validate2fa(response.id, code).then((response) => {
-        if (response.status === 401) {
-          this.errorMsg = 'Invalid code';
-          return;
-        }
-        this.initUser(response);
+      await this.codeService.emitCode().then(async (code) => {
+        await this.googleAuth
+          .validate2fa(response.id, code)
+          .then((response) => {
+            if (response.status !== 401) {
+              this.initUser(response);
+            } else {
+              this.errorMsg = 'Invalid code';
+            }
+          });
       });
     } else {
       this.initUser(response);
     }
   }
 
-  // USER INFO => COOKIE
+  // USER INFO
   private initUser(response: any) {
     this.auth.saveToken(response.accessToken);
     this.userService.setUserId(this.auth.decodeToken(response.accessToken));

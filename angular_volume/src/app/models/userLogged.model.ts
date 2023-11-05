@@ -17,3 +17,11 @@ export interface UserLoggedModel {
   updatedAt: string;
   username: string;
 }
+
+export const BLOCKED_USER_INFO: Partial<UserLoggedModel> = {
+  Wins: '0',
+  Losses: '0',
+  img: 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif',
+  isOnline: false,
+  isPlaying: false,
+};
