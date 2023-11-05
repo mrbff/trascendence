@@ -25,6 +25,14 @@ const routes: Routes = [
     path: 'leaderboard',
     component: LeaderboardComponent,
   },
+  {
+    pathMatch: 'full',
+    path: 'pong',
+    loadChildren: () =>
+      import('../game/game-routing.module').then(
+        (mod) => mod.GameRoutingModule
+      ),
+  },
 ];
 
 @NgModule({

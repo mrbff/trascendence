@@ -10,6 +10,7 @@ import { FeaturesModule } from './features/features.module';
 import { CoreModule } from './core/core.module';
 import { HeaderInterceptor } from './core/interceptors/header.interceptor';
 import { RedirectionService } from './core/socket/redirection.service';
+import { GameModule } from './game/game.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -20,6 +21,7 @@ import { RedirectionService } from './core/socket/redirection.service';
     CoreModule,
     SharedModule,
     FeaturesModule,
+    GameModule,
   ],
   providers: [
     {
