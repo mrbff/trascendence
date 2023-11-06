@@ -4,7 +4,7 @@ import { io } from 'socket.io-client';
 @Injectable({
   providedIn: 'root',
 })
-export class ChatService {
+export class ChatSocketService {
   private socket;
 
   constructor() {

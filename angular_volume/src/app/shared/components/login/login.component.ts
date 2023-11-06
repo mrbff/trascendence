@@ -5,10 +5,10 @@ import { AuthService } from 'src/app/core/auth/auth.service';
 import { UserService } from 'src/app/core/services/user.service';
 import { OAuth2Service } from 'src/app/core/auth/oauth2.service';
 import { Subscription } from 'rxjs';
-import { RedirectionService } from 'src/app/core/socket/redirection.service';
 import { GoogleAuthService } from 'src/app/core/auth/google-auth.service';
 import { CodeService } from '../../services/code.service';
 import { StatusService } from 'src/app/core/services/status.service';
+import { RedirectionGateway } from 'src/app/core/services/redirection.gateway';
 
 @Component({
   selector: 'app-login',
@@ -28,7 +28,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private readonly auth: AuthService,
     private readonly Oauth2: OAuth2Service,
     private readonly route: ActivatedRoute,
-    private readonly redirectionService: RedirectionService,
+    private readonly redirectionGateway: RedirectionGateway,
     private readonly googleAuth: GoogleAuthService,
     private readonly codeService: CodeService,
     private readonly status: StatusService
@@ -44,7 +44,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // SUBSCRIBE FOR REDIRECT MESSAGE FROM SOCKET (OBSERVABLE)
     this.subs.add(
-      this.redirectionService.onTextMessage().subscribe({
+      this.redirectionGateway.onTextMessage().subscribe({
         next: (response) => {
           this.Oauth2.redirectUser(response as string);
         },
@@ -79,7 +79,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   // REDIRECT FROM SOCKET
   on42AuthClick() {
-    this.redirectionService.sendMessageRequest();
+    this.redirectionGateway.sendMessageRequest();
   }
 
   onSubmit() {
