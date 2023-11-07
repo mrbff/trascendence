@@ -32,12 +32,12 @@ export class HeaderInterceptor implements HttpInterceptor {
       },
     });
     this.requestNumber++;
-    //this.loader.setStatus(true);
+    this.loader.setStatus(true);
     return next.handle(modifiedRequest).pipe(
       finalize(() => {
         this.requestNumber--;
         if (this.requestNumber === 0) {
-          //this.loader.setStatus(false);
+          this.loader.setStatus(false);
         }
       })
     );

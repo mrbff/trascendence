@@ -17,11 +17,20 @@ export class LoadingComponent implements OnInit {
     this.block = true;
   }
 
-  async ngOnInit() {
-    this.speedTestService.getMbps().subscribe((speed) => {
-      console.log('Your speed is ' + speed);
-      if (speed > 100) this.block = false;
-    });
+  ngOnInit() {
+    this.speedTestService
+      .getMbps({
+        file: {
+          path: '/assets/Google.svg.png',
+          shouldBustCache: true,
+          size: 68976,
+        },
+      })
+      .subscribe((speed) => {
+        if (speed < 1) {
+          this.block = false;
+        }
+      });
   }
 
   checkStatus(): Boolean {
