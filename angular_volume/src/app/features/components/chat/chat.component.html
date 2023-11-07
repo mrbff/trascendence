@@ -1,6 +1,32 @@
 <app-navbar></app-navbar>
 <div class="chat-container">
+
+  <!-- Chat box for messages -->
   <div class="chat-box">
-    <div class="sidebar"></div>
+   <!-- Sidebar for channels or user list -->
+    <div class="sidebar">
+      <ul class="channel-list">
+        <li *ngFor="let channel of channels">{{ channel }}</li>
+      </ul>
+      <ul class="user-list">
+        <li *ngFor="let user of users">{{ user }}</li>
+      </ul>
+    </div>
+  
+    <!-- Message area -->
+    <div class="message-area">
+      <div *ngFor="let message of messages" class="message" [ngClass]="{'my-message': message.isMine}">
+        <span class="message-user">{{ message.user }}</span>
+        <span class="message-content">{{ message.content }}</span>
+        <span class="message-timestamp">{{ message.timestamp | date:'shortTime' }}</span>
+      </div>
+    </div>
+
+    <!-- Input area for sending messages -->
+    <form (submit)="sendMessageToChannel()">
+      <input type="text" [(ngModel)]="newMessage" name="message" placeholder="Type a message..." autocomplete="off"/>
+      <button type="submit">Send</button>
+    </form>
+    
   </div>
 </div>

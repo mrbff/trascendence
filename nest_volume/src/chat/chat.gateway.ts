@@ -36,10 +36,9 @@ import {
     }
 
     @SubscribeMessage('BroadcastChannel')
-    handleBroadcastChannel(client: any, payload: any): void {
+    handleBroadcastChannel(client: any, message: string): void {
       //send privmsg to all users of the channel
       //save the message on the db
-      const message = 'ciao come va?';///debug
-      this.server.emit('MsgFromChannel', { message });
+      this.server.emit('MsgFromChannel', message);
     }
 }

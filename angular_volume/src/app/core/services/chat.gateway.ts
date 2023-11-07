@@ -12,8 +12,8 @@ export class ChatGateway {
     this.socket = io('/chat', { path: '/socket.io/' });
   }
 
-  sendBroadcastChannel() {
-    this.socket.emit('BroadcastChannel', {});
+  sendBroadcastChannel(message:string) {
+    this.socket.emit('BroadcastChannel', { message });
   }
 
   sendBroadcastUsers() {
