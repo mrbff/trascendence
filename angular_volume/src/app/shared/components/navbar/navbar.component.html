@@ -1,20 +1,27 @@
 <div class="navbar">
-  <nav class="menu">
+  <ng-container *ngIf="screenW > 950; else mobileBar"
+    ><nav class="menu">
+      <span class="logo" routerLink="/trascendence/home">TRASCENDENCE</span>
+      <a routerLink="/trascendence/chat">CHAT</a>
+      <a routerLink="/trascendence/leaderboard">LEADERBOARD</a>
+      <a routerLink="/trascendence/friends">FRIENDS</a>
+      <a [routerLink]="['/trascendence/profile', user]">{{ user }}</a>
+    </nav></ng-container
+  >
+  <ng-template #mobileBar
+    ><i
+      class="fa-solid fa-bars fa-2xl ham"
+      style="color: #ffa500; z-index: 10000"
+      appDropmenu
+    ></i>
     <span class="logo" routerLink="/trascendence/home">TRASCENDENCE</span>
-    <a routerLink="">CHAT</a>
-    <a routerLink="/trascendence/leaderboard">LEADERBOARD</a>
-    <a routerLink="/trascendence/friends">FRIENDS</a>
-    <a [routerLink]="['/trascendence/profile', user]">{{ user }}</a>
-  </nav>
-  <i class="fa-solid fa-bars fa-2xl ham" style="color: #ffa500" appDropmenu></i>
-  <div class="backresp" appDropmenu>
-    <div class="responsive">
-      <nav>
-        <a routerLink="">CHAT</a>
+    <div class="backresp" appDropmenu>
+      <nav class="responsive">
+        <a routerLink="/trascendence/chat">CHAT</a>
         <a routerLink="/trascendence/leaderboard">LEADERBOARD</a>
         <a routerLink="/trascendence/friends">FRIENDS</a>
         <a [routerLink]="['/trascendence/profile', user]">{{ user }}</a>
       </nav>
-    </div>
-  </div>
+    </div></ng-template
+  >
 </div>

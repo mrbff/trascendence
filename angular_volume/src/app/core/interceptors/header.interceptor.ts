@@ -5,12 +5,20 @@ import {
   HttpEvent,
   HttpInterceptor,
 } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, finalize } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
+import { LoaderService } from 'src/app/shared/services/loader.service';
 
 @Injectable()
 export class HeaderInterceptor implements HttpInterceptor {
-  constructor(private readonly auth: AuthService) {}
+  private requestNumber: number;
+
+  constructor(
+    private readonly auth: AuthService,
+    private loader: LoaderService
+  ) {
+    this.requestNumber = 0;
+  }
 
   intercept(
     request: HttpRequest<unknown>,
@@ -23,6 +31,15 @@ export class HeaderInterceptor implements HttpInterceptor {
         Authorization: `Bearer ${this.auth.getToken()}`,
       },
     });
-    return next.handle(modifiedRequest);
+    this.requestNumber++;
+    //this.loader.setStatus(true);
+    return next.handle(modifiedRequest).pipe(
+      finalize(() => {
+        this.requestNumber--;
+        if (this.requestNumber === 0) {
+          //this.loader.setStatus(false);
+        }
+      })
+    );
   }
 }

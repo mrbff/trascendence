@@ -4,6 +4,7 @@ import { HomeComponent } from './components/home/home.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { FriendsComponent } from './components/friends/friends.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
+import { ChatComponent } from './components/chat/chat.component';
 
 const routes: Routes = [
   {
@@ -24,6 +25,11 @@ const routes: Routes = [
     pathMatch: 'full',
     path: 'leaderboard',
     component: LeaderboardComponent,
+  },
+  {
+    pathMatch: 'full',
+    path: 'chat',
+    component: ChatComponent,
   },
   {
     pathMatch: 'full',

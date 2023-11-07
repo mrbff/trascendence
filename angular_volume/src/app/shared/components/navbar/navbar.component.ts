@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
 
 @Component({
@@ -8,6 +8,7 @@ import { UserService } from 'src/app/core/services/user.service';
 })
 export class NavbarComponent implements OnInit {
   user!: string;
+  screenW: any;
 
   constructor(private readonly userService: UserService) {}
 
@@ -16,5 +17,11 @@ export class NavbarComponent implements OnInit {
       this.userService.getUser() === ''
         ? 'PROFILE'
         : this.userService.getUser();
+    this.screenW = window.innerWidth;
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onWindowResize() {
+    this.screenW = window.innerWidth;
   }
 }

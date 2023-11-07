@@ -14,6 +14,7 @@ import { TwoFactorAuthComponent } from './components/profile/components/two-fact
 import { UserButtonsComponent } from './components/profile/components/user-buttons/user-buttons.component';
 import { ProfileImageComponent } from './components/profile/components/profile-image/profile-image.component';
 import { SharedModule } from '../shared/shared.module';
+import { ChatComponent } from './components/chat/chat.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { SharedModule } from '../shared/shared.module';
     UserButtonsComponent,
     ProfileImageComponent,
     ChangeImageDirective,
+    ChatComponent,
   ],
   imports: [CommonModule, SharedModule, FeaturesRoutingModule, FormsModule],
 })

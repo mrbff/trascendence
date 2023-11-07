@@ -45,6 +45,7 @@
   color: orange !important;
   font-size: 30px !important;
   cursor: pointer;
+  width: 30vw;
 }
 
 .navbar a {
@@ -88,20 +89,6 @@
   background-image: url("/assets/giphy2.gif");
   transition: transform 0.5s ease-out;
   transform: translateX(+100%);
-}
-
-@media (min-width: 949px) {
-  .responsive {
-    display: none !important;
-  }
-
-  .responsive a {
-    display: none !important;
-  }
-
-  .backresp {
-    display: none !important;
-  }
 }
 
 @media (max-width: 950px) {

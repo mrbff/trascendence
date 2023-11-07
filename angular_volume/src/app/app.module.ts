@@ -11,6 +11,7 @@ import { CoreModule } from './core/core.module';
 import { HeaderInterceptor } from './core/interceptors/header.interceptor';
 import { RedirectionGateway } from './core/services/redirection.gateway';
 import { GameModule } from './game/game.module';
+import { SpeedTestModule } from 'ng-speed-test';
 
 @NgModule({
   declarations: [AppComponent],
@@ -22,6 +23,7 @@ import { GameModule } from './game/game.module';
     SharedModule,
     FeaturesModule,
     GameModule,
+    SpeedTestModule,
   ],
   providers: [
     {

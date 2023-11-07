@@ -10,6 +10,7 @@ import { PasswordComponent } from './components/password/password.component';
 import { PopupComponent } from './components/popup/popup.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { DropmenuDirective } from './components/navbar/dropmenu.directive';
+import { LoadingComponent } from './components/loading/loading.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { DropmenuDirective } from './components/navbar/dropmenu.directive';
     PopupComponent,
     NavbarComponent,
     DropmenuDirective,
+    LoadingComponent,
   ],
   imports: [
     CommonModule,
@@ -26,6 +28,6 @@ import { DropmenuDirective } from './components/navbar/dropmenu.directive';
     ReactiveFormsModule,
     SharedRoutingModule,
   ],
-  exports: [NavbarComponent, DropmenuDirective],
+  exports: [NavbarComponent, DropmenuDirective, LoadingComponent],
 })
 export class SharedModule {}
