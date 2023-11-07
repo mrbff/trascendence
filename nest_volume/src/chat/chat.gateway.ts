@@ -19,26 +19,27 @@ import {
     @WebSocketServer()
     server: Server;
     afterInit(server: Server) {
-        console.log('Initialized!');
+        console.log('\n\nInitialized!(chat)');
     }
     
     handleConnection(client: Socket, ...args: any[]) {
-        console.log(`Client connected: ${client.id}`);
+        console.log(`\n\nClient connected(chat): ${client.id}`);
     }
     
     handleDisconnect(client: Socket) {
-        console.log(`Client disconnected: ${client.id}`);
+        console.log(`\n\nClient disconnected(chat): ${client.id}`);
     }
     
     @SubscribeMessage('message')
     handleMessage(client: Socket, payload: any): string {
-        return 'Hello world!';
+        return '\n\nHello world!(chat)';
     }
 
     @SubscribeMessage('BroadcastChannel')
-    handleBroadcastChannel(client: Socket, payload: any): boolean {
+    handleBroadcastChannel(client: any, payload: any): void {
       //send privmsg to all users of the channel
       //save the message on the db
-      return true;
+      const message = 'ciao come va?';///debug
+      this.server.emit('msgFromChannel', { message });
     }
 }

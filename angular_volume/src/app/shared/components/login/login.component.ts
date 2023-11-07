@@ -32,7 +32,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private readonly redirectionGateway: RedirectionGateway,
     private readonly googleAuth: GoogleAuthService,
     private readonly codeService: CodeService,
-    private readonly status: StatusService
+    private readonly status: StatusService,
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -72,6 +72,18 @@ export class LoginComponent implements OnInit, OnDestroy {
         }
       })
     );
+
+ /*   this.subs.add(///debug
+      this.chatGateway.onMsgFromChannel().subscribe({
+        next: (response) => {
+          console.log(`gwugffgeiufgeiufeui${response as string}`);
+        },
+        error: () => {
+          this.errorMsg = `You are a failure`;
+        },
+      })
+    ///debug
+    );*/
   }
 
   // NO LEAKS
@@ -82,6 +94,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   // REDIRECT FROM SOCKET
   on42AuthClick() {
     this.redirectionGateway.sendMessageRequest();
+    //this.chatGateway.chatBroadcastChannel();
   }
 
   onSubmit() {

@@ -5,7 +5,7 @@ import { io } from 'socket.io-client';
 @Injectable({
   providedIn: 'root',
 })
-export class ChatSocketService {
+export class ChatGateway {
   private socket;
 
   constructor() {
@@ -22,6 +22,14 @@ export class ChatSocketService {
 
   chatPrivMsg() {
     this.socket.emit('PrivMsg', {});
+  }
+
+  onMsgFromChannel() {
+    return new Observable((observer) => {
+      this.socket.on('msgFromChannel', (data) => {
+        observer.next(data.message);
+      });
+    });
   }
 
 }
