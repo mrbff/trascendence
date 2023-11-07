@@ -31,7 +31,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     private readonly redirectionGateway: RedirectionGateway,
     private readonly googleAuth: GoogleAuthService,
     private readonly codeService: CodeService,
-    private readonly status: StatusService
+    private readonly status: StatusService,
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],

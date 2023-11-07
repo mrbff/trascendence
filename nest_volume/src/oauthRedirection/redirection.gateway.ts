@@ -3,7 +3,7 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { environment } from 'src/environment/environment';
 
 @WebSocketGateway({
@@ -16,6 +16,10 @@ import { environment } from 'src/environment/environment';
 export class RedirectionGateway {
   @WebSocketServer()
   server: Server;
+
+  handleConnection(client: Socket, ...args: any[]) {
+    console.log(`\n\nRedirection gateway: ${client.id}\n\n`);//for debug
+  }
 
   @SubscribeMessage('messageRequest')
   handleMessage(client: any, payload: any): void {

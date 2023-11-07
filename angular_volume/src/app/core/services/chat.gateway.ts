@@ -1,25 +1,35 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { io } from 'socket.io-client';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ChatSocketService {
+export class ChatGateway {
   private socket;
 
   constructor() {
     this.socket = io('/chat', { path: '/socket.io/' });
   }
 
-  chatBroadcastChannel() {
+  sendBroadcastChannel() {
     this.socket.emit('BroadcastChannel', {});
   }
 
-  chatBroadcastUsers() {
+  sendBroadcastUsers() {
     this.socket.emit('BroadcastUsers', {});
   }
 
-  chatPrivMsg() {
+  sendPrivMsg() {
     this.socket.emit('PrivMsg', {});
   }
+
+  onMsgFromChannel() {
+    return new Observable((observer) => {
+      this.socket.on('MsgFromChannel', (data) => {
+        observer.next(data.message);
+      });
+    });
+  }
+
 }
