@@ -11,6 +11,7 @@ import { PopupComponent } from './components/popup/popup.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { DropmenuDirective } from './components/navbar/dropmenu.directive';
 import { LoadingComponent } from './components/loading/loading.component';
+import { SpeedTestModule } from 'ng-speed-test';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { LoadingComponent } from './components/loading/loading.component';
     FormsModule,
     ReactiveFormsModule,
     SharedRoutingModule,
+    SpeedTestModule,
   ],
   exports: [NavbarComponent, DropmenuDirective, LoadingComponent],
 })
