@@ -2,7 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { lastValueFrom } from 'rxjs';
-import { UserData } from 'src/app/models/user.model';
+import { LoginModel } from 'src/app/models/login.model';
+import { UserLoggedModel } from 'src/app/models/userLogged.model';
 
 @Injectable({
   providedIn: 'root',
@@ -45,12 +46,12 @@ export class UserService {
     );
   }
 
-  async registerUser(userData: UserData): Promise<any> {
+  async registerUser(userData: LoginModel): Promise<any> {
     return lastValueFrom(this.http.post(`/nest/users/signup`, userData));
   }
 
-  async getUserInfo(): Promise<any> {
-    return lastValueFrom(this.http.get(`/nest/users/me`));
+  async getUserInfo(): Promise<UserLoggedModel> {
+    return lastValueFrom(this.http.get<UserLoggedModel>(`/nest/users/me`));
   }
 
   async getAllUsers(): Promise<any> {

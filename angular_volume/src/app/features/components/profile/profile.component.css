@@ -21,36 +21,6 @@
   backdrop-filter: blur(40px);
 }
 
-.profile-image {
-  grid-row: 1 / 1;
-  grid-column: 1 / 1;
-  border: 4px solid;
-  border-radius: 50%;
-  width: 250px;
-  height: 250px;
-  display: block;
-  color: red;
-  margin-left: 4vh;
-  margin-top: 4vh;
-  overflow: hidden;
-  object-fit: cover;
-  object-position: center center;
-}
-
-.change-text {
-  width: 250px;
-  height: 250px;
-  border-radius: 50%;
-  font-family: Azonix;
-  font-size: 20px;
-  position: absolute;
-  cursor: pointer;
-  text-align: center;
-  display: none;
-  color: orange;
-  background-color: transparent;
-}
-
 .username {
   position: absolute;
   font-size: 70px;
@@ -126,127 +96,6 @@
   text-align: center;
   align-content: center;
 }
-
-.friend {
-  grid-column: 1 / 2;
-}
-
-.friend span {
-  cursor: pointer;
-}
-
-.fa-solid {
-  margin-bottom: 30px;
-  cursor: pointer;
-}
-
-.chat {
-  grid-column: 2 / 2;
-}
-
-.chat span {
-  cursor: pointer;
-}
-
-.block {
-  grid-column: 3 / 3;
-}
-
-.block span {
-  cursor: pointer;
-}
-
-.google-auth {
-  position: absolute;
-  left: 3vh;
-  bottom: 2vh;
-  grid-row: 4 / 4;
-  grid-column: 1 / 1;
-  cursor: pointer;
-  color: red;
-}
-
-.qr {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 2fr 2fr 2fr 2fr;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 25px;
-  border-radius: 8px;
-  max-width: 250px;
-  min-height: 300px;
-  background-image: url("../../../../assets/home_wall.gif");
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center center;
-  max-height: 400px;
-  min-width: 250px;
-  text-align: center;
-  border: 3px solid black;
-  z-index: 10000000000000;
-}
-
-.popup {
-  background-color: transparent;
-  padding: 20px;
-  position: fixed;
-  top: 65%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 9999;
-  border-radius: 30px;
-  margin-top: 40px;
-  grid-row: 2 / 3;
-  max-width: 100%;
-}
-
-.warning {
-  grid-row: 1 / 1;
-  margin-bottom: 35px;
-  color: red;
-  background-color: white;
-  padding: 10px;
-  border-radius: 20px;
-}
-
-.buttons {
-  grid-row: 4/4;
-  display: flex;
-  z-index: 9999;
-  overflow: hidden;
-}
-
-.buttons .right {
-  position: absolute;
-  bottom: 2vh;
-  right: 2vh;
-  font-family: Azonix;
-  border-radius: 50px;
-  cursor: pointer;
-  font-size: 15px;
-  padding: 15px;
-  transition: background 0.3s;
-  color: white;
-  background-color: red;
-}
-
-.buttons .left {
-  position: absolute;
-  bottom: 2vh;
-  left: 2vh;
-  font-family: Azonix;
-  border-radius: 50px;
-  cursor: pointer;
-  font-size: 15px;
-  padding: 15px;
-  transition: background 0.3s;
-  color: white;
-  background-color: green;
-}
-
 @media (max-width: 1255px) {
   .user-buttons {
     display: grid;
@@ -274,38 +123,15 @@
     backdrop-filter: blur(40px);
   }
 
-  .profile-image {
-    grid-row: 1 / 1;
+  .user-buttons {
+    display: grid;
+    grid-template-columns: 2fr 2fr 2fr;
+    grid-template-rows: 2fr;
+    grid-row: 3 / 3;
     grid-column: 1 / 1;
-    border-radius: 50%;
-    width: 150px;
-    height: 150px;
-    display: block;
-    margin: 0 auto;
-    margin-top: 4vh;
-    display: block;
-    overflow: hidden;
-    object-fit: cover;
-    object-position: center center;
-  }
-
-  .change-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -60%);
-    grid-row: 1 / 1;
-    grid-column: 1 / 1;
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    font-family: Azonix;
-    font-size: 20px;
-    cursor: pointer;
-    text-align: center;
-    display: none;
-    color: orange;
-    background-color: transparent;
+    margin-top: 0vh;
+    margin-right: 0px;
+    font-size: 12px;
   }
 
   .username-space {
@@ -313,7 +139,10 @@
     grid-column: 1 / 1;
     text-align: center;
     margin: 0 auto;
-    margin-top: 5vh;
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
 
   .username {
@@ -323,17 +152,6 @@
     margin-right: 0;
     top: 0px;
     right: 0px;
-  }
-
-  .user-buttons {
-    display: grid;
-    grid-template-columns: 2fr 2fr 2fr;
-    grid-template-rows: 2fr;
-    grid-row: 3 / 3;
-    grid-column: 1 / 1;
-    margin-top: 3vh;
-    margin-right: 0px;
-    font-size: 12px;
   }
 
   .matchbox {
@@ -346,7 +164,7 @@
     font-size: 40px;
     margin-right: 0px;
     position: relative;
-    top: 15vh;
+    top: 12vh;
     max-height: 50px;
   }
 
@@ -400,11 +218,5 @@
     transition: background 0.3s;
     color: white;
     background-image: linear-gradient(to right, purple, orange);
-  }
-
-  .qr {
-    backdrop-filter: none;
-    background-color: orange;
-    min-width: 250px;
   }
 }

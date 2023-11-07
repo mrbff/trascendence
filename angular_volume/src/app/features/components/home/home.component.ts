@@ -1,18 +1,21 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
-export class HomeComponent implements OnInit {
-  constructor() {}
-
-  ngOnInit(): void {}
+export class HomeComponent {
+  constructor(private readonly router: Router) {}
 
   @HostListener('document:keydown.enter', ['$event'])
   enterKeyPressed(event: KeyboardEvent) {
     event.preventDefault();
-    console.log('PRESSED');
+    this.gameNavigate();
+  }
+
+  gameNavigate() {
+    this.router.navigate(['/trascendence/pong/']);
   }
 }

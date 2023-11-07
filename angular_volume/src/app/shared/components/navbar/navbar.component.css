@@ -85,7 +85,7 @@
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
-  background-image: url("../../../../assets/giphy2.gif");
+  background-image: url("/assets/giphy2.gif");
   transition: transform 0.5s ease-out;
   transform: translateX(+100%);
 }

@@ -8,14 +8,24 @@ import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { PasswordComponent } from './components/password/password.component';
 import { PopupComponent } from './components/popup/popup.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
+import { DropmenuDirective } from './components/navbar/dropmenu.directive';
 
 @NgModule({
-  declarations: [LoginComponent, SignupComponent, PasswordComponent, PopupComponent],
+  declarations: [
+    LoginComponent,
+    SignupComponent,
+    PasswordComponent,
+    PopupComponent,
+    NavbarComponent,
+    DropmenuDirective,
+  ],
   imports: [
     CommonModule,
     FormsModule,
-    SharedRoutingModule,
     ReactiveFormsModule,
+    SharedRoutingModule,
   ],
+  exports: [NavbarComponent, DropmenuDirective],
 })
 export class SharedModule {}

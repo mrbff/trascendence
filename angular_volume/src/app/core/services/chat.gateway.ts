@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
 import { io } from 'socket.io-client';
 
 @Injectable({
@@ -22,14 +21,6 @@ export class ChatGateway {
 
   chatPrivMsg() {
     this.socket.emit('PrivMsg', {});
-  }
-
-  onMsgFromChannel() {
-    return new Observable((observer) => {
-      this.socket.on('msgFromChannel', (data) => {
-        observer.next(data.message);
-      });
-    });
   }
 
 }
