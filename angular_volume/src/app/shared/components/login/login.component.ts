@@ -70,18 +70,6 @@ export class LoginComponent implements OnInit, OnDestroy {
         }
       })
     );
-
- /*   this.subs.add(///debug
-      this.chatGateway.onMsgFromChannel().subscribe({
-        next: (response) => {
-          console.log(`gwugffgeiufgeiufeui${response as string}`);
-        },
-        error: () => {
-          this.errorMsg = `You are a failure`;
-        },
-      })
-    ///debug
-    );*/
   }
 
   // NO LEAKS
@@ -92,7 +80,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   // REDIRECT FROM SOCKET
   on42AuthClick() {
     this.redirectionGateway.sendMessageRequest();
-    //this.chatGateway.chatBroadcastChannel();
   }
 
   onSubmit() {
