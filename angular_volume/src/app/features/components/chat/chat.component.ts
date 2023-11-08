@@ -30,8 +30,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.subs.add(
       this.chatGateway.onMsgFromChannel().subscribe({
         next: (message) => {
-          this.messages.push(message); // Assuming 'message' is already formatted
-          console.log(message); // For debug purposes
+          this.messages.push(message);
+          console.log(message); ///debug
         },
         error: (error) => {
           this.errorMsg = `Error receiving message from channel: ${error.message}`;
@@ -39,12 +39,31 @@ export class ChatComponent implements OnInit, OnDestroy {
       })
     );
     
-    // You might also want to subscribe to other events, such as user joining, leaving, etc.
+    this.subs.add(
+      this.chatGateway.onMsgFromPriv().subscribe({
+        next: (message) => {
+          this.messages.push(message);
+          console.log(message); ///debug
+        },
+        error: (error) => {
+          this.errorMsg = `Error receiving message from user: ${error.message}`;
+        },
+      })
+    );
+    
+    // To DO: subscribe user joining, leaving, etc.
   }
 
   sendMessageToChannel(): void {
     if (this.newMessage.trim()) {
-      this.chatGateway.sendBroadcastChannel(this.newMessage); // Implement this method in your ChatGateway
+      this.chatGateway.sendChannelMsg(this.newMessage);
+      this.newMessage = ''; // Reset the input after sending
+    }
+  }
+
+  sendMessageToUser(): void {
+    if (this.newMessage.trim()) {
+      this.chatGateway.sendPrivMsg(this.newMessage);
       this.newMessage = ''; // Reset the input after sending
     }
   }
@@ -56,6 +75,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     // Perform additional cleanup if necessary, like informing the server the user has left the chat
   }
 
-  // Additional methods can be implemented here, such as handling user joining, leaving, etc.
+  // TO DO: handling user joining, leaving, etc.
 }
 

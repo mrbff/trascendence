@@ -30,15 +30,17 @@ import {
         console.log(`\n\nClient disconnected(chat): ${client.id}`);
     }
     
-    @SubscribeMessage('message')
-    handleMessage(client: Socket, payload: any): string {
-        return '\n\nHello world!(chat)';
+    @SubscribeMessage('PrivMsg')
+    handlePriv(client: Socket, payload: {sender: string, receiver: string, message: string}): void {
+      const {sender, receiver, message} = payload;
+      this.server.emit('MsgFromChannel', { sender:sender, message:message });
     }
 
-    @SubscribeMessage('BroadcastChannel')
-    handleBroadcastChannel(client: any, message: string): void {
-      //send privmsg to all users of the channel
-      //save the message on the db
-      this.server.emit('MsgFromChannel', message);
+    @SubscribeMessage('ChannelMsg')
+    handleChannelMsg(client: Socket, payload: {sender: string, channel: string, message: string}): void {
+      /* TO DO: send privmsg to all users of the channel,
+      save the message on the db */
+      const {sender, channel, message} = payload;
+      this.server.emit('MsgFromChannel', { sender:sender, channel:channel, message:message });
     }
 }

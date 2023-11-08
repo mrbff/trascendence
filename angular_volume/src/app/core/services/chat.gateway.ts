@@ -12,16 +12,12 @@ export class ChatGateway {
     this.socket = io('/chat', { path: '/socket.io/' });
   }
 
-  sendBroadcastChannel(message:string) {
-    this.socket.emit('BroadcastChannel', { message });
+  sendChannelMsg(message:string) {
+    this.socket.emit('ChannelMsg', {sender:'', channel:'', message:message });
   }
 
-  sendBroadcastUsers() {
-    this.socket.emit('BroadcastUsers', {});
-  }
-
-  sendPrivMsg() {
-    this.socket.emit('PrivMsg', {});
+  sendPrivMsg(message:string) {
+    this.socket.emit('PrivMsg', { sender:'', receiver:'', message:message });
   }
 
   onMsgFromChannel() {
@@ -31,5 +27,14 @@ export class ChatGateway {
       });
     });
   }
+
+  onMsgFromPriv() {
+    return new Observable((observer) => {
+      this.socket.on('MsgFromPriv', (data) => {
+        observer.next(data.message);
+      });
+    });
+  }
+
 
 }
