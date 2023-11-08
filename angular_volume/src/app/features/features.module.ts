@@ -31,5 +31,6 @@ import { ChatComponent } from './components/chat/chat.component';
     ChatComponent,
   ],
   imports: [CommonModule, SharedModule, FeaturesRoutingModule, FormsModule],
+  exports:[ProfileImageComponent]
 })
 export class FeaturesModule {}
