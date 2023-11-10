@@ -37,6 +37,28 @@ body {
   z-index: -1001;
 }
 
+.container {
+  font-family: Azonix;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100% !important;
+  user-select: none;
+  z-index: 10 !important;
+}
+
+.box {
+  display: grid;
+  border-radius: 8px;
+  color: orange;
+  margin-bottom: 70px;
+  width: 95%;
+  height: 90%;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(40px);
+}
+
 /* GOOGLE CHROME */
 
 input:-webkit-autofill,
@@ -75,9 +97,10 @@ input::-moz-placeholder {
   opacity: 1 !important;
 }
 
-input[type="number"] {
+/* input[type="number"] {
   -moz-appearance: textfield;
 }
+ */
 
 input::-moz-scrollbars {
   display: none;

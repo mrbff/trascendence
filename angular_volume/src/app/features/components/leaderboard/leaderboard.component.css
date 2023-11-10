@@ -1,29 +1,8 @@
-.container {
-  font-family: Azonix;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100% !important;
-  user-select: none;
-  z-index: 100;
-}
-
 h1 {
   position: absolute;
   top: 30px;
   left: 50%;
   transform: translate(-50%, -50%);
-}
-
-.box {
-  border-radius: 8px;
-  color: orange;
-  margin-bottom: 90px;
-  width: 95%;
-  height: 85%;
-  background: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(40px);
 }
 
 .player-card {

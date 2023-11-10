@@ -1,5 +1,5 @@
-<ng-container *ngIf="currentUser; else elseBlock">
-  <div class="profile-image-container">
+<ng-container *ngIf="currentUser; else otherUser">
+  <main class="profile-image-container">
     <img
       id="image"
       class="profile-image"
@@ -24,10 +24,10 @@
     >
       Change Image
     </button>
-  </div></ng-container
+  </main></ng-container
 >
-<ng-template #elseBlock>
-  <div class="profile-image-container">
+<ng-template #otherUser>
+  <main class="profile-image-container">
     <img
       id="image"
       class="profile-image"
@@ -36,5 +36,5 @@
         color: user.isPlaying ? 'orange' : user.isOnline ? 'green' : 'red'
       }"
     />
-  </div>
+  </main>
 </ng-template>
