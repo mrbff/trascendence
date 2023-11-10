@@ -33,5 +33,6 @@ import { MessageComponent } from './components/chat/components/message/message.c
     MessageComponent,
   ],
   imports: [CommonModule, SharedModule, FeaturesRoutingModule, FormsModule],
+  exports:[ProfileImageComponent]
 })
 export class FeaturesModule {}
