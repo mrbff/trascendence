@@ -1,6 +1,6 @@
 import { Component, HostListener, Input, ElementRef } from '@angular/core';
 import { UserLoggedModel } from 'src/app/models/userLogged.model';
-import { GoogleAuthService } from '../../../../../core/auth/google-auth.service';
+import { GoogleAuthService } from 'src/app/core/auth/google-auth.service';
 import { StatusService } from 'src/app/core/services/status.service';
 
 @Component({
@@ -20,13 +20,6 @@ export class TwoFactorAuthComponent {
   ) {
     this.showQr = false;
     this.newQr = true;
-  }
-
-  // CLOSE 2FA IF CLICK IS OUTSIDE CHILD COMPONENT
-  @HostListener('document:click', ['$event']) onClick(event: Event) {
-    if (!this.element.nativeElement.contains(event.target)) {
-      this.showQr = false;
-    }
   }
 
   // CHECK IF USER 2FA ENABLE AND OPEN NEW QR CODE OR LATEST
