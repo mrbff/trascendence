@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StatusService } from 'src/app/core/services/status.service';
@@ -7,17 +7,19 @@ import {
   BLOCKED_USER_INFO,
   UserLoggedModel,
 } from 'src/app/models/userLogged.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css'],
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy {
   user!: UserLoggedModel;
   currentUser: boolean;
   isFriend: boolean;
   showQr: boolean;
   isBlocked: boolean;
+  private $sub: Subscription;
 
   constructor(
     private readonly userService: UserService,
@@ -30,14 +32,25 @@ export class ProfileComponent implements OnInit {
     this.isFriend = false;
     this.showQr = false;
     this.isBlocked = false;
+    this.$sub = new Subscription();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     // SEARCH USER FROM PARAM IN URL
-    this.route.params.subscribe(async (params) => {
+    this.$sub = this.route.params.subscribe(async (params) => {
       const username = params['username'];
-      this.profileInit(username);
+      if (username !== undefined) {
+        this.profileInit(username);
+      } else {
+        this.router.navigate(['/trascendence/home']);
+      }
     });
+  }
+
+  ngOnDestroy(): void {
+    if (this.$sub) {
+      this.$sub.unsubscribe();
+    }
   }
 
   // GET USER OR FRIEND INFO FOR PROFILE PAGE

@@ -1,27 +1,8 @@
-.friend-container {
-  font-family: Azonix;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100% !important;
-  user-select: none;
-  z-index: 1 !important;
-}
-
-.friend-box {
-  display: grid;
+.box {
   grid-template-columns: 3fr;
   grid-template-rows: 1fr 2fr 1fr;
   white-space: nowrap;
   overflow-x: auto;
-  border-radius: 8px;
-  color: orange;
-  margin-bottom: 90px;
-  width: 95%;
-  height: 85%;
-  background: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(40px);
 }
 
 .input-container {

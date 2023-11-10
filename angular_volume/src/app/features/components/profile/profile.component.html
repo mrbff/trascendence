@@ -1,6 +1,6 @@
 <app-navbar></app-navbar>
-<div class="profile-container">
-  <div class="profile-box">
+<main class="container">
+  <section class="box">
     <app-profile-image
       *ngIf="user"
       [user]="user"
@@ -17,7 +17,7 @@
         [isBlocked]="isBlocked"
       ></app-user-buttons>
     </ng-container>
-    <div class="matchbox" *ngIf="user">
+    <section class="matchbox" *ngIf="user">
       <div class="win">WIN</div>
       <div class="winRes">
         {{ user.Wins }}
@@ -26,12 +26,12 @@
       <div class="loseRes">
         {{ user.Losses }}
       </div>
-    </div>
+    </section>
     <ng-container *ngIf="currentUser && user"
       ><app-two-factor-auth [user]="user"> </app-two-factor-auth>
     </ng-container>
     <div class="logout" *ngIf="currentUser">
       <button class="logout-bt" (click)="logout()">LOGOUT</button>
     </div>
-  </div>
-</div>
+  </section>
+</main>

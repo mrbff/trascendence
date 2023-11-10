@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, AfterViewInit } from '@angular/core';
-import { FriendsService } from '../../../../../core/services/friends.service';
+import { FriendsService } from 'src/app/core/services/friends.service';
 import { Router } from '@angular/router';
 import { UserLoggedModel } from 'src/app/models/userLogged.model';
 

@@ -1,6 +1,6 @@
-import { Component, Input } from '@angular/core';
+import { Component, HostListener, Input, ElementRef } from '@angular/core';
 import { UserLoggedModel } from 'src/app/models/userLogged.model';
-import { GoogleAuthService } from '../../../../../core/auth/google-auth.service';
+import { GoogleAuthService } from 'src/app/core/auth/google-auth.service';
 import { StatusService } from 'src/app/core/services/status.service';
 
 @Component({
@@ -15,7 +15,8 @@ export class TwoFactorAuthComponent {
 
   constructor(
     private readonly googleAuth: GoogleAuthService,
-    private readonly status: StatusService
+    private readonly status: StatusService,
+    private element: ElementRef
   ) {
     this.showQr = false;
     this.newQr = true;

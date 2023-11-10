@@ -1,24 +1,12 @@
-.profile-container {
-  font-family: Azonix;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100% !important;
-  user-select: none;
-}
-
-.profile-box {
+.box {
   display: grid;
   grid-template-columns: 2fr 2fr 2fr 2fr;
   grid-template-rows: 2fr 2fr 2fr;
-  border-radius: 8px;
-  color: orange;
-  margin-bottom: 90px;
-  width: 95%;
-  height: 85%;
-  background: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(40px);
+}
+
+.box app-profile-image {
+  margin-top: 4vh;
+  margin-left: 4vw;
 }
 
 .username {
@@ -112,15 +100,9 @@
 }
 
 @media (max-width: 765px) {
-  .profile-box {
-    display: grid;
+  .box {
     grid-template-columns: 2fr;
     grid-template-rows: 2fr 2fr 2fr 2fr;
-    border-radius: 8px;
-    margin-bottom: 10vh;
-    background: transparent;
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(40px);
   }
 
   .user-buttons {

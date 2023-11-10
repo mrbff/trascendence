@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, HostListener, OnInit } from '@angular/core';
-import { FriendsService } from '../../../core/services/friends.service';
+import { FriendsService } from 'src/app/core/services/friends.service';
 import { Router } from '@angular/router';
 
 @Component({

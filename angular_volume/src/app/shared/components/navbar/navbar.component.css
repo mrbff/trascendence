@@ -22,7 +22,7 @@
   height: 65px;
   border-bottom: 2px solid;
   background: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(40px);
   z-index: -1;
 }
