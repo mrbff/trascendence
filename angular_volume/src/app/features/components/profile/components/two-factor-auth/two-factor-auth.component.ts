@@ -1,4 +1,4 @@
-import { Component, HostListener, Input, ElementRef } from '@angular/core';
+import { Component, Input, ElementRef } from '@angular/core';
 import { UserLoggedModel } from 'src/app/models/userLogged.model';
 import { GoogleAuthService } from 'src/app/core/auth/google-auth.service';
 import { StatusService } from 'src/app/core/services/status.service';

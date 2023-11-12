@@ -6,7 +6,7 @@ import { UserService } from 'src/app/core/services/user.service';
 
 @Component({
   templateUrl: './chat.component.html',
-  styleUrls: ['./chat.component.css']
+  styleUrls: ['./chat.component.css'],
 })
 export class ChatComponent implements OnInit, OnDestroy {
   private subs = new Subscription();
@@ -16,29 +16,45 @@ export class ChatComponent implements OnInit, OnDestroy {
   public channels!: string[]; // Populate with actual channels
   public users!: string[]; // Populate with actual user list
 
+  showMsg: boolean;
+  chat: string[];
+
   constructor(
-    private readonly userService: UserService,
+    readonly userService: UserService,
     private readonly router: Router,
     private readonly chatGateway: ChatGateway
-  ) {}
+  ) {
+    this.messages = [
+      { msg: 'ciao', user: 'mbozzi' },
+      { msg: 'ciao', user: 'mbozzi' },
+      { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
+      { msg: 'ciao', user: 'mbozzi' },
+      { msg: 'ciao', user: 'mbozzi' },
+      { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
+      { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
+    ];
+    this.showMsg = false;
+    this.chat = [];
+  }
 
   ngOnInit(): void {
     this.initializeChat();
   }
-  
+
   initializeChat(): void {
     this.subs.add(
       this.chatGateway.onMsgFromChannel().subscribe({
         next: (message) => {
           this.messages.push(message);
           console.log(message); ///debug
+          console.log(this.messages);
         },
         error: (error) => {
           this.errorMsg = `Error receiving message from channel: ${error.message}`;
         },
       })
     );
-    
+
     this.subs.add(
       this.chatGateway.onMsgFromPriv().subscribe({
         next: (message) => {
@@ -50,7 +66,7 @@ export class ChatComponent implements OnInit, OnDestroy {
         },
       })
     );
-    
+
     // To DO: subscribe user joining, leaving, etc.
   }
 
@@ -67,14 +83,14 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.newMessage = ''; // Reset the input after sending
     }
   }
-  
+
   ngOnDestroy(): void {
-    if (this.subs) {
-      this.subs.unsubscribe();
-    }
-    // Perform additional cleanup if necessary, like informing the server the user has left the chat
+    this.subs.unsubscribe();
   }
 
   // TO DO: handling user joining, leaving, etc.
-}
 
+  openChat(event: string) {
+    this.chat = this.messages.filter((obj) => obj.user === event);
+  }
+}

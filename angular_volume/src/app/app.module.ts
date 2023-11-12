@@ -21,7 +21,7 @@ import { GameModule } from './game/game.module';
     CoreModule,
     SharedModule,
     FeaturesModule,
-    GameModule
+    GameModule,
   ],
   providers: [
     {
