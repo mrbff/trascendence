@@ -15,6 +15,8 @@ import { UserButtonsComponent } from './components/profile/components/user-butto
 import { ProfileImageComponent } from './components/profile/components/profile-image/profile-image.component';
 import { SharedModule } from '../shared/shared.module';
 import { ChatComponent } from './components/chat/chat.component';
+import { MessageComponent } from './components/chat/components/message/message.component';
+import { ChatUserComponent } from './components/chat/components/chat-user/chat-user.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +31,8 @@ import { ChatComponent } from './components/chat/chat.component';
     ProfileImageComponent,
     ChangeImageDirective,
     ChatComponent,
+    MessageComponent,
+    ChatUserComponent,
   ],
   imports: [CommonModule, SharedModule, FeaturesRoutingModule, FormsModule],
   exports: [ProfileImageComponent],

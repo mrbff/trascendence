@@ -1,18 +1,32 @@
+import { UserInfo } from '../../models/userInfo.model';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
-import { lastValueFrom } from 'rxjs';
+import { BehaviorSubject, Observable, lastValueFrom } from 'rxjs';
 import { LoginModel } from 'src/app/models/login.model';
-import { UserLoggedModel } from 'src/app/models/userLogged.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
+  private $userSubject: BehaviorSubject<UserInfo>;
+
   constructor(
     private readonly http: HttpClient,
     private readonly cookieService: CookieService
-  ) {}
+  ) {
+    this.$userSubject = new BehaviorSubject<any>(null);
+  }
+
+  updateUser() {
+    this.http.get<UserInfo>(`/nest/users/me`).subscribe((user) => {
+      this.$userSubject.next(user);
+    });
+  }
+
+  getUserObservable(): Observable<UserInfo> {
+    return this.$userSubject.asObservable();
+  }
 
   setUser(name: string) {
     this.cookieService.set('user', name, 1 / 24, '/');
@@ -30,7 +44,7 @@ export class UserService {
     return this.cookieService.get('id');
   }
 
-  deleteAllInfo() {
+  deleteAllCookie() {
     this.cookieService.deleteAll('/');
   }
 
@@ -50,8 +64,8 @@ export class UserService {
     return lastValueFrom(this.http.post(`/nest/users/signup`, userData));
   }
 
-  async getUserInfo(): Promise<UserLoggedModel> {
-    return lastValueFrom(this.http.get<UserLoggedModel>(`/nest/users/me`));
+  async getUserInfo(): Promise<UserInfo> {
+    return lastValueFrom(this.http.get<UserInfo>(`/nest/users/me`));
   }
 
   async getAllUsers(): Promise<any> {

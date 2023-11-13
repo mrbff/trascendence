@@ -1,7 +1,8 @@
-import { Component, Input, ElementRef } from '@angular/core';
-import { UserLoggedModel } from 'src/app/models/userLogged.model';
+import { Component, Input } from '@angular/core';
+import { UserInfo } from 'src/app/models/userInfo.model';
 import { GoogleAuthService } from 'src/app/core/auth/google-auth.service';
 import { StatusService } from 'src/app/core/services/status.service';
+import { UserService } from 'src/app/core/services/user.service';
 
 @Component({
   selector: 'app-two-factor-auth',
@@ -9,14 +10,14 @@ import { StatusService } from 'src/app/core/services/status.service';
   styleUrls: ['./two-factor-auth.component.css'],
 })
 export class TwoFactorAuthComponent {
-  @Input() user!: UserLoggedModel;
+  @Input() user!: UserInfo;
   showQr: boolean;
   newQr: boolean;
 
   constructor(
     private readonly googleAuth: GoogleAuthService,
     private readonly status: StatusService,
-    private element: ElementRef
+    private userService: UserService
   ) {
     this.showQr = false;
     this.newQr = true;
@@ -37,16 +38,14 @@ export class TwoFactorAuthComponent {
 
   async onConfirm2FA() {
     this.showQr = false;
-    await this.status.set2fa(this.user.id, true).then(() => {
-      this.user.is2faEnabled = true;
-    });
+    await this.status.set2fa(this.user.id, true);
+    this.userService.updateUser();
   }
 
   async onReject2FA() {
     this.showQr = false;
-    await this.status.set2fa(this.user.id, false).then(() => {
-      this.user.is2faEnabled = false;
-    });
+    await this.status.set2fa(this.user.id, false);
+    this.userService.updateUser();
   }
 
   closeQr() {

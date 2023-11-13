@@ -1,0 +1,48 @@
+.message {
+  position: relative;
+  font-family: Newake;
+  padding: 20px;
+  font-size: 15px;
+  border-radius: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  max-width: 85%;
+  float: right;
+  text-align: left;
+  margin-top: 15px;
+  min-width: 100px;
+}
+
+.otherMessage {
+  position: relative;
+  font-family: Newake;
+  padding: 20px;
+  font-size: 15px;
+  border-radius: 10px;
+  background-color: rgba(72, 61, 139, 0.5);
+  max-width: 85%;
+  float: left;
+  text-align: left;
+  margin-top: 15px;
+  min-width: 100px;
+}
+
+span {
+  color: white;
+  display: block;
+  white-space: wrap;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  font-size: 18px;
+}
+
+.message-content {
+  display: block;
+  white-space: wrap;
+  overflow-x: hidden;
+}
+
+.username {
+  font-size: 12px;
+  color: orange !important;
+  margin-bottom: 10px;
+}

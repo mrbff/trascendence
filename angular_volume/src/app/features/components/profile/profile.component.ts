@@ -2,11 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { StatusService } from 'src/app/core/services/status.service';
-import { FriendsService } from '../../../core/services/friends.service';
-import {
-  BLOCKED_USER_INFO,
-  UserLoggedModel,
-} from 'src/app/models/userLogged.model';
+import { FriendsService } from 'src/app/core/services/friends.service';
+import { BLOCKED_USER_INFO, UserInfo } from 'src/app/models/userInfo.model';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -14,12 +11,12 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./profile.component.css'],
 })
 export class ProfileComponent implements OnInit, OnDestroy {
-  user!: UserLoggedModel;
+  user!: UserInfo;
   currentUser: boolean;
   isFriend: boolean;
   showQr: boolean;
   isBlocked: boolean;
-  private $sub: Subscription;
+  private $userSubs: Subscription;
 
   constructor(
     private readonly userService: UserService,
@@ -32,51 +29,63 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.isFriend = false;
     this.showQr = false;
     this.isBlocked = false;
-    this.$sub = new Subscription();
+    this.$userSubs = new Subscription();
   }
 
   ngOnInit(): void {
     // SEARCH USER FROM PARAM IN URL
-    this.$sub = this.route.params.subscribe(async (params) => {
-      const username = params['username'];
-      if (username !== undefined) {
-        this.profileInit(username);
-      } else {
-        this.router.navigate(['/trascendence/home']);
-      }
-    });
+    this.$userSubs.add(
+      this.route.params.subscribe((params) => {
+        const username = params['username'];
+        if (username !== undefined) {
+          this.profileInit(username);
+        } else {
+          this.router.navigate(['/trascendence/home']);
+        }
+      })
+    );
   }
 
   ngOnDestroy(): void {
-    if (this.$sub) {
-      this.$sub.unsubscribe();
+    if (this.$userSubs) {
+      this.$userSubs.unsubscribe();
     }
   }
 
-  // GET USER OR FRIEND INFO FOR PROFILE PAGE
-  private async profileInit(username: string) {
+  // SUBSCRIBE TO USER OBSERVABLE
+  private profileInit(username: string) {
     if (username === this.userService.getUser()) {
       this.currentUser = true;
-      this.user = await this.userService.getUserInfo();
+      this.$userSubs.add(
+        this.userService.getUserObservable().subscribe((user) => {
+          this.user = user;
+        })
+      );
+      this.userService.updateUser();
     } else {
       this.currentUser = false;
-      // CHECK IF USER BLOCKED
-      this.isBlocked = await this.friendsService.isBlocked(username);
-      if (!this.isBlocked) {
-        this.user = await this.friendsService.getFriendInfo(username);
-        this.isFriend = await this.friendsService.isFriend(username);
-      } else {
-        this.user = {
-          username: username,
-          ...BLOCKED_USER_INFO,
-        } as UserLoggedModel;
-      }
+      this.otherUserInit(username);
     }
   }
 
-  logout() {
-    this.status.setStatus(this.user.id, false);
-    this.userService.deleteAllInfo();
+  private async otherUserInit(username: string) {
+    // CHECK IF USER BLOCKED
+    this.isBlocked = await this.friendsService.isBlocked(username);
+    if (!this.isBlocked) {
+      this.user = await this.friendsService.getFriendInfo(username);
+      this.isFriend = await this.friendsService.isFriend(username);
+    } else {
+      // PLACEHOLDERS USER INFO
+      this.user = {
+        username: username,
+        ...BLOCKED_USER_INFO,
+      } as UserInfo;
+    }
+  }
+
+  async logout() {
+    await this.status.setStatus(this.user.id, false);
+    this.userService.deleteAllCookie();
     this.router.navigate(['/login']);
   }
 }
