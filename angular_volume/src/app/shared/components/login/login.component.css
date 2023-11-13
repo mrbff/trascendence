@@ -1,5 +1,4 @@
 .login-container {
-  font-family: Azonix;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -81,7 +80,6 @@
 
 .split-button button {
   margin-top: 15px;
-  font-family: Azonix;
   text-align: center;
   flex: 1;
   border: none;

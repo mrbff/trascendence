@@ -9,9 +9,14 @@
 }
 
 body {
+  font-family: Azonix !important;
   margin: 0;
   padding: 0;
   overflow: hidden !important;
+}
+
+button {
+  font-family: Azonix !important;
 }
 
 .background {
@@ -38,7 +43,6 @@ body {
 }
 
 .container {
-  font-family: Azonix;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -96,11 +100,6 @@ input::-moz-placeholder {
   color: orange;
   opacity: 1 !important;
 }
-
-/* input[type="number"] {
-  -moz-appearance: textfield;
-}
- */
 
 input::-moz-scrollbars {
   display: none;

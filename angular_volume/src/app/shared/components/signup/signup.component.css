@@ -1,5 +1,4 @@
 .signup-container {
-  font-family: Azonix;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -69,7 +68,6 @@
 }
 
 .signup-button {
-  font-family: Azonix;
   border-radius: 50px;
   padding: 15px 20px;
   background-color: orange;
