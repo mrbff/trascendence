@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { UserService } from 'src/app/core/services/user.service';
@@ -9,7 +9,7 @@ import { UserService } from 'src/app/core/services/user.service';
   styleUrls: ['./chat.component.css'],
 })
 export class ChatComponent implements OnInit, OnDestroy {
-  private subs = new Subscription();
+  private $subs = new Subscription();
   public messages: any[] = []; // You might want to create a Message interface or class
   public newMessage: string = '';
   public errorMsg: string = '';
@@ -21,8 +21,8 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   constructor(
     readonly userService: UserService,
-    private readonly router: Router,
-    private readonly chatGateway: ChatGateway
+    private readonly chatGateway: ChatGateway,
+    private readonly route: ActivatedRoute
   ) {
     this.messages = [
       { msg: 'ciao', user: 'mbozzi' },
@@ -42,7 +42,17 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   initializeChat(): void {
-    this.subs.add(
+    // OPEN USER CHAT IF USERNAME IN QUERY PARAMS
+    this.$subs.add(
+      this.route.queryParams.subscribe((params) => {
+        const username = params['username'];
+        if (username !== undefined) {
+          this.openChat(username);
+        }
+      })
+    );
+
+    this.$subs.add(
       this.chatGateway.onMsgFromChannel().subscribe({
         next: (message) => {
           this.messages.push(message);
@@ -55,7 +65,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       })
     );
 
-    this.subs.add(
+    this.$subs.add(
       this.chatGateway.onMsgFromPriv().subscribe({
         next: (message) => {
           this.messages.push(message);
@@ -67,7 +77,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       })
     );
 
-    // To DO: subscribe user joining, leaving, etc.
+    // To DO: $subscribe user joining, leaving, etc.
   }
 
   sendMessageToChannel(): void {
@@ -85,12 +95,12 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.subs.unsubscribe();
+    this.$subs.unsubscribe();
   }
 
   // TO DO: handling user joining, leaving, etc.
 
-  openChat(event: string) {
-    this.chat = this.messages.filter((obj) => obj.user === event);
+  openChat(username: string) {
+    this.chat = this.messages.filter((obj) => obj.user === username);
   }
 }

@@ -33,14 +33,31 @@ export class FriendsComponent implements OnInit, AfterViewInit {
     this.noFriends = true;
   }
 
-  async ngOnInit() {
-    await this.loadFriend();
+  ngOnInit() {
+    this.loadFriend();
   }
 
   ngAfterViewInit(): void {
     this.searchBox = document.querySelector('#search');
     this.cardContainer = document.querySelector('.card-box');
     this.requestContainer = document.querySelector('.request-box');
+  }
+
+  async loadFriend() {
+    await this.friendsService
+      .getFriendRequestsRecv()
+      .then((resp) => {
+        this.friend = resp.length !== 0 ? true : false;
+        this.friendRequests = resp;
+      })
+      .catch((err) => console.error(err));
+    await this.friendsService
+      .getFriends()
+      .then((resp) => {
+        this.noFriends = resp.length === 0 ? true : false;
+        this.users = resp;
+      })
+      .catch((err) => console.error(err));
   }
 
   async searchPlayer() {
@@ -67,22 +84,5 @@ export class FriendsComponent implements OnInit, AfterViewInit {
     } else if (containerType === 'request') {
       this.requestContainer.scrollLeft += event.deltaY;
     }
-  }
-
-  async loadFriend() {
-    await this.friendsService
-      .getFriendRequestsRecv()
-      .then((resp) => {
-        this.friend = resp.length !== 0 ? true : false;
-        this.friendRequests = resp;
-      })
-      .catch((err) => console.error(err));
-    await this.friendsService
-      .getFriends()
-      .then((resp) => {
-        this.noFriends = resp.length === 0 ? true : false;
-        this.users = resp;
-      })
-      .catch((err) => console.error(err));
   }
 }

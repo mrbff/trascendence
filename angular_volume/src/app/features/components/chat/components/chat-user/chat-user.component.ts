@@ -20,7 +20,6 @@ export class ChatUserComponent implements OnInit {
 
   @HostListener('click') onClick() {
     this.openChat.emit(this.user.username);
-    console.log(this.user.username);
   }
 
   constructor(private readonly friendService: FriendsService) {}
