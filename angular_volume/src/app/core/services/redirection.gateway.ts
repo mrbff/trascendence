@@ -8,9 +8,6 @@ import { io } from 'socket.io-client';
 export class RedirectionGateway {
   private socket;
 
-  /*   TO DO     // Crea la connessione WebSocket con il token nell'URL
-const socket = new WebSocket(`ws://example.com/socket?token=${jwtToken}`); */
-
   constructor() {
     this.socket = io('/redirection', { path: '/socket.io/' });
   }

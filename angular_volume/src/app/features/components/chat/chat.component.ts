@@ -25,13 +25,13 @@ export class ChatComponent implements OnInit, OnDestroy {
     private readonly route: ActivatedRoute
   ) {
     this.messages = [
+    /*  { msg: 'ciao', user: 'mbozzi' },
+      { msg: 'ciao', user: 'mbozzi' },
+      { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
       { msg: 'ciao', user: 'mbozzi' },
       { msg: 'ciao', user: 'mbozzi' },
       { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
-      { msg: 'ciao', user: 'mbozzi' },
-      { msg: 'ciao', user: 'mbozzi' },
-      { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
-      { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
+      { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },*/
     ];
     this.showMsg = false;
     this.chat = [];

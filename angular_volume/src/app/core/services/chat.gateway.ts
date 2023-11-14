@@ -4,6 +4,7 @@ import { io } from 'socket.io-client';
 import { AuthService } from '../auth/auth.service';
 import { Socket } from 'socket.io';
 import { DefaultEventsMap } from '@socket.io/component-emitter';
+import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,10 @@ import { DefaultEventsMap } from '@socket.io/component-emitter';
 export class ChatGateway {
   private socket;
 
-  constructor(private authService:AuthService) {
+  constructor(
+    private authService:AuthService,
+    private readonly userService:UserService
+    ) {
     const jwt = this.authService.getToken();
     console.log({jwt});
     
@@ -21,19 +25,23 @@ export class ChatGateway {
     });
   }
 
-
   sendChannelMsg(message:string) {
-    this.socket.emit('ChannelMsg', {sender:'', channel:'', message:message });
+    this.socket.emit('ChannelMsg', { sender:this.userService.getUser(), channel:'', message:message });
   }
 
   sendPrivMsg(message:string) {
-    this.socket.emit('PrivMsg', { sender:'', receiver:'', message:message });
+    this.socket.emit('PrivMsg', { sender:this.userService.getUser(), receiver:'', message:message });
   }
 
   onMsgFromChannel() {
     return new Observable((observer) => {
       this.socket.on('MsgFromChannel', (data) => {
-        observer.next(data.message);
+        observer.next(
+          {
+            msg:data.message,
+            user:data.sender
+          }
+        );
       });
     });
   }
@@ -41,7 +49,12 @@ export class ChatGateway {
   onMsgFromPriv() {
     return new Observable((observer) => {
       this.socket.on('MsgFromPriv', (data) => {
-        observer.next(data.message);
+        observer.next(
+          {
+            msg:data.message,
+            user:data.sender
+          }
+        );
       });
     });
   }

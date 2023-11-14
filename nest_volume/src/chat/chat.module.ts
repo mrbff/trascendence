@@ -9,13 +9,6 @@ import { environment } from 'src/environment/environment';
 
 @Module({
   providers: [ChatGateway, JwtStrategy],
-  imports: [
-  /*  PassportModule,
-    JwtModule.register({
-      secret: 'environment.jwt_secret',
-      signOptions: { expiresIn: '1h' },
-    }),*/
-    UsersModule
-  ]
+  imports: [UsersModule]
 })
 export class ChatModule {}

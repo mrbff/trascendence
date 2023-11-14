@@ -21,6 +21,11 @@ interface ExtendedSocket extends Socket {
   user: any;
 }
 
+type Message = {
+  msg:string,
+  user:any
+};
+
 const userSocketMap: { [userId: string]: string } = {};
 
 @WebSocketGateway({
