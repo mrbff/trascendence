@@ -80,16 +80,16 @@ export class ChatComponent implements OnInit, OnDestroy {
     // To DO: $subscribe user joining, leaving, etc.
   }
 
-  sendMessageToChannel(): void {
+  sendMessageToChannel(channel:string): void {
     if (this.newMessage.trim()) {
-      this.chatGateway.sendChannelMsg(this.newMessage);
+      this.chatGateway.sendChannelMsg(this.newMessage, channel);
       this.newMessage = ''; // Reset the input after sending
     }
   }
 
-  sendMessageToUser(): void {
+  sendMessageToUser(receiver:string): void {
     if (this.newMessage.trim()) {
-      this.chatGateway.sendPrivMsg(this.newMessage);
+      this.chatGateway.sendPrivMsg(this.newMessage, receiver);
       this.newMessage = ''; // Reset the input after sending
     }
   }

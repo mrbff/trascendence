@@ -25,12 +25,12 @@ export class ChatGateway {
     });
   }
 
-  sendChannelMsg(message:string) {
-    this.socket.emit('ChannelMsg', { sender:this.userService.getUser(), channel:'', message:message });
+  sendChannelMsg(message:string, channel:string) {
+    this.socket.emit('ChannelMsg', { sender:this.userService.getUser(), channel:channel, message:message });
   }
 
-  sendPrivMsg(message:string) {
-    this.socket.emit('PrivMsg', { sender:this.userService.getUser(), receiver:'', message:message });
+  sendPrivMsg(message:string, receiver:string) {
+    this.socket.emit('PrivMsg', { sender:this.userService.getUser(), receiver:receiver, message:message });
   }
 
   onMsgFromChannel() {

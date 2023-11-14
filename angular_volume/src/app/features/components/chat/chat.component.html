@@ -16,7 +16,7 @@
       <app-message *ngFor="let message of chat" [message]="message">
       </app-message>
     </section>
-    <form (submit)="sendMessageToChannel()" class="message-container">
+    <form (submit)="sendMessageToChannel('#Mychannel')" class="message-container">
       <input
         class="message-input"
         type="text"
