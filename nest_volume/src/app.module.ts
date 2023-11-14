@@ -8,9 +8,10 @@ import { HttpModule } from '@nestjs/axios';
 import { RedirectionGateway } from './oauthRedirection/redirection.gateway';
 import { FriendsModule } from './friends/friends.module';
 import { ChatModule } from './chat/chat.module';
+import { PongModule } from './game/game.module';
 
 @Module({
-  imports: [PrismaModule, UsersModule, AuthModule, HttpModule, FriendsModule, ChatModule],
+  imports: [PrismaModule, UsersModule, AuthModule, HttpModule, FriendsModule, ChatModule, PongModule],
   controllers: [AppController],
   providers: [AppService, RedirectionGateway],
 })

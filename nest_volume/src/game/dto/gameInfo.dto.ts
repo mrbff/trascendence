@@ -20,20 +20,20 @@ export interface GameInfo{
 	racket1Increment: number;
 }
 
-// export const START_GAME_DATA: gameInfo = {
-// 	ball: START_BALL_DATA,
-// 	player0: START_RACKET_DATA,
-// 	player1: START_RACKET_DATA,
-// 	score0: 0,
-// 	score1: 0,
-// 	p0Y: 40,
-// 	p1Y: 40,
-// 	p0X: player0.margin,
-// 	p1X: 100 - player1.margin - player1.width,
-// 	ballX: -1 * ball.width,
-// 	ballY: -1 * ball.height,
-// 	canMoveBall: false,
-// 	canMoveRackets: false,
-// 	racket0Increment: 0,
-// 	racket1Increment: 0
-// }
+export const START_GAME_DATA: GameInfo = {
+	ball: START_BALL_DATA,
+	player: START_RACKET_DATA,
+	opponent: START_RACKET_DATA,
+	score0: 0,
+	score1: 0,
+	p0Y: 40,
+	p1Y: 40,
+	p0X: 3,
+	p1X: 100 - 3 - 3,
+	ballX: -1 * 3,
+	ballY: -1 * 4,
+	canMoveBall: false,
+	canMoveRackets: false,
+	racket0Increment: 0,
+	racket1Increment: 0
+}
