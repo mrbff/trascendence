@@ -125,6 +125,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   // USER INFO
   private initUser(response: any) {
+    console.log({response});
     this.auth.saveToken(response.accessToken);
     this.userService.setUserId(this.auth.decodeToken(response.accessToken));
     this.userService.setUser(response.username);

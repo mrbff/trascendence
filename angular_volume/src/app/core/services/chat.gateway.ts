@@ -1,7 +1,9 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { io } from 'socket.io-client';
 import { AuthService } from '../auth/auth.service';
+import { Socket } from 'socket.io';
+import { DefaultEventsMap } from '@socket.io/component-emitter';
 
 @Injectable({
   providedIn: 'root',
@@ -11,13 +13,14 @@ export class ChatGateway {
 
   constructor(private authService:AuthService) {
     const jwt = this.authService.getToken();
+    console.log({jwt});
+    
     this.socket = io('/chat', { 
       path: '/socket.io/',
-      query: {
-        token: jwt
-      } 
+      auth:{token: jwt}
     });
   }
+
 
   sendChannelMsg(message:string) {
     this.socket.emit('ChannelMsg', {sender:'', channel:'', message:message });
