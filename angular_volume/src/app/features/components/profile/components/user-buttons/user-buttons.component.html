@@ -10,8 +10,11 @@
     <span (click)="removeFriend()">REMOVE FRIEND</span>
   </div>
 </ng-template>
-<div class="chat">
-  <i class="fa-solid fa-headset fa-2xl"></i><br /><span>CHAT</span>
+<div class="chat" (click)="openFriendChat()">
+  <i class="fa-solid fa-headset fa-2xl"></i><br /><span
+    (click)="openFriendChat()"
+    >CHAT</span
+  >
 </div>
 <ng-container *ngIf="!isBlocked; else userBlocked">
   <div class="block">

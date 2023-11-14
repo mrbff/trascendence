@@ -1,5 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { FriendsService } from 'src/app/core/services/friends.service';
+import { Router } from '@angular/router';
+import { log } from 'console';
 
 @Component({
   selector: 'app-user-buttons',
@@ -11,7 +13,10 @@ export class UserButtonsComponent {
   @Input() isFriend!: boolean;
   @Input() isBlocked!: boolean;
 
-  constructor(private readonly friendsService: FriendsService) {}
+  constructor(
+    private readonly friendsService: FriendsService,
+    private readonly router: Router
+  ) {}
 
   async addFriend() {
     await this.friendsService
@@ -35,5 +40,11 @@ export class UserButtonsComponent {
     await this.friendsService
       .unblockUser(this.username)
       .then(() => (this.isBlocked = false));
+  }
+
+  openFriendChat() {
+    this.router.navigate(['/trascendence/chat/'], {
+      queryParams: { username: this.username },
+    });
   }
 }

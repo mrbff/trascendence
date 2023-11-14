@@ -1,0 +1,32 @@
+.card {
+  position: relative;
+  padding: 40px;
+  border-bottom: 1px solid black;
+  cursor: pointer;
+}
+
+.card:hover {
+  background-color: darkslateblue;
+}
+
+.img {
+  position: absolute;
+  top: 45%;
+  left: 20%;
+  transform: translate(-50%, -50%);
+  .profile-image-container {
+    width: 6vw !important;
+    height: 6vw !important;
+    max-width: 60px !important;
+    max-height: 60px !important;
+  }
+  .profile-image {
+    border: 2px solid;
+  }
+}
+
+.username {
+  position: relative;
+  left: 6vw;
+  font-size: 25px;
+}

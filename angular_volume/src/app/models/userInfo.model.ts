@@ -1,4 +1,4 @@
-export interface UserLoggedModel {
+export interface UserInfo {
   Wins: string;
   Losses: string;
   Played: string;
@@ -18,7 +18,7 @@ export interface UserLoggedModel {
   username: string;
 }
 
-export const BLOCKED_USER_INFO: Partial<UserLoggedModel> = {
+export const BLOCKED_USER_INFO: Partial<UserInfo> = {
   Wins: '0',
   Losses: '0',
   img: 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif',

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
-import { UserLoggedModel } from 'src/app/models/userLogged.model';
+import { UserInfo } from 'src/app/models/userInfo.model';
 
 @Injectable({
   providedIn: 'root',
@@ -9,10 +9,8 @@ import { UserLoggedModel } from 'src/app/models/userLogged.model';
 export class FriendsService {
   constructor(private readonly http: HttpClient) {}
 
-  async getFriendInfo(username: string): Promise<UserLoggedModel> {
-    return lastValueFrom(
-      this.http.get<UserLoggedModel>(`/nest/users/${username}`)
-    );
+  async getFriendInfo(username: string): Promise<UserInfo> {
+    return lastValueFrom(this.http.get<UserInfo>(`/nest/users/${username}`));
   }
 
   async getFriends(): Promise<any> {

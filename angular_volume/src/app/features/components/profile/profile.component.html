@@ -1,37 +1,38 @@
 <app-navbar></app-navbar>
 <main class="container">
   <section class="box">
-    <app-profile-image
-      *ngIf="user"
-      [user]="user"
-      [currentUser]="currentUser"
-    ></app-profile-image>
-    <div class="username-space" *ngIf="user">
-      <span class="username">{{ user.username }}</span>
-    </div>
-    <ng-container *ngIf="!currentUser && user">
-      <app-user-buttons
-        class="user-buttons"
-        [username]="user.username"
-        [isFriend]="isFriend"
-        [isBlocked]="isBlocked"
-      ></app-user-buttons>
-    </ng-container>
-    <section class="matchbox" *ngIf="user">
-      <div class="win">WIN</div>
-      <div class="winRes">
-        {{ user.Wins }}
+    <ng-container *ngIf="user"
+      ><app-profile-image
+        [user]="user"
+        [currentUser]="currentUser"
+      ></app-profile-image>
+      <div class="username-space">
+        <span class="username">{{ user.username }}</span>
       </div>
-      <div class="lose">LOSE</div>
-      <div class="loseRes">
-        {{ user.Losses }}
-      </div>
-    </section>
-    <ng-container *ngIf="currentUser && user"
-      ><app-two-factor-auth [user]="user"> </app-two-factor-auth>
-    </ng-container>
-    <div class="logout" *ngIf="currentUser">
-      <button class="logout-bt" (click)="logout()">LOGOUT</button>
-    </div>
+      <ng-container *ngIf="!currentUser">
+        <app-user-buttons
+          class="user-buttons"
+          [username]="user.username"
+          [isFriend]="isFriend"
+          [isBlocked]="isBlocked"
+        ></app-user-buttons>
+      </ng-container>
+      <section class="matchbox">
+        <div class="win">WIN</div>
+        <div class="winRes">
+          {{ user.Wins }}
+        </div>
+        <div class="lose">LOSE</div>
+        <div class="loseRes">
+          {{ user.Losses }}
+        </div>
+      </section>
+      <ng-container *ngIf="currentUser"
+        ><app-two-factor-auth [user]="user"> </app-two-factor-auth>
+      </ng-container>
+      <div class="logout" *ngIf="currentUser">
+        <button class="logout-bt" (click)="logout()">LOGOUT</button>
+      </div></ng-container
+    >
   </section>
 </main>

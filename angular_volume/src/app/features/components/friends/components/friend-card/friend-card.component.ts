@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, AfterViewInit } from '@angular/core';
 import { FriendsService } from 'src/app/core/services/friends.service';
 import { Router } from '@angular/router';
-import { UserLoggedModel } from 'src/app/models/userLogged.model';
+import { UserInfo } from 'src/app/models/userInfo.model';
 
 @Component({
   selector: 'app-friend-card',
@@ -12,7 +12,7 @@ export class FriendCardComponent implements OnInit, AfterViewInit {
   @Input() username: string;
   @Input() topVh: boolean;
 
-  user!: UserLoggedModel;
+  user!: UserInfo;
   win!: string;
   status!: any;
 
@@ -45,5 +45,11 @@ export class FriendCardComponent implements OnInit, AfterViewInit {
 
   openFriendProfile() {
     this.router.navigate(['/trascendence/profile', this.username]);
+  }
+
+  openFriendChat() {
+    this.router.navigate(['/trascendence/chat/'], {
+      queryParams: { username: this.username },
+    });
   }
 }

@@ -1,93 +1,95 @@
-
 text {
-	font-family: 'Atomic Age', cursive;
-	font-size: 48px;
-	fill: silver;
-  }
-  
-  #ball {
-	fill: silver;
-  }
-  
-  #net {
-	stroke: silver;
-	stroke-width: 3%;
-	stroke-dasharray: 8%, 8%;
-  }
-  
-  .racket {
-	fill: white;
-  }
+  font-family: "Atomic Age", cursive;
+  font-size: 48px;
+  fill: silver;
+}
+
+#ball {
+  fill: silver;
+}
+
+#net {
+  stroke: silver;
+  stroke-width: 3%;
+  stroke-dasharray: 8%, 8%;
+}
+
+.racket {
+  fill: white;
+}
 
 .game {
-	display: block;
-	margin: auto;
+  display: block;
+  margin: auto;
 }
 
 .loader {
-	border: 16px solid #f3f3f3; /* Light grey */
-	border-top: 16px solid #3498db; /* Blue */
-	border-radius: 50%;
-	width: 120px;
-	height: 120px;
-	animation: spin 2s linear infinite;
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
   }
-  
-  @keyframes spin {
-	0% { transform: rotate(0deg); }
-	100% { transform: rotate(360deg); }
+  100% {
+    transform: rotate(360deg);
   }
+}
 
 .container {
-	font-family: Azonix;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: 100% !important;
-	user-select: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100% !important;
+  user-select: none;
 }
 
 .box {
-	display: grid;
-	grid-template-columns: 2fr 2fr 2fr 2fr 2fr 2fr 2fr;
-	grid-template-rows: 2fr 2fr 2fr;
-	border-radius: 8px;
-	color: orange;
-	margin-bottom: 90px;
-	width: 95%;
-	height: 85%;
-	background: transparent;
-	border: 2px solid rgba(255, 255, 255, 0.1);
-	backdrop-filter: blur(40px);
-  }
+  display: grid;
+  grid-template-columns: 2fr 2fr 2fr 2fr 2fr 2fr 2fr;
+  grid-template-rows: 2fr 2fr 2fr;
+  border-radius: 8px;
+  color: orange;
+  margin-bottom: 90px;
+  width: 95%;
+  height: 85%;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(40px);
+}
 
 @media (max-width: 765px) {
-	.box {
-	  display: grid;
-	  grid-template-columns: 2fr;
-	  grid-template-rows: 2fr 2fr 2fr 2fr;
-	  border-radius: 8px;
-	  margin-bottom: 10vh;
-	  background: transparent;
-	  border: 2px solid rgba(255, 255, 255, 0.1);
-	  backdrop-filter: blur(40px);
-	}
+  .box {
+    display: grid;
+    grid-template-columns: 2fr;
+    grid-template-rows: 2fr 2fr 2fr 2fr;
+    border-radius: 8px;
+    margin-bottom: 10vh;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(40px);
+  }
 }
 
 .player-box {
-	width: 100%;
-	height: 100%;
-	align-items: center;
-	grid-row: 2 /3;
-	grid-column: 2/4;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  grid-row: 2 /3;
+  grid-column: 2/4;
 }
 
 .matchbox {
-	display: grid;
-	grid-template-columns: 1fr;
-	grid-template-rows: 2fr 2fr 2fr 2fr;
-	align-items: center;
-	grid-row: 2 / 3;
-	grid-column: 2 / 4;
-	font-size: 40px;
-  }
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 2fr 2fr 2fr 2fr;
+  align-items: center;
+  grid-row: 2 / 3;
+  grid-column: 2 / 4;
+  font-size: 40px;
+}

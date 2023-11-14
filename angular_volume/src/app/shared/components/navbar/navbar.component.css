@@ -3,7 +3,6 @@
   padding: 0;
   box-sizing: border-box;
   text-decoration: none;
-  font-family: Azonix;
   user-select: none;
   position: relative;
   z-index: 2147483646 !important;
@@ -77,7 +76,6 @@
 }
 
 .backresp {
-  font-family: Azonix;
   justify-content: center;
   align-items: center;
   height: 100vh;

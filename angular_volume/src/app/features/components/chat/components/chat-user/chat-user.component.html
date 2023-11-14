@@ -1,0 +1,4 @@
+<section class="card" *ngIf="user">
+  <app-profile-image class="img" [user]="user"></app-profile-image>
+  <div class="username">{{ user.username }}</div>
+</section>

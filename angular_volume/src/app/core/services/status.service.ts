@@ -8,19 +8,21 @@ import { firstValueFrom } from 'rxjs';
 export class StatusService {
   constructor(private readonly http: HttpClient) {}
 
-  async setStatus(id: string, status: boolean) {
+  setStatus(id: string, status: boolean) {
     return firstValueFrom(
-      this.http.patch(`/nest/users/online/${id}`, { newStatus: status })
+      this.http.patch(`/nest/users/online/${id}`, {
+        newStatus: status,
+      })
     );
   }
 
-  async setPlaying(id: string, status: boolean) {
+  setPlaying(id: string, status: boolean) {
     return firstValueFrom(
       this.http.patch(`/nest/users/${id}`, { newStatus: status })
     );
   }
 
-  async set2fa(id: string, status: boolean): Promise<any> {
+  set2fa(id: string, status: boolean): Promise<any> {
     return firstValueFrom(
       this.http.patch(`/nest/users/2fa-status/${id}`, {
         newStatus: status,

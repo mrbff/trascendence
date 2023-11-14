@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { NgxImageCompressService } from 'ngx-image-compress';
 import { UserService } from 'src/app/core/services/user.service';
-import { UserLoggedModel } from 'src/app/models/userLogged.model';
+import { UserInfo } from 'src/app/models/userInfo.model';
 
 @Component({
   selector: 'app-profile-image',
@@ -9,7 +9,7 @@ import { UserLoggedModel } from 'src/app/models/userLogged.model';
   styleUrls: ['./profile-image.component.css'],
 })
 export class ProfileImageComponent {
-  @Input() user!: UserLoggedModel;
+  @Input() user!: UserInfo;
   @Input() currentUser!: boolean;
 
   constructor(
