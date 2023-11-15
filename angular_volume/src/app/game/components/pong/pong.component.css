@@ -77,19 +77,29 @@ text {
 }
 
 .player-box {
-  width: 100%;
-  height: 100%;
-  align-items: center;
-  grid-row: 2 /3;
-  grid-column: 2/4;
+	grid-row: 2 /3;
+	grid-column: 2;
+}
+
+.opponent-box {
+	grid-row: 2/3;
+	grid-column: 6/7;
+	align-items: center;
 }
 
 .matchbox {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 2fr 2fr 2fr 2fr;
-  align-items: center;
-  grid-row: 2 / 3;
-  grid-column: 2 / 4;
-  font-size: 40px;
-}
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 2fr 2fr;
+	align-items: center;
+	font-size: 40px;
+	margin-top: 1em;
+  }
+
+/* calling-component.css */
+app-profile-image div.profile-image-container {
+	/* Your custom styles for the img element */
+	margin-top: 0 !important;
+	margin-left: 0 !important;
+  }
+  
