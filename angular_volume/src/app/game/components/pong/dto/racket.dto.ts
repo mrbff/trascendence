@@ -15,5 +15,5 @@ export const START_RACKET_DATA: Racket ={
 	width: 3,
 	height: 20,
 	margin: 3,
-	speed: 0
+	speed: 2
 }

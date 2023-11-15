@@ -8,7 +8,6 @@ import {
   } from '@nestjs/websockets';
   import { Server, Socket } from 'socket.io';
 import { GameInfo, START_GAME_DATA } from './dto/gameInfo.dto';
-import { log } from 'console';
   
   @WebSocketGateway({
 	namespace: '/pong',
@@ -17,7 +16,7 @@ import { log } from 'console';
 	  credentials: true,
 	},
   })
-  export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	server: Server;
 	queue: Socket[] = [];
@@ -37,100 +36,66 @@ import { log } from 'console';
 	handleDisconnect(client: Socket) {
 		console.log(`\n\nClient disconnected(pong): ${client.id}`);
 		this.removeFromQueue(client);
+		// for (let room of client.rooms){
+		// 	client.leave(room);
+		// 	this.rooms = this.rooms.filter((r) => !(r.name === room));
+		// }
 	  }
-	
+
 	private removeFromQueue(client: Socket) {
 	this.queue = this.queue.filter((c) => c.id !== client.id);
 	}
 
 	private matchmake() {
 	// Implement your matchmaking logic here
-	if (this.queue.length >= 2) {
-		const player1 = this.queue.pop();
-		const player2 = this.queue.pop();
+		if (this.queue.length >= 2) {
+			const player1 = this.queue[0];
+			const player2 = this.queue[1];
+			this.queue.pop();
+			this.queue.pop();
 
-		// Create a room for the matched players
-		let roomName = `room_${Math.random().toString(36).substring(2, 8)}`;
-		player1?.join(roomName);
-		player2?.join(roomName);
-		this.rooms.push({name: roomName, data: START_GAME_DATA});
-
-		// Notify players about the match
-
-		//this.server.to(roomName).emit('match-found', { room: roomName });
-		console.log(`\n\nMatch found! Players ${player1?.id} and ${player2?.id} are in room ${roomName}`);
-	//	player1?.emit('opponent-found', {user: player2, connected: true});
-	//	player2?.emit('opponent-found', {user: player1, connected: true});
-	}
-	}
-  
-	
-	@SubscribeMessage('checkOpponent')
-	async handleCheckOpponent(client: Socket, callback: Function): Promise<void> {
-		// Check if there is an opponent connected
-		console.log('Received checkOpponent event');
-		const rooms = client.rooms;
-	
-		if (rooms.size > 0) {
-			for (const roomName of rooms) {
-				console.log('Room Name:', roomName);
-		  
-				const socketsInRoom = await this.server.in(roomName).fetchSockets();
-		  
-	        if (socketsInRoom.length > 1) {
-				// There is at least one more socket in the room (opponent)
-				const opponentId = socketsInRoom.find(socket => socket.id !== client.id)?.id;
-				const opponentInfo = { user: { id: opponentId, name: 'opponentName' }, connected: true };
-	
-				// Send the opponent information to the client
-				console.log(opponentInfo);
-				callback(opponentInfo);
-				return;
-			}
-			}
+			// Create a room for the matched players
+			let roomName = `room_${Math.random().toString(36).substring(2, 8)}`;
+			player1?.join(roomName);
+			player2?.join(roomName);
+			let size = this.rooms.push({name: roomName, data: START_GAME_DATA});
+			this.rooms[size - 1].data.player.player = player1.id;
+			this.rooms[size - 1].data.opponent.player = player2.id;
+			// Notify players about the match
+			console.log(`\n\nMatch found! Players ${player1?.id} and ${player2?.id} are in room ${roomName}`);
+			player1?.emit('opponent-found', {user: player2.id, connected: true});
+			player2?.emit('opponent-found', {user: player1.id, connected: true});
 		}
-	
-		// If the client is not in any room or there's no opponent, you can handle it accordingly
-		console.log('Client is not in any room or no opponent found');
-		callback(null);
-	    // // Check if there is an opponent connected
-		// console.log('Received checkOpponent event');
-		// const roomName = Object.keys(client.rooms)[1]; // Get the room name (assuming the socket is in only one room)
-		// console.log(roomName);
-		// if (roomName) {
-			// 	console.log('Found roomName');
-			// 	const socketsInRoom = this.server.sockets.adapter.rooms.get(roomName);
-			
-			// 	if (socketsInRoom && socketsInRoom.size > 1) {
-				// 	// There is at least one more socket in the room (opponent)
-				// 	const opponentId = [...socketsInRoom].find(socketId => socketId !== client.id);
-				// 	const opponentInfo = { user: { id: opponentId, name: 'opponentName' }, connected: true };
-				
-				// 	// Send the opponent information to the client
-				// 	console.log(opponentInfo);
-		// 	callback(opponentInfo);
-		// 	return;
-		// 	}
-		// }
 	}
-
 
 	@SubscribeMessage('moveRacket')
-	handleMoveRacket(client: Socket, payload: {game: any ; direction: string }): void {
-	  // Handle the moveRacket event here
-	  // Example: Update the game state and broadcast the updated state to all clients
-	  // You'll need to implement your own game logic
-	  if (payload.direction === "up"){
-	
-	  }
-	  else if (payload.direction === "down"){
-  
-	  }
-	  console.log(`\n\nReceived moveRacket event from ${client.id}: ${payload.direction}`);
-	  // Update the game state based on the direction
-		
-	  // Broadcast the updated game state to all clients
-	  this.server.emit('game-update', payload.game);
+	handleMoveRacket(client: Socket, direction: string): void {
+		const roomNames = Array.from(client.rooms.values()).filter((room) => room !== client.id);
+		if (roomNames.length === 0) {
+			console.error(`Client ${client.id} is not in any room.`);
+			return;
+		}
+		const roomName = roomNames[0]; 
+		console.log(roomName);
+		var room = this.rooms.find((r) => r.name === roomName);
+		if (!room) {
+			console.error(`Room not found for client ${client.id}`);
+			return;
+		}
+		console.log(direction);
+		if (direction === "up"){
+			if (client.id === room.data.player.player)
+				room.data.p0Y -= room.data.player.speed;
+			else
+				room.data.p1Y -= room.data.opponent.speed;
+		}
+		else if (direction === "down"){
+			if (client.id === room.data.player.player)
+				room.data.p0Y += room.data.player.speed;
+			else
+				room.data.p1Y += room.data.opponent.speed;
+		}
+		this.server.emit('game-update', room.data);
 	}
   
 	@SubscribeMessage('game-connect')
@@ -141,5 +106,5 @@ import { log } from 'console';
 
 	  console.log(`\n\n${user.name} connected to the game`);
 	}
-  }
+}
   

@@ -4,17 +4,17 @@
     <section class="sidebar">
       <div class="title"><p>CHAT</p></div>
       <ng-container *ngFor="let message of messages">
-        <app-chat-user
+        <!-- <app-chat-user
           *ngIf="message.user !== userService.getUser()"
           [message]="message"
           (openChat)="openChat($event)"
         >
-        </app-chat-user>
+        </app-chat-user> -->
       </ng-container>
     </section>
     <section class="message-area">
-      <app-message *ngFor="let message of chat" [message]="message">
-      </app-message>
+      <!-- <app-message *ngFor="let message of chat" [message]="message">
+      </app-message> -->
     </section>
     <form (submit)="sendMessageToChannel('#Mychannel')" class="message-container">
       <input

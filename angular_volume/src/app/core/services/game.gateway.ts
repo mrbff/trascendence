@@ -1,4 +1,3 @@
-import { UserLoggedModel } from 'src/app/models/userLogged.model';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
@@ -6,14 +5,12 @@ import { UserService } from 'src/app/core/services/user.service';
 import { GameInfo } from 'src/app/game/components/pong/dto/gameInfo.dto';
 import { SubscribeMessage } from '@nestjs/websockets';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class PongGateway {
   private socket: Socket;
 
   constructor(private readonly userData: UserService) {
-    this.socket = io('/pong', {path: '/socket.io/'});
+    this.socket = io('/pong', {path: '/socket.io/', reconnection: true});
   }
 
   // Emit moveRacket event to the server
@@ -30,21 +27,16 @@ export class PongGateway {
     });
   }
 
-  onOpponentFound(): Observable<{ socket: Socket; connected: boolean }> {
+  onOpponentFound(): Observable<{ id: string; connected: boolean }> {
 	return new Observable((observer) => {
-		this.socket.on('opponent-found', (response: { socket: Socket; connected: boolean }) => {
+		this.socket.on('opponent-found', (response: { id: string; connected: boolean }) => {
         observer.next(response);
-	});
+		});
 	});
   }
 
-  // Check opponent's connection
-  checkOpponentConnection(): Observable<{ socket: Socket; connected: boolean }> {
-    return new Observable((observer) => {
-      this.socket.emit('checkOpponent', (response: { socket: Socket; connected: boolean }) => {
-        observer.next(response);
-      });
-    });
+  disconnect(): void{
+	this.socket.disconnect();
   }
 
   // Connect to the game if the opponent is connected
