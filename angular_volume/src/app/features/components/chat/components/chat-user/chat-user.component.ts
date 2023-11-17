@@ -14,7 +14,7 @@ import { FriendsService } from 'src/app/core/services/friends.service';
   styleUrls: ['./chat-user.component.css'],
 })
 export class ChatUserComponent implements OnInit {
-  @Input() message: any;
+  @Input() conversation: any;
   @Output() openChat = new EventEmitter<string>();
   user: any;
 
@@ -25,6 +25,8 @@ export class ChatUserComponent implements OnInit {
   constructor(private readonly friendService: FriendsService) {}
 
   async ngOnInit() {
-    this.user = await this.friendService.getFriendInfo(this.message.user);
+    this.user = await this.friendService.getFriendInfo(
+      this.conversation.username
+    );
   }
 }

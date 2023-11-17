@@ -3,10 +3,10 @@
   <section class="box">
     <section class="sidebar">
       <div class="title"><p>CHAT</p></div>
-      <ng-container *ngFor="let message of messages">
+      <ng-container *ngFor="let conversation of messages">
         <app-chat-user
-          *ngIf="message.user !== userService.getUser()"
-          [message]="message"
+          *ngIf="conversation.username !== userService.getUser()"
+          [conversation]="conversation"
           (openChat)="openChat($event)"
         >
         </app-chat-user>
@@ -16,8 +16,12 @@
       <app-message *ngFor="let message of chat" [message]="message">
       </app-message>
     </section>
-    <form (submit)="sendMessageToChannel('#Mychannel')" class="message-container">
+    <form
+      (submit)="sendMessageToChannel('#Mychannel')"
+      class="message-container"
+    >
       <input
+        *ngIf="chat.length !== 0"
         class="message-input"
         type="text"
         autocomplete="off"

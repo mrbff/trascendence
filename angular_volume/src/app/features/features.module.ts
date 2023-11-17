@@ -17,6 +17,7 @@ import { SharedModule } from '../shared/shared.module';
 import { ChatComponent } from './components/chat/chat.component';
 import { MessageComponent } from './components/chat/components/message/message.component';
 import { ChatUserComponent } from './components/chat/components/chat-user/chat-user.component';
+import { GameTileComponent } from './components/profile/components/game-tile/game-tile.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { ChatUserComponent } from './components/chat/components/chat-user/chat-u
     ChatComponent,
     MessageComponent,
     ChatUserComponent,
+    GameTileComponent,
   ],
   imports: [CommonModule, SharedModule, FeaturesRoutingModule, FormsModule],
   exports: [ProfileImageComponent],

@@ -1,10 +1,10 @@
 <ng-container *ngIf="currentUser; else otherUser">
-  <section class="message">
+  <section class="message mine">
     <span class="message-content">{{ message.msg }}</span>
   </section>
 </ng-container>
 <ng-template #otherUser>
-  <section class="otherMessage">
+  <section class="message other">
     <span *ngIf="!currentUser" span class="username">{{
       message.user.toUpperCase()
     }}</span>

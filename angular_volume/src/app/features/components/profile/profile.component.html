@@ -6,7 +6,7 @@
         [user]="user"
         [currentUser]="currentUser"
       ></app-profile-image>
-      <div class="username-space">
+      <div>
         <span class="username">{{ user.username }}</span>
       </div>
       <ng-container *ngIf="!currentUser">
@@ -17,6 +17,9 @@
           [isBlocked]="isBlocked"
         ></app-user-buttons>
       </ng-container>
+      <section class="gamesbox">
+        <app-game-tile></app-game-tile>
+      </section>
       <section class="matchbox">
         <div class="win">WIN</div>
         <div class="winRes">

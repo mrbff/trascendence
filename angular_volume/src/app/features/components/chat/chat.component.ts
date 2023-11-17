@@ -17,22 +17,40 @@ export class ChatComponent implements OnInit, OnDestroy {
   public users!: string[]; // Populate with actual user list
 
   showMsg: boolean;
-  chat: string[];
+  chat: any[];
 
   constructor(
     readonly userService: UserService,
     private readonly chatGateway: ChatGateway,
     private readonly route: ActivatedRoute
   ) {
-    this.messages = [
-    /*  { msg: 'ciao', user: 'mbozzi' },
-      { msg: 'ciao', user: 'mbozzi' },
-      { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
-      { msg: 'ciao', user: 'mbozzi' },
-      { msg: 'ciao', user: 'mbozzi' },
-      { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
-      { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },*/
-    ];
+    /*  this.messages = [
+      {
+        username: 'Franco',
+        chat: [
+          { msg: 'ciao', user: 'mbozzi' },
+          { msg: 'ciao', user: 'mbozzi' },
+          {
+            msg: 'dsfnelfjweiofjewiofjewfgeroijgrpgjer;oqgn ro[iegn b[ioqegjr  wmtirtj  ]w m0ir DNWUIFHWEIFHWEIOFHEWFHBEWIFBEB WQKL;DM,AS/.C QW;OFJWQOPDN WKLDNC ONFIEONFOPEWJF',
+            user: 'Franco',
+          },
+          { msg: 'ciao', user: 'mbozzi' },
+          { msg: 'ciao', user: 'mbozzi' },
+          { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
+          { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
+          {
+            msg: 'dsfnelfjweiofjewiofjewfgeroijgrpgjer;oqgn ro[iegn b[ioqegjr  wmtirtj  ]w m0ir DNWUIFHWEIFHWEIOFHEWFHBEWIFBEB WQKL;DM,AS/.C QW;OFJWQOPDN WKLDNC ONFIEONFOPEWJF',
+            user: 'mbozzi',
+          },
+          { msg: 'ciao', user: 'mbozzi' },
+          { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
+          { msg: 'ciao', user: 'mbozzi' },
+          { msg: 'ciao', user: 'mbozzi' },
+          { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
+          { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
+        ],
+      },
+    ]; */
     this.showMsg = false;
     this.chat = [];
   }
@@ -80,14 +98,14 @@ export class ChatComponent implements OnInit, OnDestroy {
     // To DO: $subscribe user joining, leaving, etc.
   }
 
-  sendMessageToChannel(channel:string): void {
+  sendMessageToChannel(channel: string): void {
     if (this.newMessage.trim()) {
       this.chatGateway.sendChannelMsg(this.newMessage, channel);
       this.newMessage = ''; // Reset the input after sending
     }
   }
 
-  sendMessageToUser(receiver:string): void {
+  sendMessageToUser(receiver: string): void {
     if (this.newMessage.trim()) {
       this.chatGateway.sendPrivMsg(this.newMessage, receiver);
       this.newMessage = ''; // Reset the input after sending
@@ -101,6 +119,9 @@ export class ChatComponent implements OnInit, OnDestroy {
   // TO DO: handling user joining, leaving, etc.
 
   openChat(username: string) {
-    this.chat = this.messages.filter((obj) => obj.user === username);
+    this.chat = this.messages
+      .filter((obj) => obj.username === username)
+      .map((obj) => obj.chat)
+      .flat();
   }
 }
