@@ -21,11 +21,15 @@ import {
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { User } from '@prisma/client';
 import { GetUser } from './users.decorator';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Controller('users')
 @ApiTags('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor (
+    private readonly usersService: UsersService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   @Post('signup')
   @ApiCreatedResponse()
@@ -162,4 +166,20 @@ export class UsersController {
   async get2faQr(@GetUser() user: User) {
     return user.qrcode2fa;
   }
+
+  @Get('user-messages')
+  @UseGuards(JwtAuthGuard)
+  @ApiOkResponse()
+  async getUserMessages(
+    @GetUser() user: User,
+  ) {
+    const userMessages = await this.prisma.message.findMany({
+        where: {
+          senderId: user.id,
+        },
+      });
+      
+      return userMessages;
+  }
+
 }
