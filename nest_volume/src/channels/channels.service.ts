@@ -128,11 +128,24 @@ export class ChannelsService {
       },
     });
   }
-/*
+
   async createDirectMessage(receiverName:string, content:string, username:string) {
     const sender = await this.usersService.findUserByName(username);
     const receiver = await this.usersService.findUserByName(receiverName);
     
+    const channel = await this.prisma.channel.findFirstOrThrow({
+      where: {
+        type: "DIRECT",
+        members: {
+          some: {
+            AND: [
+              { userId: sender.id },
+              { userId: receiver.id },
+            ],
+          },
+        },
+      },
+    });
 
     return this.prisma.message.create({
       data: {
@@ -141,5 +154,6 @@ export class ChannelsService {
         content: content
       },
     });
-  }*/
+  }
+
 }
