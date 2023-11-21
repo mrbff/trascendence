@@ -177,8 +177,11 @@ export class UsersController {
         where: {
           senderId: user.id,
         },
+        orderBy: {
+          time: 'desc', // 'asc' for ascending order
+        },
       });
-      
+
       return userMessages;
   }
 
