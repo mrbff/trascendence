@@ -1,18 +1,26 @@
-<div class="card-box" *ngIf="user" [style.top]="topVh ? '14vh' : '20vh'">
-  <div
+<section class="card-box" *ngIf="user" [style.top]="topVh ? '14vh' : '20vh'">
+  <picture
     class="profile-img"
     [ngStyle]="{
       color: user.isOnline ? (user.isPlaying ? 'orange' : 'green') : 'red'
     }"
   >
     <img [src]="user.img" />
-  </div>
+  </picture>
   <div class="username">{{ username }}</div>
-  <div class="user-buttons">
-    <div class="play">
-      <i class="fa-sharp fa-regular fa-circle-play"></i><br />
-      <span>PLAY</span>
-    </div>
+  <section class="user-buttons">
+    <ng-container *ngIf="user.isOnline; else noPlay">
+      <div class="play">
+        <i class="fa-sharp fa-regular fa-circle-play"></i><br />
+        <span>PLAY</span>
+      </div></ng-container
+    >
+    <ng-template #noPlay>
+      <div class="play">
+        <i class="fa-solid fa-ban"></i><br />
+        <span>PLAY</span>
+      </div>
+    </ng-template>
     <div class="chat" (click)="openFriendChat()">
       <i class="fa-solid fa-headset"></i><br />
       <span>CHAT</span>
@@ -22,11 +30,11 @@
       ><br />
       <span (click)="openFriendProfile()">USER</span>
     </div>
-  </div>
+  </section>
   <div class="winRes">
     {{ user.Wins }}
   </div>
   <div class="loseRes">
     {{ user.Losses }}
   </div>
-</div>
+</section>

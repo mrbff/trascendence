@@ -17,6 +17,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   showQr: boolean;
   isBlocked: boolean;
   private $userSubs: Subscription;
+  games: any;
 
   constructor(
     private readonly userService: UserService,
@@ -30,6 +31,18 @@ export class ProfileComponent implements OnInit, OnDestroy {
     this.showQr = false;
     this.isBlocked = false;
     this.$userSubs = new Subscription();
+    this.games = [
+      /* { home: 'mbozzi', away: 'Franco', result: '0-0' },
+      { home: 'Franco', away: 'mbozzi', result: '1-0' },
+      { home: 'mbozzi', away: 'Franco', result: '0-2' },
+      { home: 'mbozzi', away: 'Franco', result: '1-1' },
+      { home: 'mbozzi', away: 'Franco', result: '1-1' },
+      { home: 'mbozzi', away: 'Franco', result: '0-0' },
+      { home: 'Franco', away: 'mbozzi', result: '1-0' },
+      { home: 'mbozzi', away: 'Franco', result: '0-2' },
+      { home: 'mbozzi', away: 'Franco', result: '1-1' },
+      { home: 'mbozzi', away: 'Franco', result: '1-1' }, */
+    ];
   }
 
   ngOnInit(): void {

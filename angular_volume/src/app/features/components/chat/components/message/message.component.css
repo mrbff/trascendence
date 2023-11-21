@@ -2,7 +2,6 @@
   position: relative;
   font-family: Newake;
   padding: 20px;
-  font-size: 15px;
   border-radius: 10px;
   max-width: 45%;
   margin-top: 15px;
@@ -31,13 +30,14 @@ span {
 }
 
 .message-content {
+  font-size: 14px;
   display: block;
   white-space: wrap;
   overflow-x: hidden;
 }
 
 .username {
-  font-size: 12px;
+  font-size: 13px;
   color: orange !important;
   margin-bottom: 10px;
 }

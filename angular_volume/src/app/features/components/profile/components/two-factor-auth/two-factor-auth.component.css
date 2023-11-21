@@ -1,9 +1,4 @@
 .google-auth {
-  position: absolute;
-  left: 4vh;
-  bottom: 4vh;
-  grid-row: 4 / 4;
-  grid-column: 1 / 1;
   cursor: pointer;
   color: red;
 }
@@ -12,7 +7,7 @@
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 2fr 2fr 2fr 2fr;
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);

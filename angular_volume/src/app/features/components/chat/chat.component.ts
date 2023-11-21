@@ -24,8 +24,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     private readonly chatGateway: ChatGateway,
     private readonly route: ActivatedRoute
   ) {
-    /*  this.messages = [
-      {
+    this.messages = [
+      /*   {
         username: 'Franco',
         chat: [
           { msg: 'ciao', user: 'mbozzi' },
@@ -50,7 +50,32 @@ export class ChatComponent implements OnInit, OnDestroy {
           { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
         ],
       },
-    ]; */
+      {
+        username: 'mbozzi',
+        chat: [
+          { msg: 'ciao', user: 'mbozzi' },
+          { msg: 'ciao', user: 'mbozzi' },
+          {
+            msg: 'dsfnelfjweiofjewiofjewfgeroijgrpgjer;oqgn ro[iegn b[ioqegjr  wmtirtj  ]w m0ir DNWUIFHWEIFHWEIOFHEWFHBEWIFBEB WQKL;DM,AS/.C QW;OFJWQOPDN WKLDNC ONFIEONFOPEWJF',
+            user: 'Franco',
+          },
+          { msg: 'ciao', user: 'mbozzi' },
+          { msg: 'ciao', user: 'mbozzi' },
+          { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
+          { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
+          {
+            msg: 'dsfnelfjweiofjewiofjewfgeroijgrpgjer;oqgn ro[iegn b[ioqegjr  wmtirtj  ]w m0ir DNWUIFHWEIFHWEIOFHEWFHBEWIFBEB WQKL;DM,AS/.C QW;OFJWQOPDN WKLDNC ONFIEONFOPEWJF',
+            user: 'mbozzi',
+          },
+          { msg: 'ciao', user: 'mbozzi' },
+          { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
+          { msg: 'ciao', user: 'mbozzi' },
+          { msg: 'ciao', user: 'mbozzi' },
+          { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
+          { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
+        ],
+      }, */
+    ];
     this.showMsg = false;
     this.chat = [];
   }

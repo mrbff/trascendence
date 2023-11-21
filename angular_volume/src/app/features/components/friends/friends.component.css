@@ -1,4 +1,5 @@
 .box {
+  display: grid;
   grid-template-columns: 3fr;
   grid-template-rows: 1fr 2fr 1fr;
   white-space: nowrap;
@@ -25,7 +26,7 @@
   margin-bottom: 15px;
   border: 2px solid orange;
   color: orange;
-  background: black;
+  background: rgb(0, 0, 0, 0.5);
   text-indent: 20px;
   outline: none;
   font-size: 15px;

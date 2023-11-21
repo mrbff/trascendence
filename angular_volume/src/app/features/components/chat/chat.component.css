@@ -1,4 +1,5 @@
 .box {
+  display: grid;
   grid-template-columns: 1.5fr 5fr;
   grid-template-rows: 5fr;
   border-radius: 20px;
