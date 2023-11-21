@@ -1,6 +1,6 @@
 .card {
   position: relative;
-  padding: 40px;
+  padding: 30px;
   border-bottom: 1px solid black;
   cursor: pointer;
 }
@@ -26,7 +26,21 @@
 }
 
 .username {
+  font-family: Newake;
   position: relative;
   left: 6vw;
-  font-size: 25px;
+  font-size: 20px;
+}
+
+@media (max-width: 1255) {
+  .img {
+    .profile-image-container {
+      max-width: 40px !important;
+      max-height: 40px !important;
+    }
+  }
+
+  .username {
+    font-size: 15px;
+  }
 }

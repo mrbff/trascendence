@@ -52,7 +52,6 @@ button {
 }
 
 .box {
-  display: grid;
   border-radius: 8px;
   color: orange;
   margin-bottom: 70px;

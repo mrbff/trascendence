@@ -2,11 +2,13 @@
 <main class="container">
   <section class="box">
     <ng-container *ngIf="user"
-      ><app-profile-image
-        [user]="user"
-        [currentUser]="currentUser"
-      ></app-profile-image>
-      <div>
+      ><div class="image-space">
+        <app-profile-image
+          [user]="user"
+          [currentUser]="currentUser"
+        ></app-profile-image>
+      </div>
+      <div class="username-space">
         <span class="username">{{ user.username }}</span>
       </div>
       <ng-container *ngIf="!currentUser">
@@ -17,8 +19,18 @@
           [isBlocked]="isBlocked"
         ></app-user-buttons>
       </ng-container>
-      <section class="gamesbox">
-        <app-game-tile></app-game-tile>
+      <section></section>
+      <div
+        *ngIf="games.length !== 0"
+        [ngClass]="currentUser ? 'match' : 'match-other'"
+      >
+        MATCH HISTORY
+      </div>
+      <section
+        *ngIf="games.length !== 0"
+        [ngClass]="currentUser ? 'gamesbox' : 'gamesbox-other'"
+      >
+        <app-game-tile *ngFor="let game of games" [game]="game"></app-game-tile>
       </section>
       <section class="matchbox">
         <div class="win">WIN</div>
@@ -31,11 +43,11 @@
         </div>
       </section>
       <ng-container *ngIf="currentUser"
-        ><app-two-factor-auth [user]="user"> </app-two-factor-auth>
+        ><app-two-factor-auth class="auth" [user]="user"> </app-two-factor-auth>
       </ng-container>
       <div class="logout" *ngIf="currentUser">
         <button class="logout-bt" (click)="logout()">LOGOUT</button>
-      </div></ng-container
-    >
+      </div>
+    </ng-container>
   </section>
 </main>

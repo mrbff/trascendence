@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { UserService } from '../../../../../core/services/user.service';
 
 @Component({
   selector: 'app-game-tile',
@@ -6,9 +7,10 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./game-tile.component.css'],
 })
 export class GameTileComponent {
-  fakeTile = { home: 'mbozzi', away: 'franco', result: '0-0' };
-
   @Input() game: any;
+  currentUser: string;
 
-  constructor() {}
+  constructor(private readonly userService: UserService) {
+    this.currentUser = this.userService.getUser();
+  }
 }
