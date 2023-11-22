@@ -112,6 +112,7 @@ export class ChannelsService {
   }
 
   async createChannelMessage(channelName:string, content:string, username:string) {
+    ///TO DO: se non trova channel crealo
     const channel = await this.prisma.channel.findUniqueOrThrow({
       where: {
         name: channelName
@@ -132,7 +133,7 @@ export class ChannelsService {
   async createDirectMessage(receiverName:string, content:string, username:string) {
     const sender = await this.usersService.findUserByName(username);
     const receiver = await this.usersService.findUserByName(receiverName);
-    
+    ///TO DO: se non trova channel crealo
     const channel = await this.prisma.channel.findFirstOrThrow({
       where: {
         type: "DIRECT",

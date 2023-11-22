@@ -13,6 +13,7 @@ import { UsersService } from 'src/users/users.service';
 import * as jwt from 'jsonwebtoken';
 
 import {JwtPayload} from 'jsonwebtoken'
+import { ChannelsService } from 'src/channels/channels.service';
 type MyJwtPayload = {
   userId: number,
 } & JwtPayload;
@@ -38,6 +39,7 @@ const userSocketMap: { [userId: string]: string } = {};
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   constructor (
     private usersService: UsersService,
+    private channelsService: ChannelsService
   ) {}
 
   @WebSocketServer()
@@ -84,12 +86,15 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('PrivMsg')
   handlePriv(client: Socket, payload: { sender: string, receiver: string, message: string }): void {
     const { sender, receiver, message } = payload;
+    this.channelsService.createDirectMessage(receiver, message, sender);
     this.server.emit('MsgFromChannel', { sender: sender, message: message });
   }
 
   @SubscribeMessage('ChannelMsg')
   handleChannelMsg(client: Socket, payload: { sender: string, channel: string, message: string }): void {
     const { sender, channel, message } = payload;
+    this.channelsService.createChannelMessage(channel, message, sender);
+    ///TO DO: creare room a cui mandarlo
     this.server.emit('MsgFromChannel', { sender: sender, channel: channel, message: message });
   }
 }
