@@ -3,9 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { User } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { receiveMessageOnPort } from 'worker_threads';
 
 @Injectable()
 export class FriendsService {
