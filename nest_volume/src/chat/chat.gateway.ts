@@ -87,6 +87,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   handlePriv(client: Socket, payload: { sender: string, receiver: string, message: string }): void {
     const { sender, receiver, message } = payload;
     this.channelsService.createDirectMessage(receiver, message, sender);
+    ///TO DO: creare room della chat o mandarlo all'id dell'user nella map
     this.server.emit('MsgFromChannel', { sender: sender, message: message });
   }
 
@@ -95,6 +96,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const { sender, channel, message } = payload;
     this.channelsService.createChannelMessage(channel, message, sender);
     ///TO DO: creare room a cui mandarlo
+    //this.server.to(/*id della room*/).emit('MsgFromChannel', { sender: sender, channel: channel, message: message });
     this.server.emit('MsgFromChannel', { sender: sender, channel: channel, message: message });
   }
 }
