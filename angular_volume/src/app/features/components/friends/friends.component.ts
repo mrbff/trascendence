@@ -61,20 +61,22 @@ export class FriendsComponent implements OnInit, AfterViewInit {
   }
 
   async searchPlayer() {
-    await this.friendsService
-      .getFriendInfo(this.search)
-      .then((response) => {
-        this.router.navigate(['/trascendence/profile', response.username]);
-      })
-      .catch(() => {
-        this.placeholder = 'User not found';
-        this.searchBox.classList.add('red');
-        setTimeout(() => {
-          this.placeholder = 'Search player';
-          this.searchBox.classList.remove('red');
-        }, 2000);
-      });
-    this.search = '';
+    if (this.search !== '') {
+      await this.friendsService
+        .getFriendInfo(this.search)
+        .then((response) => {
+          this.router.navigate(['/trascendence/profile', response.username]);
+        })
+        .catch(() => {
+          this.placeholder = 'User not found';
+          this.searchBox.classList.add('red');
+          setTimeout(() => {
+            this.placeholder = 'Search player';
+            this.searchBox.classList.remove('red');
+          }, 2000);
+        });
+      this.search = '';
+    }
   }
 
   onMouseWheel(event: WheelEvent, containerType: string) {

@@ -1,5 +1,4 @@
 .box {
-  display: grid;
   grid-template-columns: 3fr;
   grid-template-rows: 1fr 2fr 1fr;
   white-space: nowrap;
