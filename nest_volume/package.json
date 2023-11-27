@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@babylonjs/core": "^6.31.0",
     "@k4connect/socket.io": "^1.7.6",
     "@nestjs/axios": "^3.0.0",
     "@nestjs/common": "^10.2.7",

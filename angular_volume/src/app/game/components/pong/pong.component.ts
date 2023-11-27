@@ -1,9 +1,8 @@
 import { UserInfo } from '../../../models/userInfo.model';
-import { GameInfo, START_GAME_DATA } from './dto/gameInfo.dto';
-import { Component, HostListener, OnInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild, ElementRef, OnDestroy, AfterViewInit, AfterContentChecked, AfterViewChecked, NgZone } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
 import { PongGateway } from 'src/app/core/services/game.gateway';
-import { Subscription } from 'rxjs';
+import * as BABYLON from '@babylonjs/core';
 
 @Component({
   selector: 'app-pong',
@@ -11,36 +10,49 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./pong.component.css'],
   providers: [PongGateway],
 })
-export class PongComponent implements OnInit , OnDestroy{
+export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
+	@ViewChild('renderCanvas', {static: true})
+	canvas!: HTMLCanvasElement;
 	
-	game: GameInfo = START_GAME_DATA;
-	private socket: any;
 	user!: UserInfo;
 	opponentConnected = false;
+	racket: number = -1;
+	private scene!: BABYLON.Scene;
 	
 	constructor(
 		private readonly userData: UserService,
 		private readonly gate: PongGateway,
-	//	private subs: Subscription
-		){}
-
+		private ngZone: NgZone,
+	){}
+	
 	public async  ngOnInit() {
 		this.user = await this.userData.getUserInfo();
-		this.game.player.player = this.user.id;
-		this.gate.onGameUpdate().subscribe((data) => {
-			console.log(data);
-			this.game = data;
-		});
-		
+		// this.gate.onPlayerUpdate().subscribe((data) => {
+		// 	//console.log(data);
+		// });
+		this.gate.onPlayerUpdate();
 		this.gate.onOpponentFound().subscribe((found) =>{
 			console.log('opponent found starting game');
-			this.game.opponent.player = found.id;
 			this.opponentConnected = found.connected;
+			this.racket = found.seat;
 		});
 	}
 
+	ngAfterViewChecked(): void {
+		// Check if opponent is connected and canvas is available
+		if (this.opponentConnected) {
+			this.canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
+			if (this.canvas && !this.scene) {
+				this.scene = this.gate.start(this.canvas);
+			} else {
+				//console.error('Canvas element not found.');
+			}
+		}
+	}
+
 	ngOnDestroy(): void {
-		// clearInterval(this.findOpponent);
+		if (this.scene)
+			this.gate.stop();
 		this.gate.disconnect();
 	}
 
@@ -56,12 +68,4 @@ export class PongComponent implements OnInit , OnDestroy{
 			this.gate.moveRacket('down');
 		}
 	}
-
-	// @HostListener('window:keyup', ['$event'])
-	// onKeyUp(e: any) {
-	//   if (e.code === 'KeyW' || e.code === 'KeyS') {
-	//   }
-	//   if (e.code === 'ArrowUp' || e.code === 'ArrowDown') {
-	//   }
-	// }
 }
