@@ -1,3 +1,4 @@
+import { Scene } from "babylonjs";
 import { Socket } from "socket.io";
 
 
@@ -6,6 +7,7 @@ export interface GameInfo{
 	player2: Socket;
 	score1: number;
 	score2: number;
+	scene?: Scene;
 }
 
 // export const START_GAME_DATA: GameInfo = {

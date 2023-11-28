@@ -8,7 +8,7 @@ import {
   } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { GameInfo } from './dto/gameInfo.dto';
-import * as BABYLON from '@babylonjs/core';
+import * as BABYLON from 'babylonjs';
 
 @WebSocketGateway({
 	namespace: '/pong',
@@ -22,14 +22,11 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	server: Server;
 	queue: Socket[] = [];
 	rooms: {name: string; data: GameInfo}[] = [];
-	// private socket: Socket;
-	// private engine!: BABYLON.Engine;
+	private engine!: BABYLON.Engine;
 	// private scene!: BABYLON.Scene;
-	// private canvas!: HTMLCanvasElement;
-	// private camera!: BABYLON.ArcRotateCamera;
-	// private player: number = -1;
-	
-  
+
+	//---------------------- CONNECTION HANDLING -------------------------//
+
 	afterInit(server: Server) {
 	  console.log('\n\nInitialized!(pong)');
 	}
@@ -73,85 +70,92 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		}
 	}
 
-	// gameLoop() {
-	// 	var ball = {position: {x: 0, y: 0, z: 0}, dir: 1};
-	// 	while (1)
-	// 	{
-	// 		ball
-	// 	}
+	//---------------------- GAME LOGIC -------------------------//
 
+	
+	@SubscribeMessage('start')
+	start(client: Socket) {
+		let room = this.findClientRoom(client);
+		if (room){
+			if (!room.data.scene)
+			this.createScene(room);
+			this.gameLoop(room);
+		}
+}
+
+	createScene(room: {name: string; data: GameInfo}){
+		this.engine = new BABYLON.NullEngine();
+		if (room.data.scene) {
+			room.data.scene.dispose();
+		}
+		this.engine.displayLoadingUI();
+		room.data.scene = new BABYLON.Scene(this.engine);
+		room.data.scene.collisionsEnabled = true;
+		var ball = BABYLON.MeshBuilder.CreateSphere('ball', );
+		var ballbody = new BABYLON.PhysicsAggregate(ball, BABYLON.PhysicsShapeType.SPHERE, { mass: 0}, room.data.scene);
+		var racket1 = BABYLON.MeshBuilder.CreateCapsule('player1',{orientation: BABYLON.Vector3.Left(),height: 7, radius: 0.5});
+		var racket2 = BABYLON.MeshBuilder.CreateCapsule('player2',{orientation: BABYLON.Vector3.Left(),height: 7, radius: 0.5});
+		var racket1body =  new BABYLON.PhysicsAggregate(racket1, BABYLON.PhysicsShapeType.CAPSULE, { mass: 0}, room.data.scene);
+		var racket2body =  new BABYLON.PhysicsAggregate(racket2, BABYLON.PhysicsShapeType.CAPSULE, { mass: 0}, room.data.scene);
+		racket1.position = new BABYLON.Vector3(0, 4.5, -29);
+		racket2.position = new BABYLON.Vector3(0, 4.5, 29);
+		ball.position = new BABYLON.Vector3(0, 4.5, 0);
+		var board = BABYLON.SceneLoader.ImportMesh("", "../../assets/", "test.glb", room.data.scene, (mesh)=> { mesh[0].checkCollisions = true; mesh[0].receiveShadows = true; });
+	}
+
+	// stop(): void {
+	// 	this.scene.dispose();
+	// 	this.engine.dispose();
 	// }
 
-	//   start(canvas: HTMLCanvasElement): BABYLON.Scene {
-	// 	  this.ngZone.runOutsideAngular(() => {
-	// 		  this.initializeEngine(canvas);
-	// 		  this.createScene();
-	// 		  this.renderScene();
-	// 	  });
-	// 	  return(this.scene);
-	//   }
-  
-	//   initializeEngine(canvas: HTMLCanvasElement): void {
-	// 	  this.canvas = canvas;
-	// 	  this.engine = new BABYLON.Engine(this.canvas, true);
-	//   }
-  
-	//   createScene(){
-	// 	  if (this.scene) {
-	// 		  this.scene.dispose();
-	// 	  }
-	// 	  this.engine.displayLoadingUI();
-	// 	  this.scene = new BABYLON.Scene(this.engine);
-  
-	// 	  //this.camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), this.scene);
-	// 	  this.camera = new BABYLON.ArcRotateCamera('camera', 0, 0.5, 50, BABYLON.Vector3.Zero(), this.scene);
-	// 	  // This targets the camera to scene origin
-	// 	  this.camera.setTarget(BABYLON.Vector3.Zero());
-	// 	  // This attaches the camera to the canvas
-	// 	  this.camera.attachControl(this.canvas, true);
-	  
-	// 	  var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(-0.5, 1, -2), this.scene);
-	// 	  light.intensity = 1;
-	// 	  light.diffuse = new BABYLON.Color3(0.82, 0.46, 0.97);
-	// 	  light.specular = new BABYLON.Color3(1, 1, 1);
-	// 	  light.groundColor = new BABYLON.Color3(0.2, 0.03, 0.22);
-	  
-	// 	  var ball = BABYLON.MeshBuilder.CreateSphere('ball', );
-	// 	  var racket1 = BABYLON.MeshBuilder.CreateCapsule('player1',{orientation: BABYLON.Vector3.Left(),height: 7, radius: 0.5});
-	// 	  var racket2 = BABYLON.MeshBuilder.CreateCapsule('player2',{orientation: BABYLON.Vector3.Left(),height: 7, radius: 0.5});
-	// 	  racket1.position = new BABYLON.Vector3(0, 4.5, -29);
-	// 	  racket2.position = new BABYLON.Vector3(0, 4.5, 29);
-	// 	  ball.position = new BABYLON.Vector3(0, 4.5, 0);
-	// 	  var board = BABYLON.SceneLoader.ImportMesh("", "../../assets/", "test.glb", this.scene);
-		  
-	// 	  /*-------------- NEBULA SKYBOX -----------------*/
-	// 	  // var nebula = new BABYLON.CubeTexture("https://www.babylonjs.com/assets/skybox/nebula", this.scene);
-	// 	  // nebula.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
-	// 	  var nebula = new BABYLON.CubeTexture("../../assets/skybox/sky", this.scene, null, true);
-	// 	  this.scene.createDefaultSkybox(nebula, true, 1000);
-	// 	  const music = new BABYLON.Sound('backgroun-music', "../../assets/Intergalactic Odyssey.ogg", this.scene, null, {loop:true, autoplay:true});
-  
-  
-	//   }
-	  
-	//   renderScene(){
-	// 	  this.engine.hideLoadingUI();
-	// 	  this.engine.runRenderLoop(()=> {
-	// 		  this.scene.render();
-	// 	  });
-	//   }
-	  
-	//   stop(): void {
-	// 	  this.scene.dispose();
-	// 	  this.engine.stopRenderLoop();
-	// 	  this.engine.dispose();
-	// 	  this.camera.dispose();
-	//   }
-  
+	gameLoop(room: {name: string; data: GameInfo}) {
+		var ball = room.data.scene?.getMeshByName('ball');
+		var racket1 = room.data.scene?.getMeshByName('player1');
+		var racket2 = room.data.scene?.getMeshByName('player2');
+		var board =  room.data.scene?.getMeshByName('board');
+		const move = new BABYLON.Vector3(0, 0, 0.5);
+		// Set up onCollide handler for the ball
+		if(ball)
+			ball.onCollide = (collidedMesh) => {
+				if (collidedMesh === racket1) {
+
+				} else if (collidedMesh === racket2) {
+
+				} else if (collidedMesh === board) {
+
+				}
+			};
+		room.data.scene?.onBeforeRenderObservable.add(() => {
+			ball?.moveWithCollisions(move);
+			this.server.to(room.name).emit('ball-update', ball?.position);
+		});
+	}
 
 
 	@SubscribeMessage('moveRacket')
 	handleMoveRacket(client: Socket, direction: string): void {
+			let room = this.findClientRoom(client);
+			if (!room)
+				return
+			/*------------------------------------------*/
+			var racket = room.data.scene?.getMeshByName(client === room.data.player1 ? 'player1': 'player2');
+			if (racket) {
+				switch (direction) {
+					case 'up':
+						racket.position.x -= 0.1;
+						break;
+					case 'down':
+						racket.position.x += 0.1;
+						break;
+				}
+			}
+			client.to(room.name).emit('racket-update', direction);
+		}
+	
+
+
+	//-------------------------- UTILITY ------------------------------------//
+	findClientRoom(client: Socket) {
 		const roomNames = Array.from(client.rooms.values()).filter((room) => room !== client.id);
 		if (roomNames.length === 0) {
 			console.error(`Client ${client.id} is not in any room.`);
@@ -164,18 +168,16 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			console.error(`Room not found for client ${client.id}`);
 			return;
 		}
-		// console.log(direction);
-		/*------------------------------------------*/
-		client.to(roomName).emit('racket-update', direction);
+		return (room);
 	}
-  
-	@SubscribeMessage('game-connect')
-	handleGameConnect(client: Socket, user: { id: string; name: string }): void {
-	  // Handle the game-connect event here
-	  // Example: You can log the connected user or perform other actions
-	  client.join(user.id);
+	
+	/* 	@SubscribeMessage('game-connect')
+		handleGameConnect(client: Socket, user: { id: string; name: string }): void {
+		// Handle the game-connect event here
+		// Example: You can log the connected user or perform other actions
+		client.join(user.id);
 
-	  console.log(`\n\n${user.name} connected to the game`);
+		console.log(`\n\n${user.name} connected to the game`);
+		} */
 	}
-}
   

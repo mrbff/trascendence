@@ -4,28 +4,42 @@ import { io, Socket } from 'socket.io-client';
 import { UserService } from 'src/app/core/services/user.service';
 import { GameInfo } from 'src/app/game/components/pong/dto/gameInfo.dto';
 import * as BABYLON from '@babylonjs/core';
-import "@babylonjs/loaders/glTF";
+// import "@babylonjs/loaders/glTF";
 
 @Injectable()
 export class PongGateway {
 
   private socket: Socket;
+  private canvas!: HTMLCanvasElement;
   private engine!: BABYLON.Engine;
   private scene!: BABYLON.Scene;
-  private canvas!: HTMLCanvasElement;
   private camera!: BABYLON.ArcRotateCamera;
   private player: number = -1;
-
-	constructor(private readonly userData: UserService, private ngZone: NgZone,) {
-		this.socket = io('/pong', {path: '/socket.io/', reconnection: true});
+  
+  constructor(private readonly userData: UserService, private ngZone: NgZone,) {
+	  this.socket = io('/pong', {path: '/socket.io/', reconnection: true});
 	}
 
+	onOpponentFound(): Observable<{ id: string; connected: boolean; seat: number}> {
+		return new Observable((observer) => {
+			this.socket.on('opponent-found', (response: { id: string; connected: boolean; seat: number}) => {
+				this.player = response.seat;
+				observer.next(response);
+			});
+		});
+	}
+	
+	disconnect(): void{
+		this.socket.disconnect();
+	}
+	
 	start(canvas: HTMLCanvasElement): BABYLON.Scene {
 		this.ngZone.runOutsideAngular(() => {
 			this.initializeEngine(canvas);
 			this.createScene();
 			this.scene.executeWhenReady(() => this.renderScene());
 		});
+		this.socket.emit('start', canvas);
 		return(this.scene);
 	}
 
@@ -62,7 +76,7 @@ export class PongGateway {
 		ball.position = new BABYLON.Vector3(0, 4.5, 0);
 		var board = BABYLON.SceneLoader.ImportMesh("", "../../assets/", "test.glb", this.scene);
 		
-		/*-------------- NEBULA SKYBOX -----------------*/
+		//-------------- NEBULA SKYBOX -----------------
 		// var nebula = new BABYLON.CubeTexture("https://www.babylonjs.com/assets/skybox/nebula", this.scene);
         // nebula.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
 		var nebula = new BABYLON.CubeTexture("../../assets/skybox/sky", this.scene, null, true);
@@ -133,18 +147,6 @@ export class PongGateway {
 		});
 	}
 	
-	onOpponentFound(): Observable<{ id: string; connected: boolean; seat: number}> {
-		return new Observable((observer) => {
-			this.socket.on('opponent-found', (response: { id: string; connected: boolean; seat: number}) => {
-				this.player = response.seat;
-				observer.next(response);
-			});
-		});
-	}
-	
-	disconnect(): void{
-		this.socket.disconnect();
-	}
 	
 }
 
@@ -155,39 +157,3 @@ export class PongGateway {
 			//         this.socket.emit('game-connect', user);
 			//       }
 			//     });
-			
-			
-			/*---------------- STELLE CON PARTICLE EMITTER------------------*/
-			
-			// this.scene.clearColor = new BABYLON.Color4(0.0, 0.0, 0.0); // background color
-			// var starsParticles = new BABYLON.ParticleSystem("starsParticles", 15000, this.scene);
-			// starsParticles.particleTexture = new BABYLON.Texture("https://raw.githubusercontent.com/PatrickRyanMS/BabylonJStextures/master/ParticleSystems/Sun/T_Star.png", this.scene);
-			// var starsEmitter = new BABYLON.SphereParticleEmitter();
-			// starsEmitter.radius = 60;
-			// starsEmitter.radiusRange = 0; // emit only from shape surface
-			// // mesh emmitting the particles
-			// starsParticles.emitter = board; // the starting object, the emitter
-			// starsParticles.particleEmitterType = starsEmitter;
-			
-			// // Random starting color
-			// starsParticles.color1 = new BABYLON.Color4(0.898, 0.737, 0.718, 1.0);
-			// starsParticles.color2 = new BABYLON.Color4(0.584, 0.831, 0.894, 1.0);
-			
-			// starsParticles.minSize = 0.15;
-			// starsParticles.maxSize = 0.3;
-			// starsParticles.minLifeTime = 999999;
-			// starsParticles.maxLifeTime = 999999;
-			
-			// starsParticles.manualEmitCount = 500;
-			// starsParticles.maxEmitPower = 0.0;
-			
-			// starsParticles.blendMode = BABYLON.ParticleSystem.BLENDMODE_STANDARD;
-			// starsParticles.gravity = new BABYLON.Vector3(0, 0, 0);
-			// starsParticles.minAngularSpeed = 0.0;
-			// starsParticles.maxAngularSpeed = 0.0;
-			// starsParticles.minEmitPower = 0.0;
-			// starsParticles.maxAngularSpeed = 0.0;
-			// starsParticles.isBillboardBased = true;
-			// starsParticles.renderingGroupId = 0;
-			// starsParticles.start();
-//   }

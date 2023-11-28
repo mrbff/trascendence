@@ -4,6 +4,9 @@ build:
 	@docker-compose -f $(COMPOSE_FILE) build --no-cache
 	@npm install --prefix ./angular_volume/
 	@npm install --prefix ./nest_volume/
+	@npm install --prefix ./angular_volume/ @babylonjs/core
+	@npm install --prefix ./angular_volume/ @babylonjs/loaders
+	@npm install --prefix ./nest_volume/ babylonjs
 
 up:
 	@echo "\e[32mStarting trascendence\e[0m"
