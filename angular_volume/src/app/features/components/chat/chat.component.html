@@ -2,7 +2,18 @@
 <main class="container">
   <section class="box">
     <section class="sidebar">
-      <div class="title"><p>CHAT</p></div>
+      <div class="title">
+        <p>{{ title }}</p>
+      </div>
+      <input
+        id="search"
+        [(ngModel)]="search"
+        class="search"
+        autocomplete="on"
+        spellcheck="false"
+        [placeholder]="placeholder"
+        (keydown.enter)="searchChat()"
+      />
       <ng-container *ngFor="let conversation of messages">
         <app-chat-user
           *ngIf="conversation.username !== userService.getUser()"
@@ -11,17 +22,18 @@
         >
         </app-chat-user>
       </ng-container>
+      <div class="create-channel" (click)="newChannel.changeDialogStatus()">
+        <i class="fa-solid fa-people-group fa-2xl"></i>
+      </div>
     </section>
     <section class="message-area">
       <app-message *ngFor="let message of chat" [message]="message">
       </app-message>
     </section>
-    <form
-      (submit)="sendMessageToChannel('#Mychannel')"
-      class="message-container"
-    >
+    <form class="message-container">
       <input
-        *ngIf="chat.length !== 0"
+        id="message-input"
+        *ngIf="chat.length !== 0 || isOpen"
         class="message-input"
         type="text"
         autocomplete="off"
@@ -30,7 +42,19 @@
         name="message"
         placeholder="Type a message..."
       />
-      <button type="submit">Send</button>
+      <button
+        *ngIf="chat.length !== 0 || isOpen"
+        type="submit"
+        (click)="sendMessageToUser(title)"
+      >
+        Send
+      </button>
     </form>
   </section>
+  <app-new-channel #newChannel></app-new-channel>
+  <div
+    class="backdroppe"
+    *ngIf="newChannel.isOpen"
+    (click)="newChannel.changeDialogStatus()"
+  ></div>
 </main>

@@ -68,7 +68,7 @@ export class UserService {
     return lastValueFrom(this.http.get<UserInfo>(`/nest/users/me`));
   }
 
-  async getAllUsers(): Promise<any> {
-    return lastValueFrom(this.http.get(`/nest/users/`));
+  async getAllUsers(): Promise<UserInfo[]> {
+    return lastValueFrom(this.http.get<UserInfo[]>(`/nest/users/`));
   }
 }

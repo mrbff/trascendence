@@ -42,6 +42,36 @@
     0 0 40px #00c4ff, 0 0 70px #00c4ff, 0 0 80px #00c4ff, 0 0 100px #00c4ff;
 }
 
+.search {
+  padding: 15px;
+  color: white;
+  font-family: Newake;
+  border: 0px;
+  border-bottom: 2px solid black;
+  background: rgb(0, 0, 0, 0.5);
+  text-indent: 20px;
+  outline: none;
+  font-size: 20px;
+  padding: 15px;
+}
+
+.search::placeholder {
+  color: white;
+  font-family: Newake;
+  background-color: transparent;
+}
+
+.create-channel {
+  cursor: pointer;
+  position: absolute;
+  left: 2vw;
+  bottom: 2vh;
+  padding: 15px;
+  border: 2px solid orange;
+  border-radius: 100px;
+  background: darkslateblue;
+}
+
 .message-container {
   grid-column: 2 / 3;
   margin-left: 10px;
@@ -99,4 +129,14 @@
 .other-msg {
   grid-column: 1 / 2;
   margin: 0 !important;
+}
+
+.backdroppe {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
 }

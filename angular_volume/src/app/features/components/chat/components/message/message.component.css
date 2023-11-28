@@ -30,7 +30,7 @@ span {
 }
 
 .message-content {
-  font-size: 14px;
+  font-size: 16px;
   display: block;
   white-space: wrap;
   overflow-x: hidden;

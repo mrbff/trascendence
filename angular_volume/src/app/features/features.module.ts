@@ -18,6 +18,7 @@ import { ChatComponent } from './components/chat/chat.component';
 import { MessageComponent } from './components/chat/components/message/message.component';
 import { ChatUserComponent } from './components/chat/components/chat-user/chat-user.component';
 import { GameTileComponent } from './components/profile/components/game-tile/game-tile.component';
+import { NewChannelComponent } from './components/chat/components/new-channel/new-channel.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { GameTileComponent } from './components/profile/components/game-tile/gam
     MessageComponent,
     ChatUserComponent,
     GameTileComponent,
+    NewChannelComponent,
   ],
   imports: [CommonModule, SharedModule, FeaturesRoutingModule, FormsModule],
   exports: [ProfileImageComponent],

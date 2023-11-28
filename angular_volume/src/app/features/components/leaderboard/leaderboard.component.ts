@@ -16,12 +16,13 @@ export class LeaderboardComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-    this.players = await this.userService.getAllUsers();
-    this.players.sort((a: any, b: any) => {
-      const aWinRatio = a.Wins / (a.Wins + a.Losses);
-      const bWinRatio = b.Wins / (b.Wins + b.Losses);
-      return bWinRatio - aWinRatio;
-    });
+    this.players = (await this.userService.getAllUsers()).sort(
+      (a: any, b: any) => {
+        const aWinRatio = a.Wins / (a.Wins + a.Losses);
+        const bWinRatio = b.Wins / (b.Wins + b.Losses);
+        return bWinRatio - aWinRatio;
+      }
+    );
   }
 
   openProfile(player: string) {

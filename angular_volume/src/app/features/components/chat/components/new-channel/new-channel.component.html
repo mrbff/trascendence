@@ -1,0 +1,34 @@
+<dialog class="newChannel">
+  <p>CREATE NEW CHANNEL</p>
+  <input
+    id="channel-input"
+    [(ngModel)]="channelName"
+    class="channel-input"
+    type="text"
+    placeholder="Insert channel name"
+  />
+  <input
+    id="users-input"
+    [(ngModel)]="search"
+    class="channel-input"
+    type="text"
+    [placeholder]="placeholder"
+    (keydown.enter)="addUser()"
+    spellcheck="false"
+  />
+  <section class="select-area">
+    <span>CHANNEL USERS:</span>
+    <div class="space">
+      <div class="select-user" *ngFor="let user of channelUsers">
+        {{ user }}
+      </div>
+    </div>
+  </section>
+  <button style="background-color: green" (click)="createNewChannel()">
+    CREATE
+  </button>
+  <button style="background-color: red" (click)="changeDialogStatus()">
+    CANCEL
+  </button>
+  <span style="color: red">{{ errorMsg }}</span>
+</dialog>

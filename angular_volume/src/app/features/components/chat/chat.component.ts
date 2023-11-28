@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { UserService } from 'src/app/core/services/user.service';
@@ -16,7 +16,12 @@ export class ChatComponent implements OnInit, OnDestroy {
   public channels!: string[]; // Populate with actual channels
   public users!: string[]; // Populate with actual user list
 
+  search: string;
+  placeholder: string;
+  isOpen: boolean;
+  title: string;
   showMsg: boolean;
+
   chat: any[];
 
   constructor(
@@ -25,7 +30,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     private readonly route: ActivatedRoute
   ) {
     this.messages = [
-      /*   {
+      /*  {
         username: 'Franco',
         chat: [
           { msg: 'ciao', user: 'mbozzi' },
@@ -78,6 +83,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     ];
     this.showMsg = false;
     this.chat = [];
+    this.search = '';
+    this.placeholder = 'Search user or channel';
+    this.isOpen = false;
+    this.title = 'CHAT';
   }
 
   ngOnInit(): void {
@@ -91,6 +100,8 @@ export class ChatComponent implements OnInit, OnDestroy {
         const username = params['username'];
         if (username !== undefined) {
           this.openChat(username);
+          this.title = username;
+          this.isOpen = true;
         }
       })
     );
@@ -143,10 +154,29 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   // TO DO: handling user joining, leaving, etc.
 
+  // WIP
   openChat(username: string) {
     this.chat = this.messages
       .filter((obj) => obj.username === username)
       .map((obj) => obj.chat)
       .flat();
+    this.isOpen = true;
+    this.title = username;
+  }
+
+  searchChat() {
+    if (this.search !== '' && this.search !== this.userService.getUser()) {
+      if (
+        this.messages.filter((obj) => obj.username === this.search).length !== 0
+      ) {
+        this.openChat(this.search);
+      } else {
+        this.placeholder = 'Chat not found';
+        setTimeout(() => {
+          this.placeholder = 'Search user or channel';
+        }, 2000);
+      }
+    }
+    this.search = '';
   }
 }
