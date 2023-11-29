@@ -3,6 +3,10 @@
   <section class="box">
     <section class="sidebar">
       <div class="title">
+        <div class="back" *ngIf="screenW < 650 && isOpen" (click)="backClick()">
+          <i class="fa-solid fa-angles-left fa-2xl" (click)="backClick()"></i>
+        </div>
+        <i></i>
         <p>{{ title }}</p>
       </div>
       <input
@@ -16,7 +20,7 @@
       />
       <ng-container *ngFor="let conversation of messages">
         <app-chat-user
-          *ngIf="conversation.username !== userService.getUser()"
+          *ngIf="conversation.username !== userService.getUser() && !isOpen"
           [conversation]="conversation"
           (openChat)="openChat($event)"
         >
@@ -26,10 +30,11 @@
         <i class="fa-solid fa-people-group fa-2xl"></i>
       </div>
     </section>
-    <section class="message-area">
-      <app-message *ngFor="let message of chat" [message]="message">
-      </app-message>
-    </section>
+    <ng-container *ngIf="isOpen">
+      <section class="message-area">
+        <app-message *ngFor="let message of chat" [message]="message">
+        </app-message></section
+    ></ng-container>
     <form class="message-container">
       <input
         id="message-input"

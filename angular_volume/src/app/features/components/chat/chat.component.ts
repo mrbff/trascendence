@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
@@ -21,8 +21,14 @@ export class ChatComponent implements OnInit, OnDestroy {
   isOpen: boolean;
   title: string;
   showMsg: boolean;
+  screenW: any;
 
   chat: any[];
+
+  @HostListener('window:resize', ['$event'])
+  onWindowResize() {
+    this.screenW = window.innerWidth;
+  }
 
   constructor(
     readonly userService: UserService,
@@ -30,7 +36,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     private readonly route: ActivatedRoute
   ) {
     this.messages = [
-      /*  {
+      {
         username: 'Franco',
         chat: [
           { msg: 'ciao', user: 'mbozzi' },
@@ -79,7 +85,7 @@ export class ChatComponent implements OnInit, OnDestroy {
           { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
           { msg: 'dsfnelfjweiofjewiofjewf', user: 'Franco' },
         ],
-      }, */
+      },
     ];
     this.showMsg = false;
     this.chat = [];
@@ -90,6 +96,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.screenW = window.innerWidth;
+    console.log(this.screenW);
     this.initializeChat();
   }
 
@@ -178,5 +186,11 @@ export class ChatComponent implements OnInit, OnDestroy {
       }
     }
     this.search = '';
+  }
+
+  backClick() {
+    this.isOpen = false;
+    this.title = 'chat';
+    console.log('TKM');
   }
 }
