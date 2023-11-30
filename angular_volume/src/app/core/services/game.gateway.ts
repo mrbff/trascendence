@@ -4,7 +4,7 @@ import { io, Socket } from 'socket.io-client';
 import { UserService } from 'src/app/core/services/user.service';
 import { GameInfo } from 'src/app/game/components/pong/dto/gameInfo.dto';
 import * as BABYLON from '@babylonjs/core';
-// import "@babylonjs/loaders/glTF";
+import "@babylonjs/loaders/glTF";
 
 @Injectable()
 export class PongGateway {
@@ -102,9 +102,9 @@ export class PongGateway {
 
 	ballHandler(){
 		var ball = this.scene.getMeshByName('ball');
-		this.socket.on('ball-update', (position: {x: number; y: number; z: number}) =>{
+		this.socket.on('ball-update', (position: BABYLON.Vector3) =>{
 			if (ball){
-				ball.position = new BABYLON.Vector3(position.x, position.y, position.z);
+				ball.position = position;
 			}
 		})
 	}
@@ -129,7 +129,7 @@ export class PongGateway {
 	onPlayerUpdate() {
 		this.socket.on('racket-update', (dir: string) => {
 			var racketOpp = this.scene.getMeshByName(this.player === 1 ? 'player2': 'player1');
-			console.log(dir);
+			// console.log(dir);
 			if (racketOpp) {
 				switch (dir) {
 					case 'up':

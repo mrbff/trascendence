@@ -9,6 +9,12 @@ import {
 import { Server, Socket } from 'socket.io';
 import { GameInfo } from './dto/gameInfo.dto';
 import * as BABYLON from 'babylonjs';
+import 'babylonjs-loaders'
+// import cannon from 'cannon'
+// (global as any).CANNON = require('cannon');
+import HavokPhysics from "@babylonjs/havok";
+global.XMLHttpRequest = require("xhr2").XMLHttpRequest;
+
 
 @WebSocketGateway({
 	namespace: '/pong',
@@ -83,24 +89,28 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		}
 }
 
-	createScene(room: {name: string; data: GameInfo}){
+	async createScene(room: {name: string; data: GameInfo}){
 		this.engine = new BABYLON.NullEngine();
 		if (room.data.scene) {
 			room.data.scene.dispose();
 		}
 		this.engine.displayLoadingUI();
 		room.data.scene = new BABYLON.Scene(this.engine);
+		// const havokInstance = await HavokPhysics();
+		// const havokPlugin = new BABYLON.HavokPlugin(true, havokInstance);
+		// room.data.scene.enablePhysics(new BABYLON.Vector3(0,0,0), havokPlugin);
 		room.data.scene.collisionsEnabled = true;
-		var ball = BABYLON.MeshBuilder.CreateSphere('ball', );
-		var ballbody = new BABYLON.PhysicsAggregate(ball, BABYLON.PhysicsShapeType.SPHERE, { mass: 0}, room.data.scene);
+		var ball = BABYLON.MeshBuilder.CreateSphere('ball');
+		// var ballbody = new BABYLON.PhysicsAggregate(ball, BABYLON.PhysicsShapeType.SPHERE, { mass: 0}, room.data.scene);
 		var racket1 = BABYLON.MeshBuilder.CreateCapsule('player1',{orientation: BABYLON.Vector3.Left(),height: 7, radius: 0.5});
 		var racket2 = BABYLON.MeshBuilder.CreateCapsule('player2',{orientation: BABYLON.Vector3.Left(),height: 7, radius: 0.5});
-		var racket1body =  new BABYLON.PhysicsAggregate(racket1, BABYLON.PhysicsShapeType.CAPSULE, { mass: 0}, room.data.scene);
-		var racket2body =  new BABYLON.PhysicsAggregate(racket2, BABYLON.PhysicsShapeType.CAPSULE, { mass: 0}, room.data.scene);
+		// var racket1body =  new BABYLON.PhysicsAggregate(racket1, BABYLON.PhysicsShapeType.CAPSULE, { mass: 0}, room.data.scene);
+		// var racket2body =  new BABYLON.PhysicsAggregate(racket2, BABYLON.PhysicsShapeType.CAPSULE, { mass: 0}, room.data.scene);
 		racket1.position = new BABYLON.Vector3(0, 4.5, -29);
 		racket2.position = new BABYLON.Vector3(0, 4.5, 29);
 		ball.position = new BABYLON.Vector3(0, 4.5, 0);
-		var board = BABYLON.SceneLoader.ImportMesh("", "../../assets/", "test.glb", room.data.scene, (mesh)=> { mesh[0].checkCollisions = true; mesh[0].receiveShadows = true; });
+		var board = BABYLON.SceneLoader.ImportMesh("", "assets/", "test.glb", room.data.scene, (mesh)=> { mesh[0].checkCollisions = true; mesh[0].receiveShadows = true; });
+		  
 	}
 
 	// stop(): void {
@@ -117,12 +127,10 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		// Set up onCollide handler for the ball
 		if(ball)
 			ball.onCollide = (collidedMesh) => {
-				if (collidedMesh === racket1) {
-
-				} else if (collidedMesh === racket2) {
-
+				if (collidedMesh === racket1 || collidedMesh === racket2) {
+					move.z *= -1;
 				} else if (collidedMesh === board) {
-
+					move.x *= -1;
 				}
 			};
 		room.data.scene?.onBeforeRenderObservable.add(() => {
