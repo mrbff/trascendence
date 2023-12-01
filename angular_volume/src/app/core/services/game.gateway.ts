@@ -106,6 +106,7 @@ export class PongGateway {
 			if (ball){
 				ball.position = position;
 			}
+			console.log(position);
 		})
 	}
 	
@@ -139,7 +140,7 @@ export class PongGateway {
 						racketOpp.position.x += 0.1;
 						break;
 					}
-				// console.log(racket2.position.x);
+				console.log(racketOpp.position.x);
 			}
 		});
 		this.socket.on('player-update', () =>{

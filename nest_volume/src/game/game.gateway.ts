@@ -12,8 +12,8 @@ import * as BABYLON from 'babylonjs';
 import 'babylonjs-loaders'
 // import cannon from 'cannon'
 // (global as any).CANNON = require('cannon');
-import HavokPhysics from "@babylonjs/havok";
-global.XMLHttpRequest = require("xhr2").XMLHttpRequest;
+// import HavokPhysics from "@babylonjs/havok";
+import * as fs from 'fs';
 
 
 @WebSocketGateway({
@@ -83,9 +83,10 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	start(client: Socket) {
 		let room = this.findClientRoom(client);
 		if (room){
-			if (!room.data.scene)
-			this.createScene(room);
-			this.gameLoop(room);
+			if (!room.data.scene){
+				this.createScene(room);
+				room.data.scene!.executeWhenReady(() => this.gameLoop(room!));
+			}
 		}
 }
 
@@ -109,7 +110,11 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		racket1.position = new BABYLON.Vector3(0, 4.5, -29);
 		racket2.position = new BABYLON.Vector3(0, 4.5, 29);
 		ball.position = new BABYLON.Vector3(0, 4.5, 0);
-		var board = BABYLON.SceneLoader.ImportMesh("", "assets/", "test.glb", room.data.scene, (mesh)=> { mesh[0].checkCollisions = true; mesh[0].receiveShadows = true; });
+		// Read the GLB file as a binary string
+		const data = fs.readFileSync('/usr/src/app/src/game/assets/test.glb');
+		// Convert the binary string to a data URL
+		const dataUrl = 'data:model/gltf-binary;base64,' + Buffer.from(data).toString('base64');
+		var board = BABYLON.SceneLoader.ImportMesh("", "", dataUrl, room.data.scene, (mesh)=> { mesh[0].checkCollisions = true; mesh[0].receiveShadows = true; });
 		  
 	}
 
@@ -124,6 +129,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		var racket2 = room.data.scene?.getMeshByName('player2');
 		var board =  room.data.scene?.getMeshByName('board');
 		const move = new BABYLON.Vector3(0, 0, 0.5);
+		console.log('loop called');
 		// Set up onCollide handler for the ball
 		if(ball)
 			ball.onCollide = (collidedMesh) => {
@@ -135,6 +141,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			};
 		room.data.scene?.onBeforeRenderObservable.add(() => {
 			ball?.moveWithCollisions(move);
+			console.log('ball moving');
 			this.server.to(room.name).emit('ball-update', ball?.position);
 		});
 	}
@@ -142,6 +149,8 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('moveRacket')
 	handleMoveRacket(client: Socket, direction: string): void {
+		// console.log('%d moveracket detected', client.id);
+		// console.log(client);
 			let room = this.findClientRoom(client);
 			if (!room)
 				return
