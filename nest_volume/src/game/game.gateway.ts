@@ -10,11 +10,7 @@ import { Server, Socket } from 'socket.io';
 import { GameInfo } from './dto/gameInfo.dto';
 import * as BABYLON from 'babylonjs';
 import 'babylonjs-loaders'
-// import cannon from 'cannon'
-// (global as any).CANNON = require('cannon');
-// import HavokPhysics from "@babylonjs/havok";
 import * as fs from 'fs';
-
 
 @WebSocketGateway({
 	namespace: '/pong',
@@ -29,7 +25,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	queue: Socket[] = [];
 	rooms: {name: string; data: GameInfo}[] = [];
 	private engine!: BABYLON.Engine;
-	// private scene!: BABYLON.Scene;
+	private playersReady: Set<string> = new Set(); // Set to track players who have sent the "start" signal
 
 	//---------------------- CONNECTION HANDLING -------------------------//
 
@@ -46,11 +42,16 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	handleDisconnect(client: Socket) {
 		console.log(`\n\nClient disconnected(pong): ${client.id}`);
 		this.removeFromQueue(client);
-		// for (let room of client.rooms){
-		// 	client.leave(room);
-		// 	this.rooms = this.rooms.filter((r) => !(r.name === room));
-		// }
-	  }
+		for (var room of this.rooms)
+		{
+			if (room.data.player1 === client || room.data.player2 === client){
+				this.engine.stopRenderLoop();
+				room.data.scene?.dispose();
+				this.rooms.splice(this.rooms.indexOf(room), 1);
+			}
+			break;
+		}
+	}
 
 	private removeFromQueue(client: Socket) {
 	this.queue = this.queue.filter((c) => c.id !== client.id);
@@ -63,7 +64,6 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			const player2 = this.queue[1];
 			this.queue.pop();
 			this.queue.pop();
-
 			// Create a room for the matched players
 			let roomName = `room_${Math.random().toString(36).substring(2, 8)}`;
 			player1?.join(roomName);
@@ -78,70 +78,133 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	//---------------------- GAME LOGIC -------------------------//
 
-	
+
 	@SubscribeMessage('start')
 	start(client: Socket) {
-		let room = this.findClientRoom(client);
-		if (room){
-			if (!room.data.scene){
-				this.createScene(room);
-				room.data.scene!.executeWhenReady(() => this.gameLoop(room!));
-			}
+	  let room = this.findClientRoom(client);
+	  if (room) {
+		this.playersReady.add(client.id);
+		// Check if all players in the room have sent the "start" signal
+		if (this.playersReady.size === 2) {
+		  this.handleStart(room);
 		}
-}
-
-	async createScene(room: {name: string; data: GameInfo}){
+	  }
+	}
+  
+	private handleStart(room: {name: string; data: GameInfo}) {
+	  // Reset the playersReady set for the next round
+	  this.playersReady.clear();
+  
+	  if (!room.data.scene) {
+		this.createScene(room);
+		room.data.scene!.executeWhenReady(() => this.initHandlers(room));
+	  }
+	}
+	
+	createScene(room: {name: string; data: GameInfo}){
 		this.engine = new BABYLON.NullEngine();
 		if (room.data.scene) {
 			room.data.scene.dispose();
 		}
-		this.engine.displayLoadingUI();
 		room.data.scene = new BABYLON.Scene(this.engine);
-		// const havokInstance = await HavokPhysics();
-		// const havokPlugin = new BABYLON.HavokPlugin(true, havokInstance);
-		// room.data.scene.enablePhysics(new BABYLON.Vector3(0,0,0), havokPlugin);
 		room.data.scene.collisionsEnabled = true;
-		var ball = BABYLON.MeshBuilder.CreateSphere('ball');
-		// var ballbody = new BABYLON.PhysicsAggregate(ball, BABYLON.PhysicsShapeType.SPHERE, { mass: 0}, room.data.scene);
-		var racket1 = BABYLON.MeshBuilder.CreateCapsule('player1',{orientation: BABYLON.Vector3.Left(),height: 7, radius: 0.5});
-		var racket2 = BABYLON.MeshBuilder.CreateCapsule('player2',{orientation: BABYLON.Vector3.Left(),height: 7, radius: 0.5});
-		// var racket1body =  new BABYLON.PhysicsAggregate(racket1, BABYLON.PhysicsShapeType.CAPSULE, { mass: 0}, room.data.scene);
-		// var racket2body =  new BABYLON.PhysicsAggregate(racket2, BABYLON.PhysicsShapeType.CAPSULE, { mass: 0}, room.data.scene);
+		var camera = new BABYLON.ArcRotateCamera("Camera", 0, 0.8, 100, BABYLON.Vector3.Zero(), room.data.scene);
+		var ball = BABYLON.MeshBuilder.CreateSphere('ball', undefined, room.data.scene);
+		ball.position = new BABYLON.Vector3(0, 4.5, 0);
+		ball.checkCollisions = true;
+		var racket1 = BABYLON.MeshBuilder.CreateCapsule('player1',{orientation: BABYLON.Vector3.Left(),height: 7, radius: 0.5}, room.data.scene);
+		var racket2 = BABYLON.MeshBuilder.CreateCapsule('player2',{orientation: BABYLON.Vector3.Left(),height: 7, radius: 0.5}, room.data.scene);
 		racket1.position = new BABYLON.Vector3(0, 4.5, -29);
 		racket2.position = new BABYLON.Vector3(0, 4.5, 29);
-		ball.position = new BABYLON.Vector3(0, 4.5, 0);
-		// Read the GLB file as a binary string
+		racket1.checkCollisions = true;
+		racket2.checkCollisions = true;
 		const data = fs.readFileSync('/usr/src/app/src/game/assets/test.glb');
 		// Convert the binary string to a data URL
+		var planOBB = BABYLON.MeshBuilder.CreateBox("OBB", undefined, room.data.scene);
 		const dataUrl = 'data:model/gltf-binary;base64,' + Buffer.from(data).toString('base64');
-		var board = BABYLON.SceneLoader.ImportMesh("", "", dataUrl, room.data.scene, (mesh)=> { mesh[0].checkCollisions = true; mesh[0].receiveShadows = true; });
-		  
+		var board = BABYLON.SceneLoader.ImportMesh("", "", dataUrl, room.data.scene, (meshes)=> {
+			meshes[1].name = 'board';
+			meshes[1].checkCollisions = true;
+			meshes[1].receiveShadows = true;
+			planOBB.parent = meshes[1];
+			// meshes.forEach(mesh => {
+			// 	mesh.checkCollisions = true;
+			// })
+		});
+
+		var cornerSE = BABYLON.MeshBuilder.CreatePlane('cornerSE', {width:10, height: 3}, room.data.scene);
+		cornerSE.rotation = new BABYLON.Vector3(0, 0.8, 0);
+		cornerSE.position = new BABYLON.Vector3(13.8, 4.5, 25.5)
+		cornerSE.checkCollisions = true;
+		var cornerSO = BABYLON.MeshBuilder.CreatePlane('cornerSO', {width:10, height: 3}, room.data.scene);
+		cornerSO.rotation = new BABYLON.Vector3(0, 2.4, 0);
+		cornerSO.position = new BABYLON.Vector3(13.8, 4.5, -25.5)
+		cornerSO.checkCollisions = true;
+		var cornerNE = BABYLON.MeshBuilder.CreatePlane('cornerNE', {width:10, height: 3}, room.data.scene);
+		cornerNE.rotation = new BABYLON.Vector3(0, -0.8, 0);
+		cornerNE.position = new BABYLON.Vector3(-13.8, 4.5, 25.5);
+		cornerNE.checkCollisions = true;
+		var cornerNO = BABYLON.MeshBuilder.CreatePlane('cornerNO', {width:10, height: 3}, room.data.scene);
+		cornerNO.rotation = new BABYLON.Vector3(0, -2.4, 0);
+		cornerNO.position = new BABYLON.Vector3(-13.8, 4.5, -25.5)
+		cornerNO.checkCollisions = true;
 	}
 
-	// stop(): void {
-	// 	this.scene.dispose();
-	// 	this.engine.dispose();
-	// }
 
-	gameLoop(room: {name: string; data: GameInfo}) {
+	initHandlers(room: {name:string; data: GameInfo}) {
 		var ball = room.data.scene?.getMeshByName('ball');
 		var racket1 = room.data.scene?.getMeshByName('player1');
 		var racket2 = room.data.scene?.getMeshByName('player2');
 		var board =  room.data.scene?.getMeshByName('board');
-		const move = new BABYLON.Vector3(0, 0, 0.5);
-		console.log('loop called');
+		var SE = room.data.scene?.getMeshByName('cornerSE');
+		var SO = room.data.scene?.getMeshByName('cornerSO');
+		var NO = room.data.scene?.getMeshByName('cornerNO');
+		var NE = room.data.scene?.getMeshByName('cornerNE');
+		 console.log(board?.checkCollisions);
+		const move = new BABYLON.Vector3(0, 0, 0.4);
 		// Set up onCollide handler for the ball
-		if(ball)
+		if(ball){
 			ball.onCollide = (collidedMesh) => {
 				if (collidedMesh === racket1 || collidedMesh === racket2) {
 					move.z *= -1;
 				} else if (collidedMesh === board) {
 					move.x *= -1;
+				} else if (collidedMesh === SE || collidedMesh === NO) {
+					let newz = move.z * Math.cos(0.8) - move.x * Math.sin(0.8);
+					let newx = -(move.z * Math.sin(0.8) + move.x * Math.cos(0.8))
+					move.z = newz * Math.cos(0.8) + newx * Math.sin(0.8);
+					move.x = newx * Math.cos(0.8) - newz * Math.sin(0.8);
+				 }
+				else if (collidedMesh === NE || collidedMesh === SO){
+					let newz = move.z * Math.cos(-0.8) - move.x * Math.sin(-0.8);
+					let newx = -(move.z * Math.sin(-0.8) + move.x * Math.cos(-0.8))
+					move.z = newz * Math.cos(-0.8) + newx * Math.sin(-0.8);
+					move.x = newx * Math.cos(-0.8) - newz * Math.sin(-0.8);
 				}
 			};
-		room.data.scene?.onBeforeRenderObservable.add(() => {
-			ball?.moveWithCollisions(move);
-			console.log('ball moving');
+		};
+		this.gameLoop(room, move);
+	}
+
+	gameLoop(room: {name: string; data: GameInfo}, move: BABYLON.Vector3) {
+		var ball = room.data.scene?.getMeshByName('ball')!;
+		console.log(room.name);
+		this.engine.runRenderLoop(() => {
+			ball.moveWithCollisions(move);
+			room.data.scene?.render();
+			if (ball.position.z > 30 || ball.position.z < -30){
+				ball.position.z > 30 ? room.data.score1++ : room.data.score2++;
+				ball.position = new BABYLON.Vector3(0, 4.5, 0);
+				this.server.to(room.name).emit('score-update', {score1: room.data.score1, score2: room.data.score2});
+			}
+			if (room.data.score1 >= 10 || room.data.score2 >= 10){
+				let winner = room.data.score1 >= 10 ? 1 : 2;
+				let tempSock = room.data.player2;
+				this.server.to(room.name).emit('finished', winner);
+				room.data.player1.disconnect();
+				tempSock.disconnect();
+			}
+
 			this.server.to(room.name).emit('ball-update', ball?.position);
 		});
 	}
@@ -149,8 +212,6 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	@SubscribeMessage('moveRacket')
 	handleMoveRacket(client: Socket, direction: string): void {
-		// console.log('%d moveracket detected', client.id);
-		// console.log(client);
 			let room = this.findClientRoom(client);
 			if (!room)
 				return
@@ -188,13 +249,5 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		return (room);
 	}
 	
-	/* 	@SubscribeMessage('game-connect')
-		handleGameConnect(client: Socket, user: { id: string; name: string }): void {
-		// Handle the game-connect event here
-		// Example: You can log the connected user or perform other actions
-		client.join(user.id);
-
-		console.log(`\n\n${user.name} connected to the game`);
-		} */
-	}
+}
   

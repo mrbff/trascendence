@@ -1,5 +1,5 @@
 import { UserInfo } from '../../../models/userInfo.model';
-import { Component, HostListener, OnInit, ViewChild, ElementRef, OnDestroy, AfterViewInit, AfterContentChecked, AfterViewChecked, NgZone } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild, OnDestroy, AfterViewChecked } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
 import { PongGateway } from 'src/app/core/services/game.gateway';
 import * as BABYLON from '@babylonjs/core';
@@ -22,7 +22,6 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 	constructor(
 		private readonly userData: UserService,
 		private readonly gate: PongGateway,
-		private ngZone: NgZone,
 	){}
 	
 	public async  ngOnInit() {
@@ -30,7 +29,6 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 		// this.gate.onPlayerUpdate().subscribe((data) => {
 		// 	//console.log(data);
 		// });
-		this.gate.onPlayerUpdate();
 		this.gate.onOpponentFound().subscribe((found) =>{
 			console.log('opponent found starting game');
 			this.opponentConnected = found.connected;
@@ -44,7 +42,7 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 			this.canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
 			if (this.canvas && !this.scene) {
 				this.scene = this.gate.start(this.canvas);
-				console.log(this.scene);
+				// console.log(this.scene);
 			} else {
 				//console.error('Canvas element not found.');
 			}
@@ -55,9 +53,6 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 		// if (this.scene)
 			// this.gate.stop();
 		this.gate.disconnect();
-	}
-
-	startGame(): void{
 	}
 
 	@HostListener('window:keydown', ['$event'])

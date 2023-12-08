@@ -6,9 +6,9 @@ build:
 	@npm install --prefix ./nest_volume/
 	@npm install --prefix ./angular_volume/ @babylonjs/core
 	@npm install --prefix ./angular_volume/ @babylonjs/loaders
+	@npm install --prefix ./angular_volume/ @babylonjs/gui
 	@npm install --prefix ./nest_volume/ babylonjs
 	@npm install --prefix ./nest_volume/ babylonjs-loaders
-	@npm install --prefix ./nest_volume/ @babylonjs/havok
 
 up:
 	@echo "\e[32mStarting trascendence\e[0m"
