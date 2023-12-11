@@ -45,7 +45,8 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		for (var room of this.rooms)
 		{
 			if (room.data.player1 === client || room.data.player2 === client){
-				this.engine.stopRenderLoop();
+				if (this.engine)
+					this.engine.stopRenderLoop();
 				room.data.scene?.dispose();
 				this.rooms.splice(this.rooms.indexOf(room), 1);
 			}
@@ -127,9 +128,6 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			meshes[1].checkCollisions = true;
 			meshes[1].receiveShadows = true;
 			planOBB.parent = meshes[1];
-			// meshes.forEach(mesh => {
-			// 	mesh.checkCollisions = true;
-			// })
 		});
 
 		var cornerSE = BABYLON.MeshBuilder.CreatePlane('cornerSE', {width:10, height: 3}, room.data.scene);
@@ -205,7 +203,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				tempSock.disconnect();
 			}
 
-			this.server.to(room.name).emit('ball-update', ball?.position);
+			this.server.to(room.name).emit('ball-update', move);
 		});
 	}
 
@@ -220,10 +218,10 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			if (racket) {
 				switch (direction) {
 					case 'up':
-						racket.position.x -= 0.1;
+						racket.moveWithCollisions( new BABYLON.Vector3(-0.1, 0 , 0));
 						break;
 					case 'down':
-						racket.position.x += 0.1;
+						racket.moveWithCollisions( new BABYLON.Vector3(0.1, 0 , 0));
 						break;
 				}
 			}

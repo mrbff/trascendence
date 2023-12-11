@@ -5,6 +5,7 @@ import { UserService } from 'src/app/core/services/user.service';
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import * as GUI from '@babylonjs/gui';
+import { Inspector } from '@babylonjs/inspector';
 
 @Injectable()
 export class PongGateway {
@@ -17,7 +18,7 @@ export class PongGateway {
 	private player = -1;
 
 	constructor(private readonly userData: UserService, private ngZone: NgZone,) {
-		this.socket = io('/pong', {path: '/socket.io/', reconnection: true, timeout: 60000});
+		this.socket = io('/pong', {path: '/socket.io/', reconnection: true, reconnectionDelay: 45000, timeout: 50000});
 		this.socket.on('disconnect', function (reason) {
 		console.log('Socket disconnected because of ' + reason);
 		});
@@ -33,6 +34,8 @@ export class PongGateway {
 	}
 	
 	disconnect(): void{
+		if (this.scene)
+			this.stop();
 		this.socket.disconnect();
 	}
 
@@ -50,6 +53,7 @@ export class PongGateway {
 			this.initializeEngine(canvas);
 			this.createScene(canvas);
 			this.scene.executeWhenReady(() => this.renderScene());
+			// Inspector.Show(this.scene, {});
 		});
 		return(this.scene);
 	}
@@ -65,6 +69,7 @@ export class PongGateway {
 		this.engine.displayLoadingUI();
 		this.scene = new BABYLON.Scene(this.engine);
 		this.HUD = GUI.AdvancedDynamicTexture.CreateFullscreenUI("myUI", undefined, this.scene, undefined, true);
+		this.scene.collisionsEnabled = true;
 
 		var rectangle1 = new GUI.Rectangle("rect1");
 		rectangle1.background = "black";
@@ -73,6 +78,7 @@ export class PongGateway {
 		rectangle1.left = -200;
 		rectangle1.width = "200px";
 		rectangle1.height = "100px";
+		rectangle1.cornerRadius = 20;
 		this.HUD.addControl(rectangle1);
 	
 		var name1 = new GUI.TextBlock("name1");
@@ -97,6 +103,7 @@ export class PongGateway {
 		rectangle2.left = 200;
 		rectangle2.width = "200px";
 		rectangle2.height = "100px";
+		rectangle2.cornerRadius = 20;
 		this.HUD.addControl(rectangle2);
 	
 		var name2 = new GUI.TextBlock("name2");
@@ -121,6 +128,7 @@ export class PongGateway {
 		victoryScreen.width = "200px";
 		victoryScreen.height = "100px";
 		victoryScreen.isVisible = false;
+		victoryScreen.cornerRadius = 20;
 		this.HUD.addControl(victoryScreen);
 
 		var victoryText = new GUI.TextBlock("victoryText");
@@ -156,13 +164,19 @@ export class PongGateway {
 		light.specular = new BABYLON.Color3(1, 1, 1);
 		light.groundColor = new BABYLON.Color3(0.2, 0.03, 0.22);
  		var ball = BABYLON.MeshBuilder.CreateSphere('ball', );
-		var racket1 = BABYLON.MeshBuilder.CreateCapsule('player1',{orientation: BABYLON.Vector3.Left(),height: 7, radius: 0.5});
-		var racket2 = BABYLON.MeshBuilder.CreateCapsule('player2',{orientation: BABYLON.Vector3.Left(),height: 7, radius: 0.5});
+		var racket1 = BABYLON.MeshBuilder.CreateCapsule('player1',{height: 7, radius: 0.5});
+		var racket2 = BABYLON.MeshBuilder.CreateCapsule('player2',{height: 7, radius: 0.5});
 		racket1.position = new BABYLON.Vector3(0, 4.5, -29);
+		racket1.rotation = new BABYLON.Vector3(0, 0 , 1.57);
+		racket1.ellipsoid.x = 4;
 		racket2.position = new BABYLON.Vector3(0, 4.5, 29);
+		racket2.rotation = new BABYLON.Vector3(0, 0 , 1.57);
 		ball.position = new BABYLON.Vector3(0, 4.5, 0);
-		var board = BABYLON.SceneLoader.ImportMesh("", "../../assets/", "test.glb", this.scene);
-		
+		racket2.ellipsoid.x = 4;
+		BABYLON.SceneLoader.ImportMesh("", "../../assets/", "test.glb", this.scene, (meshes)=> {
+			meshes[1].name = 'board';
+			meshes[1].checkCollisions = true;
+		});
 		//-------------- NEBULA SKYBOX -----------------
 		// var nebula = new BABYLON.CubeTexture("https://www.babylonjs.com/assets/skybox/nebula", this.scene);
         // nebula.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
@@ -192,10 +206,10 @@ export class PongGateway {
 
 
 	ballHandler(){
-		this.socket.on('ball-update', (position: BABYLON.Vector3) =>{
+		this.socket.on('ball-update', (move: BABYLON.Vector3) =>{
 			var ball = this.scene.getMeshByName('ball');
 			if (ball){
-				ball.position.copyFrom(position);
+				ball.position.addInPlace(move);
 			}
 		})
 	}
@@ -206,10 +220,10 @@ export class PongGateway {
 		if (racket) {
 			switch (direction) {
 				case 'up':
-					racket.position.x -= 0.1;
+					racket.moveWithCollisions( new BABYLON.Vector3(-0.1, 0 , 0));
 					break;
 				case 'down':
-					racket.position.x += 0.1;
+					racket.moveWithCollisions( new BABYLON.Vector3(0.1, 0 , 0));
 					break;
 			}
 		}
@@ -224,10 +238,10 @@ export class PongGateway {
 			if (racketOpp) {
 				switch (dir) {
 					case 'up':
-						racketOpp.position.x -= 0.1;
+                        racketOpp.moveWithCollisions( new BABYLON.Vector3(-0.1, 0 , 0));
 						break;
 					case 'down':
-						racketOpp.position.x += 0.1;
+                        racketOpp.moveWithCollisions( new BABYLON.Vector3(0.1, 0 , 0));
 						break;
 					}
 				// console.log(racketOpp.position.x);
@@ -241,6 +255,8 @@ export class PongGateway {
 	onScoreUpdate(){
 		this.socket.on('score-update', (info: {score1: number, score2: number})=> {
 			console.log("score updated");
+			var ball = this.scene.getMeshByName('ball')!;
+			ball.position = new BABYLON.Vector3(0, 4.5, 0);
 			let score1 = this.HUD.getControlByName('score1') as GUI.TextBlock;
 			let score2 = this.HUD.getControlByName('score2') as GUI.TextBlock;
 			score1.text = info.score1.toString();
