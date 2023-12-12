@@ -17,7 +17,7 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 	user!: UserInfo;
 	opponentConnected = false;
 	racket: number = -1;
-	private scene!: BABYLON.Scene;
+	scene!: BABYLON.Scene;
 	
 	constructor(
 		private readonly userData: UserService,
@@ -64,4 +64,5 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 			this.gate.moveRacket('down');
 		}
 	}
+
 }

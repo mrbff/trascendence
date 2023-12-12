@@ -5,7 +5,7 @@ import { UserService } from 'src/app/core/services/user.service';
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import * as GUI from '@babylonjs/gui';
-import { Inspector } from '@babylonjs/inspector';
+// import { Inspector } from '@babylonjs/inspector';
 
 @Injectable()
 export class PongGateway {
@@ -151,7 +151,6 @@ export class PongGateway {
 		victoryScreen.addControl(exitBtn);
 
 
-		//this.camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), this.scene);
 		this.camera = new BABYLON.ArcRotateCamera('camera', 0, 0.5, 50, BABYLON.Vector3.Zero(), this.scene);
 		// This targets the camera to.scene origin
 		this.camera.setTarget(BABYLON.Vector3.Zero());
@@ -178,8 +177,6 @@ export class PongGateway {
 			meshes[1].checkCollisions = true;
 		});
 		//-------------- NEBULA SKYBOX -----------------
-		// var nebula = new BABYLON.CubeTexture("https://www.babylonjs.com/assets/skybox/nebula", this.scene);
-        // nebula.coordinatesMode = BABYLON.Texture.SKYBOX_MODE;
 		var nebula = new BABYLON.CubeTexture("../../assets/skybox/sky", this.scene, null, true);
 		this.scene.createDefaultSkybox(nebula, true, 1000);
 		const music = new BABYLON.Sound('backgroun-music', "../../assets/Intergalactic Odyssey.ogg", this.scene, null, {loop:true, autoplay:true});

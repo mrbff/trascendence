@@ -22,8 +22,8 @@ import * as fs from 'fs';
 export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	server: Server;
-	queue: Socket[] = [];
-	rooms: {name: string; data: GameInfo}[] = [];
+	private queue: Socket[] = [];
+	private rooms: {name: string; data: GameInfo}[] = [];
 	private engine!: BABYLON.Engine;
 	private playersReady: Set<string> = new Set(); // Set to track players who have sent the "start" signal
 
@@ -113,12 +113,61 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		var ball = BABYLON.MeshBuilder.CreateSphere('ball', undefined, room.data.scene);
 		ball.position = new BABYLON.Vector3(0, 4.5, 0);
 		ball.checkCollisions = true;
-		var racket1 = BABYLON.MeshBuilder.CreateCapsule('player1',{orientation: BABYLON.Vector3.Left(),height: 7, radius: 0.5}, room.data.scene);
-		var racket2 = BABYLON.MeshBuilder.CreateCapsule('player2',{orientation: BABYLON.Vector3.Left(),height: 7, radius: 0.5}, room.data.scene);
-		racket1.position = new BABYLON.Vector3(0, 4.5, -29);
-		racket2.position = new BABYLON.Vector3(0, 4.5, 29);
-		racket1.checkCollisions = true;
-		racket2.checkCollisions = true;
+
+        // Create the main capsule mesh
+        var racket1 = BABYLON.MeshBuilder.CreateCapsule('player1', { height: 7, radius: 0.5 });
+        racket1.position = new BABYLON.Vector3(0, 4.5, -29);
+        racket1.rotation = new BABYLON.Vector3(0, 0, 1.57);
+        racket1.ellipsoid.x = 4;
+        racket1.checkCollisions = true;
+
+        // Create the bottom collider
+        var c1Bottom = BABYLON.MeshBuilder.CreatePlane('c1Bottom', {height: 2, sideOrientation: BABYLON.Mesh.BACKSIDE});
+        c1Bottom.position = new BABYLON.Vector3(0, -2.25, 0.45); // Adjust the position of the bottom collider
+        c1Bottom.parent = racket1; // Make it a child of the main mesh
+        c1Bottom.checkCollisions = true;
+        c1Bottom.visibility = 0;
+
+        // Create the middle collider
+        var c1Middle = BABYLON.MeshBuilder.CreatePlane('c1Middle', {height: 2,sideOrientation: BABYLON.Mesh.BACKSIDE});
+        c1Middle.position = new BABYLON.Vector3(0, 0, 0.45); // Adjust the position of the middle collider
+        c1Middle.parent = racket1; // Make it a child of the main mesh
+        c1Middle.checkCollisions = true;
+        c1Middle.visibility = 0;
+
+        // Create the top collider
+        var c1Top = BABYLON.MeshBuilder.CreatePlane('c1Top', {height: 2,sideOrientation: BABYLON.Mesh.BACKSIDE});
+        c1Top.position = new BABYLON.Vector3(0, 2.25, 0.45); // Adjust the position of the top collider
+        c1Top.parent = racket1; // Make it a child of the main mesh
+        c1Top.checkCollisions = true;
+        c1Top.visibility = 0;
+
+
+        var racket2 = BABYLON.MeshBuilder.CreateCapsule('player2', { height: 7, radius: 0.5 });
+        racket2.position = new BABYLON.Vector3(0, 4.5, 29);
+        racket2.rotation = new BABYLON.Vector3(0, 0, 1.57);
+        racket2.ellipsoid.x = 4;
+        racket2.checkCollisions = true;
+
+        // Create the bottom collider
+        var c2Bottom = BABYLON.MeshBuilder.CreatePlane('c2Bottom', {height: 2});
+        c2Bottom.position = new BABYLON.Vector3(0, -2.25, -0.45); // Adjust the position of the bottom collider
+        c2Bottom.parent = racket2; // Make it a child of the main mesh
+        c2Bottom.checkCollisions = true;
+        c2Bottom.visibility = 0;
+        // Create the middle collider
+        var c2Middle = BABYLON.MeshBuilder.CreatePlane('c2Middle', {height: 2});
+        c2Middle.position = new BABYLON.Vector3(0, 0, -0.45); // Adjust the position of the middle collider
+        c2Middle.parent = racket2; // Make it a child of the main mesh
+        c2Middle.checkCollisions = true;
+        c2Middle.visibility = 0;
+        // Create the top collider
+        var c2Top = BABYLON.MeshBuilder.CreatePlane('c2Top', {height: 2});
+        c2Top.position = new BABYLON.Vector3(0, 2.25, -0.45); // Adjust the position of the top collider
+        c2Top.parent = racket2; // Make it a child of the main mesh
+        c2Top.checkCollisions = true;
+        c2Top.visibility = 0;
+
 		const data = fs.readFileSync('/usr/src/app/src/game/assets/test.glb');
 		// Convert the binary string to a data URL
 		var planOBB = BABYLON.MeshBuilder.CreateBox("OBB", undefined, room.data.scene);
@@ -150,36 +199,49 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 
 	initHandlers(room: {name:string; data: GameInfo}) {
-		var ball = room.data.scene?.getMeshByName('ball');
-		var racket1 = room.data.scene?.getMeshByName('player1');
-		var racket2 = room.data.scene?.getMeshByName('player2');
+		var ball = room.data.scene?.getMeshByName('ball')!;
 		var board =  room.data.scene?.getMeshByName('board');
 		var SE = room.data.scene?.getMeshByName('cornerSE');
 		var SO = room.data.scene?.getMeshByName('cornerSO');
 		var NO = room.data.scene?.getMeshByName('cornerNO');
 		var NE = room.data.scene?.getMeshByName('cornerNE');
-		 console.log(board?.checkCollisions);
+		var c1Middle = room.data.scene?.getMaterialByName('c1Middle');
+		var c1Top = room.data.scene?.getMaterialByName('c1Top');
+		var c1Bottom = room.data.scene?.getMaterialByName('c1Bottom');
+		var c2Top = room.data.scene?.getMaterialByName('c2Top');
+		var c2Middle = room.data.scene?.getMaterialByName('c2Middle');
+		var c2Bottom = room.data.scene?.getMaterialByName('c2Bottom');
 		const move = new BABYLON.Vector3(0, 0, 0.4);
 		// Set up onCollide handler for the ball
-		if(ball){
-			ball.onCollide = (collidedMesh) => {
-				if (collidedMesh === racket1 || collidedMesh === racket2) {
-					move.z *= -1;
-				} else if (collidedMesh === board) {
-					move.x *= -1;
-				} else if (collidedMesh === SE || collidedMesh === NO) {
-					let newz = move.z * Math.cos(0.8) - move.x * Math.sin(0.8);
-					let newx = -(move.z * Math.sin(0.8) + move.x * Math.cos(0.8))
-					move.z = newz * Math.cos(0.8) + newx * Math.sin(0.8);
-					move.x = newx * Math.cos(0.8) - newz * Math.sin(0.8);
-				 }
-				else if (collidedMesh === NE || collidedMesh === SO){
-					let newz = move.z * Math.cos(-0.8) - move.x * Math.sin(-0.8);
-					let newx = -(move.z * Math.sin(-0.8) + move.x * Math.cos(-0.8))
-					move.z = newz * Math.cos(-0.8) + newx * Math.sin(-0.8);
-					move.x = newx * Math.cos(-0.8) - newz * Math.sin(-0.8);
-				}
-			};
+		ball.onCollide = (collidedMesh) => {
+			if (collidedMesh === board) {
+				move.x *= -1;
+			}else if (collidedMesh === c1Middle || collidedMesh === c2Middle
+						|| collidedMesh === c1Bottom || collidedMesh === c2Bottom 
+						|| collidedMesh === c1Top || collidedMesh === c2Top) {
+				move.z *= -1;
+				if (collidedMesh === c1Bottom || collidedMesh === c2Bottom)
+					if (move.x == 0)
+						move.x = 0.2;
+					else
+						move.x *= move.x > 0 ? 1 : -1;
+				else if (collidedMesh === c1Top || collidedMesh === c2Top)
+					if (move.x == 0)
+						move.x = -0.2;
+					else
+						move.x *= move.x > 0 ? -1 : 1;
+			} else if (collidedMesh === SE || collidedMesh === NO) {
+				let newz = move.z * Math.cos(0.8) - move.x * Math.sin(0.8);
+				let newx = -(move.z * Math.sin(0.8) + move.x * Math.cos(0.8))
+				move.z = newz * Math.cos(0.8) + newx * Math.sin(0.8);
+				move.x = newx * Math.cos(0.8) - newz * Math.sin(0.8);
+			}
+			else if (collidedMesh === NE || collidedMesh === SO){
+				let newz = move.z * Math.cos(-0.8) - move.x * Math.sin(-0.8);
+				let newx = -(move.z * Math.sin(-0.8) + move.x * Math.cos(-0.8))
+				move.z = newz * Math.cos(-0.8) + newx * Math.sin(-0.8);
+				move.x = newx * Math.cos(-0.8) - newz * Math.sin(-0.8);
+			}
 		};
 		this.gameLoop(room, move);
 	}
