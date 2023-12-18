@@ -8,6 +8,8 @@ export interface GameInfo{
 	score1: number;
 	score2: number;
 	scene?: Scene;
+	mode?: string;
+	winner: number;
 }
 
 // export const START_GAME_DATA: GameInfo = {

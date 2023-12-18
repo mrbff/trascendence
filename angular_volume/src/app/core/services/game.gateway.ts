@@ -18,9 +18,15 @@ export class PongGateway {
 	private player = -1;
 
 	constructor(private readonly userData: UserService, private ngZone: NgZone,) {
-		this.socket = io('/pong', {path: '/socket.io/', reconnection: true, reconnectionDelay: 45000, timeout: 50000});
+		this.socket = io('/pong', {path: '/socket.io/', reconnection: true, reconnectionDelay: 60000, timeout: 60000});
 		this.socket.on('disconnect', function (reason) {
 		console.log('Socket disconnected because of ' + reason);
+		});
+		this.socket.on('reconnect', (attemptNumber) => {
+			console.log(`Reconnected after ${attemptNumber} attempts`);
+		});
+		this.socket.on('reconnect_error', (error) => {
+			console.error('Reconnection error:', error);
 		});
 	}
 
@@ -45,11 +51,12 @@ export class PongGateway {
 
 
 	start(canvas: HTMLCanvasElement): BABYLON.Scene {
-		this.onScoreUpdate();
-		this.onPlayerUpdate();
-		this.ballHandler();
-		this.onGameFinish();
 		this.ngZone.runOutsideAngular(() => {
+			this.onScoreUpdate();
+			this.onPlayerUpdate();
+			this.ballHandler();
+			this.onGameFinish();
+			this.onOpponentDisconnected();
 			this.initializeEngine(canvas);
 			this.createScene(canvas);
 			this.scene.executeWhenReady(() => this.renderScene());
@@ -87,6 +94,7 @@ export class PongGateway {
 		name1.top = -20;
 		name1.color = "orange";
 		name1.fontSize = "14px";
+		name1.resizeToFit = true;
 		rectangle1.addControl(name1);
 		var score1 = new GUI.TextBlock("score1");
 		score1.fontFamily = "Helvetica";
@@ -112,6 +120,7 @@ export class PongGateway {
 		name2.text = "Player 2";
 		name2.color = "orange";
 		name2.fontSize = "14px";
+		name2.resizeToFit = true;
 		rectangle2.addControl(name2);
 
 		var score2 = new GUI.TextBlock("score2");
@@ -136,6 +145,7 @@ export class PongGateway {
 		victoryText.top = -20;
 		victoryText.color = "orange";
 		victoryText.fontSize = "20px";
+		victoryText.resizeToFit = true;
 		victoryScreen.addControl(victoryText);
 
 		var exitBtn = GUI.Button.CreateSimpleButton("exit", "EXIT");
@@ -167,11 +177,11 @@ export class PongGateway {
 		var racket2 = BABYLON.MeshBuilder.CreateCapsule('player2',{height: 7, radius: 0.5});
 		racket1.position = new BABYLON.Vector3(0, 4.5, -29);
 		racket1.rotation = new BABYLON.Vector3(0, 0 , 1.57);
-		racket1.ellipsoid.x = 4;
+		// racket1.ellipsoid.x = 4;
 		racket2.position = new BABYLON.Vector3(0, 4.5, 29);
 		racket2.rotation = new BABYLON.Vector3(0, 0 , 1.57);
 		ball.position = new BABYLON.Vector3(0, 4.5, 0);
-		racket2.ellipsoid.x = 4;
+		// racket2.ellipsoid.x = 4;
 		BABYLON.SceneLoader.ImportMesh("", "../../assets/", "test.glb", this.scene, (meshes)=> {
 			meshes[1].name = 'board';
 			meshes[1].checkCollisions = true;
@@ -217,10 +227,12 @@ export class PongGateway {
 		if (racket) {
 			switch (direction) {
 				case 'up':
-					racket.moveWithCollisions( new BABYLON.Vector3(-0.1, 0 , 0));
+					racket.position.x -= 0.1;
+					// racket.moveWithCollisions( new BABYLON.Vector3(-0.1, 0 , 0));
 					break;
 				case 'down':
-					racket.moveWithCollisions( new BABYLON.Vector3(0.1, 0 , 0));
+					racket.position.x += 0.1;
+					// racket.moveWithCollisions( new BABYLON.Vector3(0.1, 0 , 0));
 					break;
 			}
 		}
@@ -235,10 +247,12 @@ export class PongGateway {
 			if (racketOpp) {
 				switch (dir) {
 					case 'up':
-                        racketOpp.moveWithCollisions( new BABYLON.Vector3(-0.1, 0 , 0));
+						racketOpp.position.x -= 0.1;
+                        // racketOpp.moveWithCollisions( new BABYLON.Vector3(-0.1, 0 , 0));
 						break;
 					case 'down':
-                        racketOpp.moveWithCollisions( new BABYLON.Vector3(0.1, 0 , 0));
+						racketOpp.position.x += 0.1;
+                        // racketOpp.moveWithCollisions( new BABYLON.Vector3(0.1, 0 , 0));
 						break;
 					}
 				// console.log(racketOpp.position.x);
@@ -270,4 +284,13 @@ export class PongGateway {
 		})
 	}	
 	
+	onOpponentDisconnected() {
+		this.socket.on('opp-disconnect',() => {
+			console.log('opponent disconnected');
+			let victoryText = this.HUD.getControlByName('victoryText') as GUI.TextBlock;
+			victoryText.text = 'Opponent disconnected';
+			var victoryScreen = this.HUD.getControlByName('victory')!;
+			victoryScreen.isVisible = true;
+		});
+	}
 }

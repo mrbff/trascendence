@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { loginGuard } from './core/guards/login.guard';
-import { PongComponent } from './game/components/pong/pong.component';
-import { LeaveGuard } from './core/guards/leave.guard';
 
 const routes: Routes = [
   {
@@ -25,11 +23,6 @@ const routes: Routes = [
   {
     path: '**',
     redirectTo: '',
-  },
-  {
-    path: 'trascendence/pong',
-    component: PongComponent,
-    canDeactivate: [LeaveGuard],
   },
 ];
 

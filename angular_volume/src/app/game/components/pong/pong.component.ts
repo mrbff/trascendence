@@ -43,8 +43,6 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 			if (this.canvas && !this.scene) {
 				this.scene = this.gate.start(this.canvas);
 				// console.log(this.scene);
-			} else {
-				//console.error('Canvas element not found.');
 			}
 		}
 	}
