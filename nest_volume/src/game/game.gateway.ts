@@ -1,3 +1,4 @@
+import { Power } from './dto/power.dto';
 import {
 	OnGatewayConnection,
 	OnGatewayDisconnect,
@@ -22,7 +23,8 @@ import * as fs from 'fs';
 export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	server: Server;
-	private queue: Socket[] = [];
+	private normalQueue: Socket[] = [];
+	private specialQueue: Socket[] = [];
 	private rooms: {name: string; data: GameInfo}[] = [];
 	private engine!: BABYLON.Engine;
 	private playersReady: Set<string> = new Set(); // Set to track players who have sent the "start" signal
@@ -34,9 +36,15 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
   
 	handleConnection(client: Socket) {
-		this.queue.push(client);
+		if (client.handshake.query.gameMode === "normal"){
+			this.normalQueue.push(client);
+			this.matchmake(this.normalQueue, "normal");
+		}
+		else{
+			this.specialQueue.push(client);
+			this.matchmake(this.specialQueue, "special");
+		}
 		console.log(`\n\nClient connected(pong): ${client.id}`);
-		this.matchmake();
 	}
 
 	handleDisconnect(client: Socket) {
@@ -61,21 +69,24 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
 
 	private removeFromQueue(client: Socket) {
-	this.queue = this.queue.filter((c) => c.id !== client.id);
+		if (this.normalQueue.find((c) => c.id == client.id))
+			this.normalQueue = this.normalQueue.filter((c) => c.id !== client.id);
+		else
+			this.specialQueue = this.specialQueue.filter((c) => c.id !== client.id);
 	}
 
-	private matchmake() {
+	private matchmake(queue: Socket[], mode: string) {
 	// Implement your matchmaking logic here
-		if (this.queue.length >= 2) {
-			const player1 = this.queue[0];
-			const player2 = this.queue[1];
-			this.queue.pop();
-			this.queue.pop();
+		if (queue.length >= 2) {
+			const player1 = queue[0];
+			const player2 = queue[1];
+			queue.pop();
+			queue.pop();
 			// Create a room for the matched players
 			let roomName = `room_${Math.random().toString(36).substring(2, 8)}`;
 			player1?.join(roomName);
 			player2?.join(roomName);
-			let size = this.rooms.push({name: roomName, data: {player1: player1, player2: player2, score1: 0, score2: 0, winner: -1}});
+			let size = this.rooms.push({name: roomName, data: {player1: player1, player2: player2, score1: 0, score2: 0, winner: -1, mode: mode}});
 			// Notify players about the match
 			console.log(`\n\nMatch found! Players ${player1?.id} and ${player2?.id} are in room ${roomName}`);
 			console.log(this.rooms.length);
@@ -203,6 +214,10 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		cornerNO.rotation = new BABYLON.Vector3(0, -2.4, 0);
 		cornerNO.position = new BABYLON.Vector3(-13.8, 4.5, -25.5)
 		cornerNO.checkCollisions = true;
+
+		if (room.data.mode === "special"){
+			//resto
+		}
 	}
 
 
@@ -254,8 +269,19 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				move.z = newz * Math.cos(-0.8) + newx * Math.sin(-0.8);
 				move.x = newx * Math.cos(-0.8) - newz * Math.sin(-0.8);
 			}
-			console.log(move);
+			this.server.to(room.name).emit('ball-update', move);
 		};
+
+
+		/* TO DO 
+		spawn power up meglio gestito dal client
+		=> invia segnale di spawn con posizione e tipo di power
+		=> client gestisce collisione con power
+		=> su collisione invia player-update se ottenuto da se stesso
+		=> se preso da avversario cancella pallina e basta, aspetta player-update per aggiornare
+		=> server aggiorna i propri mesh :: potrebbe rendere inutile il tutto visto che ha bisogno di avere gli effetti
+		*/
+
 		this.gameLoop(room, move);
 	}
 
@@ -278,33 +304,37 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				room.data.player1.disconnect();
 				tempSock.disconnect();
 			}
-			// console.log(move);
-			this.server.to(room.name).emit('ball-update', move);
 		});
 	}
 
+	@SubscribeMessage('player-update')
+	handlePower(client: Socket, power: Power){
+		let room = this.findClientRoom(client)!;
+			/*------------------------------------------*/
+		var racket = room.data.scene?.getMeshByName(client === room.data.player1 ? 'player1': 'player2')!;
+		/* TO DO 
+		server avra' bisogno di um modo di applicare gli effetti
+		rifare le classi o passargli la funzione
+ 		*/
+	}
 
 	@SubscribeMessage('moveRacket')
 	handleMoveRacket(client: Socket, direction: string): void {
-			let room = this.findClientRoom(client);
-			if (!room)
-				return
-			/*------------------------------------------*/
-			var racket = room.data.scene?.getMeshByName(client === room.data.player1 ? 'player1': 'player2');
-			if (racket) {
-				switch (direction) {
-					case 'up':
-						racket.position.x -= 0.1;
-						// racket.moveWithCollisions( new BABYLON.Vector3(-0.1, 0 , 0));
-						break;
-					case 'down':
-						racket.position.x += 0.1;
-						// racket.moveWithCollisions( new BABYLON.Vector3(0.1, 0 , 0));
-						break;
-				}
-			}
-			client.to(room.name).emit('racket-update', direction);
+		let room = this.findClientRoom(client)!;
+		/*------------------------------------------*/
+		var racket = room.data.scene?.getMeshByName(client === room.data.player1 ? 'player1': 'player2')!;
+		switch (direction) {
+			case 'up':
+				racket.position.x -= 0.1;
+				// racket.moveWithCollisions( new BABYLON.Vector3(-0.1, 0 , 0));
+				break;
+			case 'down':
+				racket.position.x += 0.1;
+				// racket.moveWithCollisions( new BABYLON.Vector3(0.1, 0 , 0));
+				break;
 		}
+		client.to(room.name).emit('racket-update', direction);
+	}
 	
 
 

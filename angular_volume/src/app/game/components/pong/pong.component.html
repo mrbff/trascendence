@@ -1,33 +1,65 @@
 <app-navbar></app-navbar>
 
-<canvas id="renderCanvas" *ngIf="opponentConnected; else findingOpponent" class="game"> </canvas>
-
-<ng-template #findingOpponent>
-	<div class="container">
-		<div class="box">
-			<div class="player-box">			
-				<app-profile-image
-				*ngIf="user"
-				[user]="user"
-				[currentUser]="false"
-				></app-profile-image>
-				<div class="matchbox" *ngIf="user">
-					<div style="text-align: center;" class="win">WIN</div>
-					<div style="grid-row: 2/2; text-align: center; color: green;" class="winRes">
-					  {{ user.Wins }}
-					</div>
-					<div style="grid-column: 2/2;text-align: center;" class="lose">LOSE</div>
-					<div style="grid-column: 2/2; grid-row: 2/2;text-align: center; color: red;" class="loseRes">
-					  {{ user.Losses }}
-					</div>
+<div *ngIf="!starting; else maingame" class="container">
+	<div class="box">
+		<div class="title">
+			<H1>Select Gamemode</H1>
+		</div>
+		<div class="div-cards" style="grid-row: 2/3; grid-column: 2;">
+			<label>
+				<input type="radio" name="radio1" value="normal" [(ngModel)]="gameMode" (change)="onChangeSelection($event)">
+				<div class="std-template" >		
+					<img draggable="false" src="https://www.teknoring.com/wp-content/uploads/2015/05/wpid-4290_pong.jpg" style="max-block-size: 400px;">
 				</div>
-			</div>
-			<div class="opponent-box" >
-				<H1>Looking for opponent...</H1>
-				<div class="loader"></div>
-
-			</div>
+			</label>	
+			<H2>Normal Mode</H2>
+		</div>
+		<div class="div-cards" style="grid-row: 2/3; grid-column: 6;">
+			<label>
+				<input type="radio" name="radio2" value="special" [(ngModel)]="gameMode" (change)="onChangeSelection($event)">
+				<div class="std-template" >
+					<img draggable="false" src="https://cdn.akamai.steamstatic.com/steam/apps/1193930/ss_4c7a3f9f8125c00b44328d064633c95af69963e2.1920x1080.jpg?t=1619453178" alt="special mode" style="max-block-size: 400px;">
+				</div>
+			</label>
+			<h2>Power Mode</h2>
+		</div>
+		<div style="grid-row: 4; grid-column: 4;">
+		<input class="std-template"  type="button" value="Start Game" (click)="start()">
 		</div>
 	</div>
+</div>
 
+
+<ng-template #maingame>
+	<canvas id="renderCanvas" *ngIf="opponentConnected; else findingOpponent" class="game"> </canvas>
+
+	<ng-template #findingOpponent>
+		<div class="container">
+			<div class="box">
+				<div class="player-box">			
+					<app-profile-image
+					*ngIf="user"
+					[user]="user"
+					[currentUser]="false"
+					></app-profile-image>
+					<div class="matchbox" *ngIf="user">
+						<div style="text-align: center;" class="win">WIN</div>
+						<div style="grid-row: 2/2; text-align: center; color: green;" class="winRes">
+							{{ user.Wins }}
+						</div>
+						<div style="grid-column: 2/2;text-align: center;" class="lose">LOSE</div>
+						<div style="grid-column: 2/2; grid-row: 2/2;text-align: center; color: red;" class="loseRes">
+							{{ user.Losses }}
+						</div>
+					</div>
+				</div>
+				<div class="opponent-box" >
+					<H1>Looking for opponent...</H1>
+					<div class="loader"></div>
+
+				</div>
+			</div>
+		</div>
+		
+	</ng-template>
 </ng-template>

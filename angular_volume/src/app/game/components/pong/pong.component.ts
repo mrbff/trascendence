@@ -16,8 +16,11 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 	
 	user!: UserInfo;
 	opponentConnected = false;
+	starting = false;
 	racket: number = -1;
 	scene!: BABYLON.Scene;
+	gameMode: string = "";
+
 	
 	constructor(
 		private readonly userData: UserService,
@@ -29,13 +32,10 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 		// this.gate.onPlayerUpdate().subscribe((data) => {
 		// 	//console.log(data);
 		// });
-		this.gate.onOpponentFound().subscribe((found) =>{
-			console.log('opponent found starting game');
-			this.opponentConnected = found.connected;
-			this.racket = found.seat;
-		});
+
 	}
 
+	
 	ngAfterViewChecked(): void {
 		// Check if opponent is connected and canvas is available
 		if (this.opponentConnected) {
@@ -46,11 +46,22 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 			}
 		}
 	}
-
+	
 	ngOnDestroy(): void {
 		// if (this.scene)
-			// this.gate.stop();
-		this.gate.disconnect();
+		// this.gate.stop();
+		if (this.starting)
+			this.gate.disconnect();
+	}
+	
+	start() {
+		this.starting = true;
+		this.gate.connect(this.gameMode);
+		this.gate.onOpponentFound().subscribe((found) =>{
+			console.log('opponent found starting game');
+			this.opponentConnected = found.connected;
+			this.racket = found.seat;
+		});
 	}
 
 	@HostListener('window:keydown', ['$event'])
@@ -63,4 +74,7 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 		}
 	}
 
+	onChangeSelection(event: Event) {
+		this.gameMode = (event.target as HTMLInputElement).value;
+	}
 }
