@@ -1,4 +1,4 @@
-import { Power } from './dto/power.dto';
+import { Enlarge, Power } from './dto/power.dto';
 import {
 	OnGatewayConnection,
 	OnGatewayDisconnect,
@@ -28,6 +28,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	private rooms: {name: string; data: GameInfo}[] = [];
 	private engine!: BABYLON.Engine;
 	private playersReady: Set<string> = new Set(); // Set to track players who have sent the "start" signal
+	private powerList: Power[] = [Enlarge, ]
 
 	//---------------------- CONNECTION HANDLING -------------------------//
 
@@ -281,7 +282,11 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		=> se preso da avversario cancella pallina e basta, aspetta player-update per aggiornare
 		=> server aggiorna i propri mesh :: potrebbe rendere inutile il tutto visto che ha bisogno di avere gli effetti
 		*/
-
+		if (room.data.mode === "special")
+			var powerSpawn = setInterval(() =>{
+				var location = new BABYLON.Vector3(30 * Math.random() - 15, 20, 50 * Math.random() - 25);
+				this.server.to(room.name).emit("power-update");
+			});
 		this.gameLoop(room, move);
 	}
 
@@ -292,8 +297,8 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		this.engine.runRenderLoop(() => {
 			ball.moveWithCollisions(move);
 			room.data.scene?.render();
-			if (ball.position.z > 30 || ball.position.z < -30){
-				ball.position.z > 30 ? room.data.score1++ : room.data.score2++;
+			if (ball.position.z > 32 || ball.position.z < -32){
+				ball.position.z > 32 ? room.data.score1++ : room.data.score2++;
 				ball.position = new BABYLON.Vector3(0, 4.5, 0);
 				this.server.to(room.name).emit('score-update', {score1: room.data.score1, score2: room.data.score2});
 			}
@@ -312,10 +317,8 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		let room = this.findClientRoom(client)!;
 			/*------------------------------------------*/
 		var racket = room.data.scene?.getMeshByName(client === room.data.player1 ? 'player1': 'player2')!;
-		/* TO DO 
-		server avra' bisogno di um modo di applicare gli effetti
-		rifare le classi o passargli la funzione
- 		*/
+		power.effect(racket);
+		client.to(room.name).emit('player-update', power);
 	}
 
 	@SubscribeMessage('moveRacket')
