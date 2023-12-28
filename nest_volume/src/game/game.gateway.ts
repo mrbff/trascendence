@@ -1,4 +1,4 @@
-import { Enlarge, Power } from './dto/power.dto';
+import { Enlarge, Power, Speed, Shield } from './dto/power.dto';
 import {
 	OnGatewayConnection,
 	OnGatewayDisconnect,
@@ -28,7 +28,6 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	private rooms: {name: string; data: GameInfo}[] = [];
 	private engine!: BABYLON.Engine;
 	private playersReady: Set<string> = new Set(); // Set to track players who have sent the "start" signal
-	private powerList: Power[] = [Enlarge, ]
 
 	//---------------------- CONNECTION HANDLING -------------------------//
 
@@ -240,6 +239,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		const move = new BABYLON.Vector3(0, 0, 0.4);
 		// Set up onCollide handler for the ball
 		ball.onCollide = (collidedMesh) => {
+			var last_hit;
 			if (collidedMesh === board) {
 				move.x *= -1;
 			// } else if (collidedMesh === racket1 || collidedMesh === racket2) {
@@ -258,6 +258,10 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 						move.x = -0.2;
 					else
 						move.x *= move.x > 0 ? -1 : 1;
+				if (collidedMesh === c1Middle || collidedMesh === c1Bottom || collidedMesh === c2Bottom || collidedMesh === c1Top)
+					last_hit = 1;
+				else
+					last_hit = 2;
 			} else if (collidedMesh === SE || collidedMesh === NO) {
 				let newz = move.z * Math.cos(0.8) - move.x * Math.sin(0.8);
 				let newx = -(move.z * Math.sin(0.8) + move.x * Math.cos(0.8))
@@ -270,7 +274,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				move.z = newz * Math.cos(-0.8) + newx * Math.sin(-0.8);
 				move.x = newx * Math.cos(-0.8) - newz * Math.sin(-0.8);
 			}
-			this.server.to(room.name).emit('ball-update', move);
+			this.server.to(room.name).emit('ball-update', {move, last_hit});
 		};
 
 
@@ -285,7 +289,8 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		if (room.data.mode === "special")
 			var powerSpawn = setInterval(() =>{
 				var location = new BABYLON.Vector3(30 * Math.random() - 15, 20, 50 * Math.random() - 25);
-				this.server.to(room.name).emit("power-update");
+				var power = this.getRandomPower();
+				this.server.to(room.name).emit("power-update",{location, power});
 			});
 		this.gameLoop(room, move);
 	}
@@ -356,6 +361,12 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			return;
 		}
 		return (room);
+	}
+	
+	getRandomPower(): Power {
+		const powerClasses = [Enlarge, Speed, Shield];
+		const randomIndex = Math.floor(Math.random() * 3 + 1);
+		return new powerClasses[randomIndex]();
 	}
 	
 }

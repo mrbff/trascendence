@@ -52,9 +52,9 @@ export class PongGateway {
 		this.socket.disconnect();
 	}
 
-
-	//---------------------- SCENE -------------------------//
-
+	//------------------------------------------------------------------------------------------------------------------------//
+	//----------------------------------------------------- SCENE ------------------------------------------------------------//
+	//------------------------------------------------------------------------------------------------------------------------//
 
 
 	start(canvas: HTMLCanvasElement): BABYLON.Scene {
@@ -85,9 +85,9 @@ export class PongGateway {
 		this.HUD = GUI.AdvancedDynamicTexture.CreateFullscreenUI("myUI", undefined, this.scene, undefined, true);
 		this.scene.collisionsEnabled = true;
 
-		//-----------------------------------------------------------------//
+
 		//------------------------- AMBIENT -------------------------------//
-		//-----------------------------------------------------------------//
+
 		this.camera = new BABYLON.ArcRotateCamera('camera', 0, 0.5, 50, BABYLON.Vector3.Zero(), this.scene);
 		// This targets the camera to.scene origin
 		this.camera.setTarget(BABYLON.Vector3.Zero());
@@ -103,9 +103,9 @@ export class PongGateway {
 		this.scene.createDefaultSkybox(nebula, true, 1000);
 		const music = new BABYLON.Sound('backgroun-music', "../../assets/Intergalactic Odyssey.ogg", this.scene, null, {loop:true, autoplay:true});
 
-		//-----------------------------------------------------------------//
+
 		//------------------------- GUI -----------------------------------//
-		//-----------------------------------------------------------------//
+
 		var rectangle1 = new GUI.Rectangle("rect1");
 		rectangle1.background = "black";
 		rectangle1.color = "yellow";
@@ -189,9 +189,9 @@ export class PongGateway {
 		});
 		victoryScreen.addControl(exitBtn);
 
-		//-----------------------------------------------------------------//
+
 		//------------------------- MESHES --------------------------------//
-		//-----------------------------------------------------------------//
+	
 		let meta = {speed: 1}
 		var racket1 = BABYLON.MeshBuilder.CreateCapsule('player1',{height: 7, radius: 0.5});
 		racket1.position = new BABYLON.Vector3(0, 4.5, -29);
@@ -207,10 +207,10 @@ export class PongGateway {
 		ball.position = new BABYLON.Vector3(0, 4.5, 0);
 		ball.material = new BABYLON.StandardMaterial("ballMat", this.scene);
 		(ball.material as BABYLON.StandardMaterial).ambientColor = new BABYLON.Color3(1, 0, 0);
+		ball.metadata.move = new BABYLON.Vector3(0, 0, 0.4);
 
 		BABYLON.SceneLoader.ImportMesh("", "../../assets/", "test.glb", this.scene, (meshes)=> {
 			meshes[1].name = 'board';
-			meshes[1].checkCollisions = true;
 		});
 
 
@@ -218,6 +218,14 @@ export class PongGateway {
 		{
 			var fountain = BABYLON.MeshBuilder.CreateBox("foutain", {}, this.scene);
 			fountain.visibility = 0;
+			ball.checkCollisions = true;
+			ball.onCollide = (collidedMesh) => {
+				if (ball.metadata.lastPlayer === this.player){
+					collidedMesh?.metadata.power.effect(this.player === 1 ? racket1: racket2);
+					this.socket.emit('player-update', collidedMesh?.metadata.power);
+				}
+				collidedMesh?.dispose();
+			}
 		}
 
 	}
@@ -270,9 +278,9 @@ export class PongGateway {
 		var material = new BABYLON.StandardMaterial('material', this.scene);
 		material.alpha = 0.5; // Set the transparency level as needed
 		orb.material = material;
-
+		orb.metadata.power = data.power;
 		// Load the image as a texture
-		var texture = new BABYLON.Texture('textures/grass.png', this.scene);
+		var texture = new BABYLON.Texture(data.power.texture, this.scene);
 
 		// Create a plane inside the orb
 		var plane = BABYLON.MeshBuilder.CreatePlane('plane', { size: 1 }, this.scene);
@@ -327,10 +335,12 @@ export class PongGateway {
 	}	
 
 	renderScene(): void{
+		var ball = this.scene.getMeshByName('ball')!;
 		this.engine.hideLoadingUI();
 		this.socket.emit('start');
 		this.engine.runRenderLoop(()=> {
 			this.scene.render();
+			ball.moveWithCollisions(ball.metadata.move);
 		});
 	}
 	
@@ -342,15 +352,16 @@ export class PongGateway {
 	}
 
 
-
-	//---------------------- EVENT HANDLERS -------------------------//
-
+	//----------------------------------------------------------------------------------------------------------------------//
+	//-------------------------------------------------- EVENT HANDLERS ----------------------------------------------------//
+	//----------------------------------------------------------------------------------------------------------------------//
 
 	ballHandler(){
-		this.socket.on('ball-update', (move: BABYLON.Vector3) =>{
+		this.socket.on('ball-update', (payload: {move: BABYLON.Vector3, last_hit: number}) =>{
 			var ball = this.scene.getMeshByName('ball');
 			if (ball){
-				ball.position.addInPlace(move);
+				ball.metadata.move = payload.move;
+				ball.metadata.lastPlayer = payload.last_hit;
 			}
 		})
 	}
