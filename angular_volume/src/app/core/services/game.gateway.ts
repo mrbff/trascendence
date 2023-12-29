@@ -272,8 +272,6 @@ export class PongGateway {
 		var fountain = this.scene.getMeshByName("fountain")!;
 		this.createNewSystem();
 		var orb = BABYLON.MeshBuilder.CreateSphere("orb", {}, this.scene);
-		// BABYLON.Tags.EnableFor(orb);
-		// BABYLON.Tags.AddTagsTo(orb, "orb-up");
 
 		var material = new BABYLON.StandardMaterial('material', this.scene);
 		material.alpha = 0.5; // Set the transparency level as needed
@@ -281,7 +279,7 @@ export class PongGateway {
 		orb.metadata.power = data.power;
 		// Load the image as a texture
 		var texture = new BABYLON.Texture(data.power.texture, this.scene);
-
+		texture.hasAlpha = true;
 		// Create a plane inside the orb
 		var plane = BABYLON.MeshBuilder.CreatePlane('plane', { size: 1 }, this.scene);
 		plane.material = new BABYLON.StandardMaterial('planeMaterial', this.scene);
@@ -336,7 +334,18 @@ export class PongGateway {
 
 	renderScene(): void{
 		var ball = this.scene.getMeshByName('ball')!;
+		var power = this.scene.getMeshByName('orb')!;
 		this.engine.hideLoadingUI();
+		this.scene.onBeforeRenderObservable.add(() => {
+            if(this.particleSystem && this.particleSystem.isStopped())
+            {
+                power.visibility = 1;
+                if (power.getChildren()[0])
+                    (power.getChildren()[0] as BABYLON.Mesh).visibility = 1;
+                if (power.position.y > 4.5)
+                    power.position.y -= 0.1;
+            }
+		});
 		this.socket.emit('start');
 		this.engine.runRenderLoop(()=> {
 			this.scene.render();

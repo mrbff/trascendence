@@ -56,6 +56,8 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				if (this.engine)
 					this.engine.stopRenderLoop();
 				room.data.scene?.dispose();
+				if (room.data.mode === 'special')
+					clearInterval(room.data.timer);
 				if (room.data.winner == -1){
 					let other = room.data.player1 === client ? room.data.player2 : room.data.player1;
 					console.log(other.id);
@@ -276,18 +278,8 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			}
 			this.server.to(room.name).emit('ball-update', {move, last_hit});
 		};
-
-
-		/* TO DO 
-		spawn power up meglio gestito dal client
-		=> invia segnale di spawn con posizione e tipo di power
-		=> client gestisce collisione con power
-		=> su collisione invia player-update se ottenuto da se stesso
-		=> se preso da avversario cancella pallina e basta, aspetta player-update per aggiornare
-		=> server aggiorna i propri mesh :: potrebbe rendere inutile il tutto visto che ha bisogno di avere gli effetti
-		*/
 		if (room.data.mode === "special")
-			var powerSpawn = setInterval(() =>{
+			room.data.timer = setInterval(() =>{
 				var location = new BABYLON.Vector3(30 * Math.random() - 15, 20, 50 * Math.random() - 25);
 				var power = this.getRandomPower();
 				this.server.to(room.name).emit("power-update",{location, power});
@@ -320,7 +312,6 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	@SubscribeMessage('player-update')
 	handlePower(client: Socket, power: Power){
 		let room = this.findClientRoom(client)!;
-			/*------------------------------------------*/
 		var racket = room.data.scene?.getMeshByName(client === room.data.player1 ? 'player1': 'player2')!;
 		power.effect(racket);
 		client.to(room.name).emit('player-update', power);

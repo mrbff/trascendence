@@ -9,6 +9,7 @@ export interface GameInfo{
 	score2: number;
 	scene?: Scene;
 	mode?: string;
+	timer?: NodeJS.Timeout;
 	winner: number;
 }
 
