@@ -87,8 +87,30 @@ export class ChatComponent implements OnInit, OnDestroy {
       })
     );
 
-    // To DO: $subscribe user joining, leaving, etc.
-  }
+  //   this.$subs.add(
+  //     this.chatGateway.onUserJoin().subscribe({
+  //       next: (user) => {
+  //         console.log(`User joined: ${user}`);
+  //         // Handle user joining logic here
+  //       },
+  //       error: (error) => {
+  //         console.error(`Error receiving user join event: ${error.message}`);
+  //       },
+  //     })
+  //   );
+
+  //   this.$subs.add(
+  //     this.chatGateway.onUserLeave().subscribe({
+  //       next: (user) => {
+  //         console.log(`User left: ${user}`);
+  //         // Handle user leaving logic here
+  //       },
+  //       error: (error) => {
+  //         console.error(`Error receiving user leave event: ${error.message}`);
+  //       },
+  //     })
+  //   );
+  // }
 
   sendMessageToChannel(channel: string): void {
     if (this.newMessage.trim()) {
