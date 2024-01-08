@@ -1,4 +1,4 @@
-import { Power } from './../../game/components/pong/dto/power.dto';
+import { Enlarge, Power, Shield, Speed } from './../../game/components/pong/dto/power.dto';
 import { Injectable, NgZone } from '@angular/core';
 import { Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
@@ -17,8 +17,10 @@ export class PongGateway {
 	private camera!: BABYLON.ArcRotateCamera;
 	private HUD!: GUI.AdvancedDynamicTexture;
 	private particleSystem!: BABYLON.GPUParticleSystem;
+	private hl!: BABYLON.HighlightLayer;
 	private player = -1;
 	private gameMode!: string
+	private index = -1;
 
 	constructor(private readonly userData: UserService, private ngZone: NgZone,) {
 	}
@@ -61,34 +63,32 @@ export class PongGateway {
 		this.ngZone.runOutsideAngular(() => {
 			this.onScoreUpdate();
 			this.onPlayerUpdate();
+			this.onPowerUpdate();
 			this.ballHandler();
 			this.onGameFinish();
 			this.onOpponentDisconnected();
-			this.initializeEngine(canvas);
 			this.createScene(canvas);
 			this.scene.executeWhenReady(() => this.renderScene());
-			// Inspector.Show(this.scene, {});
 		});
 		return(this.scene);
 	}
 	
-	initializeEngine(canvas: HTMLCanvasElement): void {
-		this.engine = new BABYLON.Engine(canvas, true);
-	}
-
-	createScene(canvas: HTMLCanvasElement){
+	
+	async createScene(canvas: HTMLCanvasElement){
+		this.engine = new BABYLON.Engine(canvas, true, {stencil: true});
 		if (this.scene) {
 			this.scene.dispose();
 		}
 		this.engine.displayLoadingUI();
 		this.scene = new BABYLON.Scene(this.engine);
+		this.hl = new BABYLON.HighlightLayer("hl1", this.scene);
 		this.HUD = GUI.AdvancedDynamicTexture.CreateFullscreenUI("myUI", undefined, this.scene, undefined, true);
 		this.scene.collisionsEnabled = true;
 
 
 		//------------------------- AMBIENT -------------------------------//
 
-		this.camera = new BABYLON.ArcRotateCamera('camera', 0, 0.5, 50, BABYLON.Vector3.Zero(), this.scene);
+		this.camera = new BABYLON.ArcRotateCamera('camera', 0, 0.5, 100, BABYLON.Vector3.Zero(), this.scene);
 		// This targets the camera to.scene origin
 		this.camera.setTarget(BABYLON.Vector3.Zero());
 		// This attaches the camera to the canvas
@@ -96,13 +96,11 @@ export class PongGateway {
 	
 		var light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(-0.35, 1, -1), this.scene);
 		light.intensity = 1;
-		light.diffuse = new BABYLON.Color3(0.82, 0.46, 0.97);
-		light.specular = new BABYLON.Color3(1, 1, 1);
-		light.groundColor = new BABYLON.Color3(0.2, 0.03, 0.22);
 		var nebula = new BABYLON.CubeTexture("../../assets/skybox/sky", this.scene, null, true);
 		this.scene.createDefaultSkybox(nebula, true, 1000);
-		const music = new BABYLON.Sound('backgroun-music', "../../assets/Intergalactic Odyssey.ogg", this.scene, null, {loop:true, autoplay:true});
-
+		const music = new BABYLON.Sound('music', "../../assets/Intergalactic Odyssey.ogg", this.scene, null, {loop:true, volume: 0.1});
+		const BallBounce = new BABYLON.Sound('pong-bounce', "../../assets/pong.wav", this.scene, null);
+		const PowerSound = new BABYLON.Sound('power-sound', "../../assets/power.wav", this.scene, null);
 
 		//------------------------- GUI -----------------------------------//
 
@@ -192,22 +190,21 @@ export class PongGateway {
 
 		//------------------------- MESHES --------------------------------//
 	
-		let meta = {speed: 1}
 		var racket1 = BABYLON.MeshBuilder.CreateCapsule('player1',{height: 7, radius: 0.5});
 		racket1.position = new BABYLON.Vector3(0, 4.5, -29);
 		racket1.rotation = new BABYLON.Vector3(0, 0 , 1.57);
-		racket1.metadata = meta;
-		// racket1.ellipsoid.x = 4;
+
 		var racket2 = BABYLON.MeshBuilder.CreateCapsule('player2',{height: 7, radius: 0.5});
 		racket2.position = new BABYLON.Vector3(0, 4.5, 29);
 		racket2.rotation = new BABYLON.Vector3(0, 0 , 1.57);
-		racket2.metadata = meta;
-		
+
 		var ball = BABYLON.MeshBuilder.CreateSphere('ball', );
 		ball.position = new BABYLON.Vector3(0, 4.5, 0);
 		ball.material = new BABYLON.StandardMaterial("ballMat", this.scene);
-		(ball.material as BABYLON.StandardMaterial).ambientColor = new BABYLON.Color3(1, 0, 0);
-		ball.metadata.move = new BABYLON.Vector3(0, 0, 0.4);
+		(ball.material as BABYLON.StandardMaterial).diffuseColor = new BABYLON.Color3(1, 0, 0);
+		ball.metadata = {
+			lastPlayer: -1,
+		};
 
 		BABYLON.SceneLoader.ImportMesh("", "../../assets/", "test.glb", this.scene, (meshes)=> {
 			meshes[1].name = 'board';
@@ -216,15 +213,35 @@ export class PongGateway {
 
 		if (this.gameMode === "special")
 		{
-			var fountain = BABYLON.MeshBuilder.CreateBox("foutain", {}, this.scene);
+			var fountain = BABYLON.MeshBuilder.CreateBox("fountain", {}, this.scene);
 			fountain.visibility = 0;
 			ball.checkCollisions = true;
+			var orb = BABYLON.MeshBuilder.CreateSphere("orb", {diameter: 2.5}, this.scene);
+			orb.visibility = 0;
+
+			var shield1 = BABYLON.MeshBuilder.CreateCylinder('shield1', {height: 34, diameter: 2.5})
+			shield1.position = new BABYLON.Vector3(0, 4.5, -24);
+			shield1.rotation = new BABYLON.Vector3(0, 0 , 1.57);
+			shield1.material = await BABYLON.NodeMaterial.ParseFromSnippetAsync('2VUFZ8#5');
+			shield1.material.backFaceCulling = false;
+			shield1.visibility = 0;
+			racket1.metadata = {speed: 1, shield: shield1};
+
+			var shield2 = BABYLON.MeshBuilder.CreateCylinder('shield2', {height: 34, diameter: 2.5})
+			shield2.position = new BABYLON.Vector3(0, 4.5, 24);
+			shield2.rotation = new BABYLON.Vector3(0, 0 , 1.57);
+			shield2.material = await BABYLON.NodeMaterial.ParseFromSnippetAsync('2VUFZ8#5');
+			shield2.material.backFaceCulling = false;
+			shield2.visibility = 0;
+			racket2.metadata = {speed: 1, shield: shield2};
+			
 			ball.onCollide = (collidedMesh) => {
 				if (ball.metadata.lastPlayer === this.player){
 					collidedMesh?.metadata.power.effect(this.player === 1 ? racket1: racket2);
 					this.socket.emit('player-update', collidedMesh?.metadata.power);
 				}
 				collidedMesh?.dispose();
+				PowerSound.play();
 			}
 		}
 
@@ -235,7 +252,7 @@ export class PongGateway {
 		if (this.particleSystem) {
 			this.particleSystem.dispose();
 		}
-		
+
 		this.particleSystem = new BABYLON.GPUParticleSystem("particles", { capacity:1000}, this.scene);
 		var customEmitter = new BABYLON.CustomParticleEmitter();
 		// Colors of all particles
@@ -256,7 +273,7 @@ export class PongGateway {
 			out.z = 0;
 		}
 		this.particleSystem.particleEmitterType = customEmitter;
-		this.particleSystem.particleTexture = new BABYLON.Texture("/textures/flare.png", this.scene);
+		this.particleSystem.particleTexture = new BABYLON.Texture("../../assets/blue-light-star.png", this.scene);
 		this.particleSystem.emitRate = 1000;
 		this.particleSystem.maxLifeTime = 1;
 		this.particleSystem.minLifeTime = 1;
@@ -268,27 +285,41 @@ export class PongGateway {
 	}
 
 	
-	spawnPowerUp(data: {position: BABYLON.Vector3, power: Power}) {
+	spawnPowerUp(position: BABYLON.Vector3, power: Power) {
 		var fountain = this.scene.getMeshByName("fountain")!;
+		var orb = this.scene.getMeshByName("orb")! as BABYLON.Mesh;
 		this.createNewSystem();
-		var orb = BABYLON.MeshBuilder.CreateSphere("orb", {}, this.scene);
-
 		var material = new BABYLON.StandardMaterial('material', this.scene);
+		this.index++;
+		let clone = orb.clone("power" + this.index);
+		let powerParticles = new BABYLON.ParticleSystem("power-up", 2000, this.scene);
+		powerParticles.particleTexture = new BABYLON.Texture("../../assets/blue-light-star.png", this.scene);
+		powerParticles.emitter = clone;
+		powerParticles.color1 = new BABYLON.Color4(0.7, 0.8, 1.0, 1.0);
+		powerParticles.color2 = new BABYLON.Color4(0.2, 0.5, 1.0, 1.0);
+		powerParticles.colorDead = new BABYLON.Color4(0, 0, 0.2, 0.0);
+		powerParticles.minSize = 0.1;
+		powerParticles.maxSize = 0.9;
+		powerParticles.minEmitBox = new BABYLON.Vector3(-1, 0, -1);
+		powerParticles.maxEmitBox = new BABYLON.Vector3(1, 0, 1);
+		powerParticles.start(3500);
+		clone.alwaysSelectAsActiveMesh = true;
 		material.alpha = 0.5; // Set the transparency level as needed
-		orb.material = material;
-		orb.metadata.power = data.power;
+		clone.material = material;
+		clone.metadata = {power: power}
+		this.hl.addMesh(clone, BABYLON.Color3.White());
 		// Load the image as a texture
-		var texture = new BABYLON.Texture(data.power.texture, this.scene);
+		var texture = new BABYLON.Texture(power.texture, this.scene);
 		texture.hasAlpha = true;
-		// Create a plane inside the orb
-		var plane = BABYLON.MeshBuilder.CreatePlane('plane', { size: 1 }, this.scene);
+		// Create a plane inside the clone
+		var plane = BABYLON.MeshBuilder.CreatePlane('plane', { size: 1.5 }, this.scene);
 		plane.material = new BABYLON.StandardMaterial('planeMaterial', this.scene);
 		(plane.material as BABYLON.StandardMaterial).diffuseTexture = texture;
 		plane.billboardMode = BABYLON.Mesh.BILLBOARDMODE_ALL;
 		plane.visibility = 0;
 
-		// Attach the plane to the orb
-		plane.parent = orb;
+		// Attach the plane to the clone
+		plane.parent = clone;
 
 		// Animation parameters
 		var animationScale = 0.2;
@@ -324,32 +355,38 @@ export class PongGateway {
 
 		// Run the animation
 		this.scene.beginAnimation(plane, 0, 60, true, animationSpeed);
-		orb.metadata
-		orb.position.copyFrom(data.position);
-		orb.checkCollisions = true;
-		orb.visibility = 0;
-		fountain.position.copyFrom(data.position);
+		clone.position.copyFrom(position);
+		clone.checkCollisions = true;
+		clone.visibility = 0;
+		fountain.position.copyFrom(position);
 		this.particleSystem.start();
 	}	
 
 	renderScene(): void{
 		var ball = this.scene.getMeshByName('ball')!;
-		var power = this.scene.getMeshByName('orb')!;
+		var music = this.scene.getSoundByName('music')!;
 		this.engine.hideLoadingUI();
 		this.scene.onBeforeRenderObservable.add(() => {
-            if(this.particleSystem && this.particleSystem.isStopped())
+			if(this.particleSystem && this.particleSystem.isStopped())
             {
-                power.visibility = 1;
-                if (power.getChildren()[0])
-                    (power.getChildren()[0] as BABYLON.Mesh).visibility = 1;
-                if (power.position.y > 4.5)
-                    power.position.y -= 0.1;
+				var power = this.scene.getMeshByName('power' + this.index);
+				if (power){
+					power.visibility = 1;
+					if (power.getChildren()[0])
+						(power.getChildren()[0] as BABYLON.Mesh).visibility = 1;
+					if (power.position.y > 4.5)
+						power.position.y -= 0.1;
+				}
             }
 		});
 		this.socket.emit('start');
+		console.log(music);
+		music.play();
 		this.engine.runRenderLoop(()=> {
 			this.scene.render();
-			ball.moveWithCollisions(ball.metadata.move);
+		});
+		window.addEventListener("resize", () => {
+			this.engine.resize();
 		});
 	}
 	
@@ -366,18 +403,35 @@ export class PongGateway {
 	//----------------------------------------------------------------------------------------------------------------------//
 
 	ballHandler(){
-		this.socket.on('ball-update', (payload: {move: BABYLON.Vector3, last_hit: number}) =>{
-			var ball = this.scene.getMeshByName('ball');
-			if (ball){
-				ball.metadata.move = payload.move;
-				ball.metadata.lastPlayer = payload.last_hit;
-			}
-		})
+		this.socket.on('ball-update', (payload: {move: BABYLON.Vector3, lastPlayer: number}) =>{
+			var ball = this.scene.getMeshByName('ball')!;
+			let vector = new BABYLON.Vector3(0,0,0);
+			ball.metadata = {lastPlayer: payload.lastPlayer};
+			vector.copyFrom(payload.move);
+			ball.moveWithCollisions(vector);
+		});
+		this.socket.on('ball-collide', ()=> {
+			this.scene.getSoundByName('pong-bounce')?.play();
+		});
 	}
 	
 	onPowerUpdate(){
-		this.socket.on('power-update', (data: {position: BABYLON.Vector3, power: Power}) =>{
-			this.spawnPowerUp(data);
+		this.socket.on('power-update', (data: {position: BABYLON.Vector3, power: string}) =>{
+			var power;
+			switch (data.power) {
+				case 'Enlarge':
+					power = new Enlarge();
+					break;
+				case 'Speed':
+					power = new Speed;
+					break;
+				case 'Shield':
+					power = new Shield;
+					break;
+				default:
+					throw new Error(`Unknown power type: ${data.power}`);
+			}
+			this.spawnPowerUp(data.position, power);
 		})
 	}
 
@@ -385,14 +439,13 @@ export class PongGateway {
 	moveRacket(direction: string): void {
 		var racket = this.scene.getMeshByName(this.player === 1 ? 'player1': 'player2');
 		if (racket) {
+			const speed = racket.metadata?.speed || 1;
 			switch (direction) {
 				case 'up':
-					racket.position.x -= 0.1 * racket.metadata.speed;
-					// racket.moveWithCollisions( new BABYLON.Vector3(-0.1, 0 , 0));
+					racket.position.x -= 0.1 * speed;
 					break;
 				case 'down':
-					racket.position.x += 0.1 * racket.metadata.speed;;
-					// racket.moveWithCollisions( new BABYLON.Vector3(0.1, 0 , 0));
+					racket.position.x += 0.1 * speed;
 					break;
 			}
 		}
@@ -403,24 +456,35 @@ export class PongGateway {
 	onPlayerUpdate() {
 		this.socket.on('racket-update', (dir: string) => {
 			var racketOpp = this.scene.getMeshByName(this.player === 1 ? 'player2': 'player1');
-			// console.log(dir);
 			if (racketOpp) {
+				const speed = racketOpp.metadata?.speed || 1;
 				switch (dir) {
 					case 'up':
-						racketOpp.position.x -= 0.1 * racketOpp.metadata.speed;;
-                        // racketOpp.moveWithCollisions( new BABYLON.Vector3(-0.1, 0 , 0));
+						racketOpp.position.x -= 0.1 * speed;
 						break;
 					case 'down':
-						racketOpp.position.x += 0.1 * racketOpp.metadata.speed;;
-                        // racketOpp.moveWithCollisions( new BABYLON.Vector3(0.1, 0 , 0));
+						racketOpp.position.x += 0.1 * speed;
 						break;
 					}
-				// console.log(racketOpp.position.x);
 			}
 		});
 		this.socket.on('player-update', (power: Power) =>{
 			var racketOpp = this.scene.getMeshByName(this.player === 1 ? 'player2': 'player1')!;
-			power.effect(racketOpp);
+			var pcopy;
+			switch (power.type) {
+				case 'Enlarge':
+					pcopy = new Enlarge();
+					break;
+				case 'Speed':
+					pcopy = new Speed;
+					break;
+				case 'Shield':
+					pcopy = new Shield;
+					break;
+				default:
+					throw new Error(`Unknown power type: ${power.type}`);
+			}
+			pcopy.effect(racketOpp);
 		});
 	}
 	
