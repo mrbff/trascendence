@@ -9,6 +9,10 @@ up:
 	@echo "\e[32mStarting trascendence\e[0m"
 	@docker-compose -f $(COMPOSE_FILE) up -d
 
+up-d:
+	@echo "\e[32mStarting trascendence\e[0m"
+	@docker-compose -f $(COMPOSE_FILE) up
+
 down:
 	@echo "\e[31mShutdown\e[0m"
 	@docker-compose -f $(COMPOSE_FILE) down

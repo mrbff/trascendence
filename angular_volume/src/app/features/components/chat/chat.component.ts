@@ -35,6 +35,20 @@ export class ChatComponent implements OnInit, OnDestroy {
     private readonly chatGateway: ChatGateway,
     private readonly route: ActivatedRoute
   ) {
+    this.messages = [
+      {
+        username: 'graiolo',
+        chat: [ 
+          { msg: 'ciao', user: 'graiolo' },
+        ],
+      },
+      {
+        username: 'test',
+        chat: [
+          { msg: 'ciao', user: 'test' },
+        ],
+      },
+    ];
     this.showMsg = false;
     this.chat = [];
     this.search = '';
@@ -87,30 +101,8 @@ export class ChatComponent implements OnInit, OnDestroy {
       })
     );
 
-  //   this.$subs.add(
-  //     this.chatGateway.onUserJoin().subscribe({
-  //       next: (user) => {
-  //         console.log(`User joined: ${user}`);
-  //         // Handle user joining logic here
-  //       },
-  //       error: (error) => {
-  //         console.error(`Error receiving user join event: ${error.message}`);
-  //       },
-  //     })
-  //   );
-
-  //   this.$subs.add(
-  //     this.chatGateway.onUserLeave().subscribe({
-  //       next: (user) => {
-  //         console.log(`User left: ${user}`);
-  //         // Handle user leaving logic here
-  //       },
-  //       error: (error) => {
-  //         console.error(`Error receiving user leave event: ${error.message}`);
-  //       },
-  //     })
-  //   );
-  // }
+    // To DO: $subscribe user joining, leaving, etc.
+  }
 
   sendMessageToChannel(channel: string): void {
     if (this.newMessage.trim()) {
@@ -164,5 +156,3 @@ export class ChatComponent implements OnInit, OnDestroy {
     console.log('TKM');
   }
 }
-
-//per le richeste posrman
