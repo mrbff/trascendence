@@ -1,5 +1,6 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { channel } from 'diagnostics_channel';
 import { Subscription } from 'rxjs';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { UserService } from 'src/app/core/services/user.service';
@@ -29,26 +30,12 @@ export class ChatComponent implements OnInit, OnDestroy {
   onWindowResize() {
     this.screenW = window.innerWidth;
   }
-
   constructor(
     readonly userService: UserService,
     private readonly chatGateway: ChatGateway,
     private readonly route: ActivatedRoute
   ) {
-    this.messages = [
-      {
-        username: 'graiolo',
-        chat: [ 
-          { msg: 'ciao', user: 'graiolo' },
-        ],
-      },
-      {
-        username: 'test',
-        chat: [
-          { msg: 'ciao', user: 'test' },
-        ],
-      },
-    ];
+    this.messages = [];
     this.showMsg = false;
     this.chat = [];
     this.search = '';
@@ -60,6 +47,11 @@ export class ChatComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.screenW = window.innerWidth;
     console.log(this.screenW);
+
+    const params = this.route.snapshot.queryParams;
+    console.log('params');
+    console.log(params);
+
     this.initializeChat();
   }
 
@@ -69,19 +61,24 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.route.queryParams.subscribe((params) => {
         const username = params['username'];
         if (username !== undefined) {
-          this.openChat(username);
           this.title = username;
           this.isOpen = true;
+          this.chatGateway.receivePrivChannelMsg(username)
         }
       })
     );
 
+    // this.$subs.add(
+    //   this.chatGateway.
+    
     this.$subs.add(
       this.chatGateway.onMsgFromChannel().subscribe({
-        next: (message) => {
-          this.messages.push(message);
-          console.log(message); ///debug
+        next: (messages: any) => {
+          // this.messages.concat(messages); 
+          this.messages = [...this.messages, ...messages];
+          console.log({messages}); ///debug
           console.log(this.messages);
+          this.chatGateway.receiveUserChannels(this.userService.getUser())
         },
         error: (error) => {
           this.errorMsg = `Error receiving message from channel: ${error.message}`;
@@ -101,6 +98,26 @@ export class ChatComponent implements OnInit, OnDestroy {
       })
     );
 
+    this.$subs.add(
+      this.chatGateway.onUserChannelList().subscribe({
+        next: (data: any) => {
+          const myUsername = this.userService.getUser();
+          this.channels = data.channels.map((channel:any)=> {
+            if (!channel.name){
+              const otherUser = channel.members.find((m: any)=> m.user.username != myUsername);
+              channel.name = otherUser.user.username;
+            }
+            return channel;
+          }); 
+          console.log({chat:this.channels})
+        },
+        error: (error) => {
+          this.errorMsg = `Error receiving channel list`;
+        },
+      })
+    );
+    this.chatGateway.receiveUserChannels(this.userService.getUser())
+
     // To DO: $subscribe user joining, leaving, etc.
   }
 
@@ -113,6 +130,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   sendMessageToUser(receiver: string): void {
     if (this.newMessage.trim()) {
+      const sender = ''; // Declare the 'sender' variable
       this.chatGateway.sendPrivMsg(this.newMessage, receiver);
       this.newMessage = ''; // Reset the input after sending
     }
@@ -126,10 +144,12 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   // WIP
   openChat(username: string) {
+    const newChat = {};
+
     this.chat = this.messages
-      .filter((obj) => obj.username === username)
-      .map((obj) => obj.chat)
-      .flat();
+    .filter((obj) => obj.username === username)
+    .map((obj) => obj.chat)
+    console.log({messages:this.messages, chat:this.chat})
     this.isOpen = true;
     this.title = username;
   }

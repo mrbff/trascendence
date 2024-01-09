@@ -28,13 +28,18 @@
 >
 <ng-template #otherUser>
   <main class="card-profile-image-container">
-    <img
+    <img *ngIf="user"
       id="image"
       class="profile-image"
       [src]="user.img"
       [ngStyle]="{
         color: user.isPlaying ? 'orange' : user.isOnline ? 'green' : 'red'
       }"
+    />
+    <img *ngIf="!user"
+      id="image"
+      class="profile-image"
+      [src]="conversation.img"
     />
   </main>
 </ng-template>

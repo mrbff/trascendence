@@ -63,6 +63,7 @@ model matchHistory {
 model Channel {
   id        String                 @id @default(uuid()) @unique
   type      ChannelType
+  img       String    @default("")
   name      String?   @unique
   password  String?
   members   ChannelMembership[]

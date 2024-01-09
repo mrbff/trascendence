@@ -16,8 +16,10 @@ export class ChatGateway {
     private authService:AuthService,
     private readonly userService:UserService
     ) {
+    
+    console.log('ChatGateway constructor called');
     const jwt = this.authService.getToken();
-    console.log({jwt});
+    console.log({ jwt });
     
     this.socket = io('/chat', { 
       path: '/socket.io/',
@@ -37,10 +39,7 @@ export class ChatGateway {
     return new Observable((observer) => {
       this.socket.on('MsgFromChannel', (data) => {
         observer.next(
-          {
-            msg:data.message,
-            user:data.sender
-          }
+          data
         );
       });
     });
@@ -55,6 +54,23 @@ export class ChatGateway {
             user:data.sender
           }
         );
+      });
+    });
+  }
+
+  receivePrivChannelMsg(receiver:string){
+    this.socket.emit('ReceivePrivMsg', { sender:this.userService.getUser(), receiver:receiver });
+  }
+
+
+  receiveUserChannels(username:string){
+    this.socket.emit('ReceiveUserChannels', { username });
+  }
+
+  onUserChannelList(){
+    return new Observable((observer) => {
+      this.socket.on('UserChannelList', (data) => {
+        observer.next(data);
       });
     });
   }

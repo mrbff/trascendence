@@ -30,11 +30,9 @@ export class ChannelsService {
 
   async createDirectMembership(user:any, channel:any) {
     return this.prisma.channelMembership.create({
-      data: {
-        userId: user.id,
-        user: user,
-        channelId: channel.id,
-        channel: channel,
+      data: { 
+        user: { connect: { id: user.id } },
+        channel: { connect: { id: channel.id } },
         role: 'MEMBER'
       }
     });
@@ -44,9 +42,9 @@ export class ChannelsService {
     return this.prisma.channelMembership.create({
       data: {
         userId: user.id,
-        user: user,
         channelId: channel.id,
-        channel: channel,
+        user: { connect: { id: user.id } },
+        channel: { connect: { id: channel.id } },
         role: 'MEMBER'
       }
     });
@@ -55,10 +53,10 @@ export class ChannelsService {
   async createAdminChannelMembership(user:any, channel:any) {
     return this.prisma.channelMembership.create({
       data: {
-        userId: user.id,
         user: user,
-        channelId: channel.id,
+        userId: user.id,
         channel: channel,
+        channelId: channel.id,
         role: 'ADMIN'
       }
     });
@@ -130,31 +128,105 @@ export class ChannelsService {
     });
   }
 
-  async createDirectMessage(receiverName:string, content:string, username:string) {
+  async createDirectMessage(receiverName: string, content: string, username: string) {
     const sender = await this.usersService.findUserByName(username);
     const receiver = await this.usersService.findUserByName(receiverName);
-    ///TO DO: se non trova channel crealo
-    const channel = await this.prisma.channel.findFirstOrThrow({
+  
+    // Check if the direct channel already exists
+    let channel = await this.prisma.channel.findFirst({
       where: {
         type: "DIRECT",
-        members: {
-          some: {
-            AND: [
-              { userId: sender.id },
-              { userId: receiver.id },
-            ],
+        AND:[
+          {
+            members:{
+              some:{
+                userId:sender.id
+              }
+            }
           },
-        },
+          {
+            members:{
+              some:{
+                userId:receiver.id
+              }
+            }
+          }
+        ]
       },
     });
-
+    // If the direct channel doesn't exist, create it
+    if (!channel) {
+      channel = await this.createDirect(username, receiverName);
+    }
+  
     return this.prisma.message.create({
       data: {
         channelId: channel.id,
         senderId: sender.id,
-        content: content
+        content: content,
       },
     });
+  }  
+
+  async getChannelMsg(sender: string, receiver:string){
+    const senderUser = await this.usersService.findUserByName(sender);
+    const receiverUser = await this.usersService.findUserByName(receiver);
+  
+    return await this.prisma.message.findMany({
+      where:{
+
+        channel:{
+          AND:[
+            {
+              members:{
+                some:{
+                  userId:senderUser.id
+                }
+              }
+            },
+            {
+              members:{
+                some:{
+                  userId:receiverUser.id
+                }
+              }
+            }
+          ]
+        },
+      },
+      include:{
+        sender: true
+      }
+    })
+  }
+
+  async getUserChannels(username: string){
+    const user = await this.prisma.user.findFirst({
+      where:{username}
+    });
+    if (!user){
+      return null;
+    }
+    return await this.prisma.channel.findMany({
+      where:{
+        members:{
+          some:{
+            userId:user.id
+          }
+        },
+      },
+      include:{
+        members: {
+          include:{
+            user: {
+              select:{
+                username: true
+              }
+            }
+          }
+        }
+      }
+    })
   }
 
 }

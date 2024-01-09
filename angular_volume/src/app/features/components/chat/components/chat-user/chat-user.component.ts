@@ -19,14 +19,14 @@ export class ChatUserComponent implements OnInit {
   user: any;
 
   @HostListener('click') onClick() {
-    this.openChat.emit(this.user.username);
+    this.openChat.emit(this.user.name);
   }
 
   constructor(private readonly friendService: FriendsService) {}
 
   async ngOnInit() {
     this.user = await this.friendService.getFriendInfo(
-      this.conversation.username
+      this.conversation.name
     );
   }
 }

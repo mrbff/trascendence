@@ -9,6 +9,7 @@ import { UserInfo } from 'src/app/models/userInfo.model';
   styleUrls: ['./profile-image.component.css'],
 })
 export class ProfileImageComponent {
+  @Input() conversation: any;
   @Input() user!: UserInfo;
   @Input() currentUser!: boolean;
 

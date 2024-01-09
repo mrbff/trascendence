@@ -14,6 +14,7 @@ import * as jwt from 'jsonwebtoken';
 
 import {JwtPayload} from 'jsonwebtoken'
 import { ChannelsService } from 'src/channels/channels.service';
+import { use } from 'passport';
 type MyJwtPayload = {
   userId: number,
 } & JwtPayload;
@@ -68,6 +69,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       console.log('Authentication error');
       client.disconnect();
     }
+
   }
 
   handleDisconnect(client: ExtendedSocket) {
@@ -88,8 +90,30 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const { sender, receiver, message } = payload;
     this.channelsService.createDirectMessage(receiver, message, sender);
     ///TO DO: creare room della chat o mandarlo all'id dell'user nella map
-    this.server.emit('MsgFromChannel', { sender: sender, message: message });
+    this.server.emit('MsgFromChannel', [{ user: sender, msg: message }]);
   }
+  
+  @SubscribeMessage("ReceivePrivMsg")
+  async receivePrivChannelMsg(client: Socket, payload: { sender: string, receiver: string}) {
+    const { sender, receiver } = payload;
+    const messages = await this.channelsService.getChannelMsg(sender, receiver);
+    ///TO DO: creare room della chat o mandarlo all'id dell'user nella map
+    this.server.emit('MsgFromChannel', messages.map(message=>{
+        return {
+          msg:message.content,
+          user:message.sender.username,
+        }
+      })
+    );
+  }
+
+  @SubscribeMessage("ReceiveUserChannels")
+  async receiveUserChannels(client: Socket, payload: { username: string }) {
+    const channels = await this.channelsService.getUserChannels(payload.username);
+    this.server.emit('UserChannelList', {channels} );
+  }
+
+
 
   @SubscribeMessage('ChannelMsg')
   handleChannelMsg(client: Socket, payload: { sender: string, channel: string, message: string }): void {
