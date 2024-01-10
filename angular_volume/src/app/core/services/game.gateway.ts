@@ -2,16 +2,18 @@ import { Enlarge, Power, Shield, Speed } from './../../game/components/pong/dto/
 import { Injectable, NgZone } from '@angular/core';
 import { Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
-import { UserService } from 'src/app/core/services/user.service';
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import * as GUI from '@babylonjs/gui';
+import { UserInfo } from 'src/app/models/userInfo.model';
 // import { Inspector } from '@babylonjs/inspector';
 
 @Injectable()
 export class PongGateway {
 
 	private socket!: Socket;
+	private user!: UserInfo;
+	private opponent!: string;
 	private engine!: BABYLON.Engine;
 	private scene!: BABYLON.Scene;
 	private camera!: BABYLON.ArcRotateCamera;
@@ -22,12 +24,14 @@ export class PongGateway {
 	private gameMode!: string
 	private index = -1;
 
-	constructor(private readonly userData: UserService, private ngZone: NgZone,) {
+	constructor(private ngZone: NgZone,) {
 	}
 	
-	connect(gameMode: string) {
+	connect(gameMode: string, user: UserInfo) {
 		this.gameMode = gameMode;
-		this.socket = io('/pong', {path: '/socket.io/', reconnection: true, reconnectionDelay: 60000, timeout: 60000, query: {gameMode}});
+		this.user = user;
+		
+		this.socket = io('/pong', {path: '/socket.io/', reconnection: true, reconnectionDelay: 60000, timeout: 60000, query: {gameMode, name: user.username}});
 		this.socket.on('disconnect', function (reason) {
 		console.log('Socket disconnected because of ' + reason);
 		});
@@ -39,10 +43,11 @@ export class PongGateway {
 		});
 	}
 
-	onOpponentFound(): Observable<{ client: string ; connected: boolean; seat: number}> {
+	onOpponentFound(): Observable<{ client: string ; username: string; seat: number}> {
 		return new Observable((observer) => {
-			this.socket.on('opponent-found', (response: { client: string; connected: boolean; seat: number}) => {
+			this.socket.on('opponent-found', (response: { client: string; username: string; seat: number}) => {
 				this.player = response.seat;
+				this.opponent = response.username;
 				observer.next(response);
 			});
 		});
@@ -87,9 +92,7 @@ export class PongGateway {
 
 
 		//------------------------- AMBIENT -------------------------------//
-
 		this.camera = new BABYLON.ArcRotateCamera('camera', 0, 0.5, 100, BABYLON.Vector3.Zero(), this.scene);
-		// This targets the camera to.scene origin
 		this.camera.setTarget(BABYLON.Vector3.Zero());
 		// This attaches the camera to the canvas
 		this.camera.attachControl(canvas, true);
@@ -116,12 +119,15 @@ export class PongGateway {
 	
 		var name1 = new GUI.TextBlock("name1");
 		name1.fontFamily = "Helvetica";
-		name1.text = "Player 1";
+		name1.text = this.player === 1 ? this.user.username : this.opponent;
 		name1.top = -20;
 		name1.color = "orange";
 		name1.fontSize = "14px";
 		name1.resizeToFit = true;
+		name1.paddingLeft = 15;
+		name1.paddingRight = 15;
 		rectangle1.addControl(name1);
+
 		var score1 = new GUI.TextBlock("score1");
 		score1.fontFamily = "Helvetica";
 		score1.text = '0';
@@ -143,10 +149,12 @@ export class PongGateway {
 		var name2 = new GUI.TextBlock("name2");
 		name2.fontFamily = "Helvetica";
 		name2.top = -20;
-		name2.text = "Player 2";
+		name2.text = this.player === 2 ? this.user.username : this.opponent;
 		name2.color = "orange";
 		name2.fontSize = "14px";
 		name2.resizeToFit = true;
+		name2.paddingLeft = 15;
+		name2.paddingRight = 15;
 		rectangle2.addControl(name2);
 
 		var score2 = new GUI.TextBlock("score2");
@@ -173,6 +181,8 @@ export class PongGateway {
 		victoryText.color = "orange";
 		victoryText.fontSize = "20px";
 		victoryText.resizeToFit = true;
+		victoryText.paddingLeft = 15;
+		victoryText.paddingRight = 15;
 		victoryScreen.addControl(victoryText);
 
 		var exitBtn = GUI.Button.CreateSimpleButton("exit", "EXIT");
@@ -380,7 +390,6 @@ export class PongGateway {
             }
 		});
 		this.socket.emit('start');
-		console.log(music);
 		music.play();
 		this.engine.runRenderLoop(()=> {
 			this.scene.render();
@@ -437,19 +446,25 @@ export class PongGateway {
 
 	// Function to update the position of the racket
 	moveRacket(direction: string): void {
-		var racket = this.scene.getMeshByName(this.player === 1 ? 'player1': 'player2');
-		if (racket) {
+		var racket = this.scene.getMeshByName(this.player === 1 ? 'player1': 'player2')!;
+		const maxPos = racket.scaling.y > 1 ? 5 : 7;
+		{
 			const speed = racket.metadata?.speed || 1;
 			switch (direction) {
 				case 'up':
-					racket.position.x -= 0.1 * speed;
+					if (racket.position.x > -maxPos){
+						racket.position.x -= 0.1 * speed;
+						this.socket.emit('moveRacket', direction);
+					}
 					break;
 				case 'down':
-					racket.position.x += 0.1 * speed;
+					if (racket.position.x < maxPos){
+						racket.position.x += 0.1 * speed;
+						this.socket.emit('moveRacket', direction);
+					}
 					break;
 			}
 		}
-		this.socket.emit('moveRacket', direction);
 	}
 
 	// Listen for data-update events from the server
@@ -500,13 +515,23 @@ export class PongGateway {
 		})
 	}
 
-	onGameFinish() {
-		this.socket.on('finished', (winner: number) => {
-			let victoryText = this.HUD.getControlByName('victoryText') as GUI.TextBlock;
-			victoryText.text = 'Player ' + winner + ' won !';
-			var victoryScreen = this.HUD.getControlByName('victory')!;
-			victoryScreen.isVisible = true;
-		})
+	onGameFinish() :Observable<boolean> {
+		return new Observable((observer) =>{
+			this.socket.on('finished', (winner: number) => {
+				let victoryText = this.HUD.getControlByName('victoryText') as GUI.TextBlock;
+				let player1 = this.HUD.getControlByName('name1') as GUI.TextBlock;
+				let player2 = this.HUD.getControlByName('name2') as GUI.TextBlock;
+				victoryText.text = (winner === 1 ? player1.text : player2.text) + ' won !';
+				var victoryScreen = this.HUD.getControlByName('victory')!;
+				victoryScreen.isVisible = true;
+				let won;
+				if (winner === 1)
+					won = this.player === 1 ? true : false;
+				else
+					won = this.player === 2 ? true : false;
+				observer.next(won);
+			});
+		});
 	}	
 	
 	onOpponentDisconnected() {

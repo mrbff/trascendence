@@ -100,6 +100,20 @@ export class UsersService {
     });
   }
 
+  async updateWinLoss(id: number, update: string) {
+	console.log(update);
+	if (update == 'Won')
+		return this.prisma.user.update({
+			where: { id: id },
+			data: { Wins: {increment: 1}},
+		});
+	else if (update == 'Lost')
+		return this.prisma.user.update({
+			where: { id: id },
+			data: { Losses: {increment: 1}},
+		});
+  }
+
   async updateIsPlaying(id: number, newStatus: boolean) {
     return this.prisma.user.update({
       where: { id: id },

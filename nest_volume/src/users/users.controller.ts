@@ -162,4 +162,17 @@ export class UsersController {
   async get2faQr(@GetUser() user: User) {
     return user.qrcode2fa;
   }
+
+  @Patch('win-loss/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOkResponse()
+  async updateRatio(
+	@GetUser() user: User,
+	@Param('id', ParseIntPipe) id: number,
+	@Body('update') update: string,)
+	{
+		if (user.id == id)
+			return await this.usersService.updateWinLoss(id, update);
+	}
 }

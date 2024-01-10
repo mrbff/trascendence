@@ -12,6 +12,8 @@ import { GameInfo } from './dto/gameInfo.dto';
 import * as BABYLON from 'babylonjs';
 import 'babylonjs-loaders'
 import * as fs from 'fs';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { UsersService } from 'src/users/users.service';
 
 @WebSocketGateway({
 	namespace: '/pong',
@@ -23,13 +25,15 @@ import * as fs from 'fs';
 export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
 	server: Server;
-	private normalQueue: Socket[] = [];
-	private specialQueue: Socket[] = [];
+	private normalQueue: {username: string, client: Socket}[] = [];
+	private specialQueue: {username: string, client: Socket}[] = [];
 	private rooms: {name: string; data: GameInfo}[] = [];
 	private engine!: BABYLON.Engine;
 	private playersReady: Set<string> = new Set(); // Set to track players who have sent the "start" signal
 
 	//---------------------- CONNECTION HANDLING -------------------------//
+
+	constructor(private prisma: PrismaService, private userData: UsersService){}
 
 	afterInit(server: Server) {
 	  console.log('\n\nInitialized!(pong)');
@@ -39,12 +43,13 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
   
 	handleConnection(client: Socket) {
+		let element = {username: client.handshake.query.name as string, client: client}
 		if (client.handshake.query.gameMode === "normal"){
-			this.normalQueue.push(client);
+			this.normalQueue.push(element);
 			this.matchmake(this.normalQueue, "normal");
 		}
 		else{
-			this.specialQueue.push(client);
+			this.specialQueue.push(element);
 			this.matchmake(this.specialQueue, "special");
 		}
 		console.log(`\n\nClient connected(pong): ${client.id}`);
@@ -60,11 +65,13 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 					this.engine.stopRenderLoop();
 				room.data.scene?.dispose();
 				if (room.data.mode === 'special')
-					clearInterval(room.data.timer);
+				clearInterval(room.data.timer);
 				if (room.data.winner == -1){
 					let other = room.data.player1 === client ? room.data.player2 : room.data.player1;
 					other.emit('opp-disconnect');
 				}
+				else
+					this.createMatchHistory(room);
 				this.rooms.splice(this.rooms.indexOf(room), 1);
 			}
 			break;
@@ -72,14 +79,13 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
 
 	private removeFromQueue(client: Socket) {
-		if (this.normalQueue.find((c) => c.id == client.id))
-			this.normalQueue = this.normalQueue.filter((c) => c.id !== client.id);
+		if (this.normalQueue.find((elem) => elem.client.id == client.id))
+			this.normalQueue = this.normalQueue.filter((elem) => elem.client.id !== client.id);
 		else
-			this.specialQueue = this.specialQueue.filter((c) => c.id !== client.id);
+			this.specialQueue = this.specialQueue.filter((elem) => elem.client.id !== client.id);
 	}
 
-	private matchmake(queue: Socket[], mode: string) {
-	// Implement your matchmaking logic here
+ 	private async matchmake(queue: {username: string, client: Socket}[], mode: string) {
 		if (queue.length >= 2) {
 			const player1 = queue[0];
 			const player2 = queue[1];
@@ -87,14 +93,16 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			queue.pop();
 			// Create a room for the matched players
 			let roomName = `room_${Math.random().toString(36).substring(2, 8)}`;
-			player1?.join(roomName);
-			player2?.join(roomName);
-			let size = this.rooms.push({name: roomName, data: {player1: player1, player2: player2, score1: 0, score2: 0, winner: -1, mode: mode}});
+			player1?.client.join(roomName);
+			player2?.client.join(roomName);
+			let user1 = await this.userData.findUserByName(player1.username);
+			let user2 = await this.userData.findUserByName(player2.username);
+			let size = this.rooms.push({name: roomName, data: {player1: player1.client, id1: user1.id, player2: player2.client, id2: user2.id, score1: 0, score2: 0, winner: -1, mode: mode}});
 			// Notify players about the match
-			console.log(`\n\nMatch found! Players ${player1?.id} and ${player2?.id} are in room ${roomName}`);
+			console.log(`\n\nMatch found! Players ${player1?.client.id} and ${player2?.client.id} are in room ${roomName}`);
 			// console.log(this.rooms.length);
-			player1?.emit('opponent-found', {user: player2.id, connected: true, seat: 1});
-			player2?.emit('opponent-found', {user: player1.id, connected: true, seat: 2});
+			player1?.client.emit('opponent-found', {user: player2.client.id, username: player2.username, seat: 1});
+			player2?.client.emit('opponent-found', {user: player1.client.id, username: player1.username, seat: 2});
 		}
 	}
 
@@ -238,7 +246,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		var c2Top = room.data.scene?.getMeshByName('c2Top');
 		var c2Middle = room.data.scene?.getMeshByName('c2Middle');
 		var c2Bottom = room.data.scene?.getMeshByName('c2Bottom');
-		var move = new BABYLON.Vector3(0, 0, 0.6);
+		var move = new BABYLON.Vector3(0, 0, 0.9);
 		// Set up onCollide handler for the ball
 		ball.onCollide = (collidedMesh) => {
 			if (collidedMesh === board) {
@@ -358,7 +366,6 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			return;
 		}
 		const roomName = roomNames[0]; 
-		//console.log(roomName);
 		var room = this.rooms.find((r) => r.name === roomName);
 		if (!room) {
 			console.error(`Room not found for client ${client.id}`);
@@ -373,5 +380,22 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		return powerClasses[randomIndex];
 	}
 	
+	async createMatchHistory(room: {name: string; data: GameInfo;}) {
+		try {
+		  const matchHistoryEntry = await this.prisma.matchHistory.create({
+			data: {
+			  User1Id: room.data.id1.toString(),
+			  User2Id: room.data.id2.toString(),
+			  winner: room.data.winner === 1 ? room.data.id1.toString() : room.data.id2.toString(),
+			  score: room.data.score1 + ' - ' + room.data.score2,
+			  mode: room.data.mode === 'normal' ? 'CLASSIC' : 'CYBERPUNK'
+			}
+		  });
+	  
+		  console.log('Match history entry created:', matchHistoryEntry);
+		} catch (error) {
+		  console.error('Error creating match history entry:', error);
+		}
+	}
 }
   

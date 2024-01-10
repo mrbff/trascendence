@@ -71,4 +71,10 @@ export class UserService {
   async getAllUsers(): Promise<any> {
     return lastValueFrom(this.http.get(`/nest/users/`));
   }
+
+  async updateWinnLoss(id: string, update: string) {
+	return lastValueFrom(
+		this.http.patch(`/nest/users/win-loss/${id}`, {update: update})
+	);
+  }
 }

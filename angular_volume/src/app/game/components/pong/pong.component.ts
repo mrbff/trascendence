@@ -29,10 +29,6 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 	
 	public async  ngOnInit() {
 		this.user = await this.userData.getUserInfo();
-		// this.gate.onPlayerUpdate().subscribe((data) => {
-		// 	//console.log(data);
-		// });
-
 	}
 
 	
@@ -42,26 +38,30 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 			this.canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
 			if (this.canvas && !this.scene) {
 				this.scene = this.gate.start(this.canvas);
-				// console.log(this.scene);
 			}
 		}
 	}
 	
 	ngOnDestroy(): void {
-		// if (this.scene)
-		// this.gate.stop();
 		if (this.starting)
 			this.gate.disconnect();
 	}
 	
 	start() {
 		this.starting = true;
-		this.gate.connect(this.gameMode);
+		this.gate.connect(this.gameMode, this.user);
 		this.gate.onOpponentFound().subscribe((found) =>{
 			console.log('opponent found starting game');
-			this.opponentConnected = found.connected;
+			this.opponentConnected = true;
 			this.racket = found.seat;
 		});
+		this.gate.onGameFinish().subscribe((won) =>{
+			console.log(`game finished\nwon: ${won}`);
+			if (won)
+				this.userData.updateWinnLoss(this.user.id, 'Won');
+			else	
+				this.userData.updateWinnLoss(this.user.id, 'Lost');
+		})
 	}
 
 	@HostListener('window:keydown', ['$event'])

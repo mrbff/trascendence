@@ -1,7 +1,7 @@
 export interface UserInfo {
-  Wins: string;
-  Losses: string;
-  Played: string;
+  Wins: number;
+  Losses: number;
+  Played: number;
   createdAt: string;
   email: string;
   hash: string;
@@ -19,8 +19,8 @@ export interface UserInfo {
 }
 
 export const BLOCKED_USER_INFO: Partial<UserInfo> = {
-  Wins: '0',
-  Losses: '0',
+  Wins: 0,
+  Losses: 0,
   img: 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif',
   isOnline: false,
   isPlaying: false,
