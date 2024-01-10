@@ -71,4 +71,8 @@ export class UserService {
   async getAllUsers(): Promise<UserInfo[]> {
     return lastValueFrom(this.http.get<UserInfo[]>(`/nest/users/`));
   }
+
+  getUserByUsername(username: string) {
+    return this.http.get<UserInfo>(`/nest/users/nothrow/${username}`);
+  }
 }

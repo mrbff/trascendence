@@ -1,9 +1,11 @@
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { channel } from 'diagnostics_channel';
-import { Subscription } from 'rxjs';
+import { Subscription, take } from 'rxjs';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { UserService } from 'src/app/core/services/user.service';
+import { Router } from '@angular/router';
+
 
 @Component({
   templateUrl: './chat.component.html',
@@ -21,7 +23,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   placeholder: string;
   isOpen: boolean;
   title: string;
-  showMsg: boolean;
+  msgToShow: string | null = null;
   screenW: any;
 
   chat: any[];
@@ -33,16 +35,18 @@ export class ChatComponent implements OnInit, OnDestroy {
   constructor(
     readonly userService: UserService,
     private readonly chatGateway: ChatGateway,
-    private readonly route: ActivatedRoute
+    private readonly route: ActivatedRoute, 
+    private readonly router: Router,
+    private activatedRoute: ActivatedRoute,
   ) {
     this.messages = [];
-    this.showMsg = false;
     this.chat = [];
     this.search = '';
     this.placeholder = 'Search user or channel';
     this.isOpen = false;
     this.title = 'CHAT';
   }
+
 
   ngOnInit(): void {
     this.screenW = window.innerWidth;
@@ -55,15 +59,31 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.initializeChat();
   }
 
+  private onUserNotFound(){
+    this.msgToShow = "USER NOT FOUND"
+    setTimeout(()=> this.msgToShow = null, 2500);
+  }
   initializeChat(): void {
     // OPEN USER CHAT IF USERNAME IN QUERY PARAMS
     this.$subs.add(
       this.route.queryParams.subscribe((params) => {
         const username = params['username'];
+        //this.userService.
         if (username !== undefined) {
-          this.title = username;
-          this.isOpen = true;
-          this.chatGateway.receivePrivChannelMsg(username)
+          this.userService.getUserByUsername(username).pipe(take(1)).subscribe({
+            next:(user)=>{
+              if (!user) {  
+                return this.onUserNotFound()
+              }
+
+              this.title = username;
+              this.isOpen = true;
+              this.chatGateway.receivePrivChannelMsg(username)
+            },
+            error:(err)=>{
+              this.onUserNotFound();
+            }
+          })
         }
       })
     );
@@ -74,7 +94,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.$subs.add(
       this.chatGateway.onMsgFromChannel().subscribe({
         next: (messages: any) => {
-          // this.messages.concat(messages); 
           this.messages = [...this.messages, ...messages];
           console.log({messages}); ///debug
           console.log(this.messages);
@@ -143,7 +162,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   // TO DO: handling user joining, leaving, etc.
 
   // WIP
-  openChat(username: string) {
+  openChat(conversation: any) {
+    this.messages = [];
+    const username = conversation.name;
+    this.msgToShow = null;
     const newChat = {};
 
     this.chat = this.messages
@@ -152,20 +174,30 @@ export class ChatComponent implements OnInit, OnDestroy {
     console.log({messages:this.messages, chat:this.chat})
     this.isOpen = true;
     this.title = username;
+    this.chatGateway.receivePrivChannelMsg(username);
   }
 
   searchChat() {
     if (this.search !== '' && this.search !== this.userService.getUser()) {
-      if (
-        this.messages.filter((obj) => obj.username === this.search).length !== 0
-      ) {
-        this.openChat(this.search);
-      } else {
-        this.placeholder = 'Chat not found';
-        setTimeout(() => {
-          this.placeholder = 'Search user or channel';
-        }, 2000);
-      }
+      this.router.navigate(
+        [], 
+        {
+          relativeTo: this.activatedRoute,
+          queryParams: {username:this.search}, 
+          queryParamsHandling: 'merge', // remove to replace all query params by provided
+        }
+      );
+      this.msgToShow = null;
+      // if (
+      //   this.messages.filter((obj) => obj.username === this.search).length !== 0
+      // ) {
+      //   this.openChat(this.search);
+      // } else {
+      //   this.placeholder = 'Chat not found';
+      //   setTimeout(() => {
+      //     this.placeholder = 'Search user or channel';
+      //   }, 2000);
+      // }
     }
     this.search = '';
   }

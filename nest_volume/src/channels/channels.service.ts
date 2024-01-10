@@ -154,7 +154,6 @@ export class ChannelsService {
         ]
       },
     });
-    // If the direct channel doesn't exist, create it
     if (!channel) {
       channel = await this.createDirect(username, receiverName);
     }
@@ -168,7 +167,7 @@ export class ChannelsService {
     });
   }  
 
-  async getChannelMsg(sender: string, receiver:string){
+  async getChannelMsg(sender: string, receiver:string){;
     const senderUser = await this.usersService.findUserByName(sender);
     const receiverUser = await this.usersService.findUserByName(receiver);
   

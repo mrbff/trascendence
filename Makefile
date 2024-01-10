@@ -17,6 +17,10 @@ down:
 	@echo "\e[31mShutdown\e[0m"
 	@docker-compose -f $(COMPOSE_FILE) down
 
+stop:
+	@echo "\e[31mShutdown\e[0m"
+	@docker-compose -f $(COMPOSE_FILE) stop
+
 clean:
 	@echo "\e[31mStopping containers && Removing images\e[0m"
 	@docker-compose -f $(COMPOSE_FILE) down --rmi all

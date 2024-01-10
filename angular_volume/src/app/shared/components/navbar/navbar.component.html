@@ -2,7 +2,7 @@
   <ng-container *ngIf="screenW > 950; else mobileBar"
     ><nav class="menu">
       <span class="logo" routerLink="/trascendence/home">TRASCENDENCE</span>
-      <a routerLink="/trascendence/chat">CHAT</a>
+      <a routerLink="/trascendence/chat" (click)="onChatClick()">CHAT</a>
       <a routerLink="/trascendence/leaderboard">LEADERBOARD</a>
       <a routerLink="/trascendence/friends">FRIENDS</a>
       <a [routerLink]="['/trascendence/profile', user]">{{ user }}</a>
@@ -17,7 +17,7 @@
     <span class="logo" routerLink="/trascendence/home">TRASCENDENCE</span>
     <div class="backresp" appDropmenu>
       <nav class="responsive">
-        <a routerLink="/trascendence/chat">CHAT</a>
+        <a routerLink="/trascendence/chat" (click)="onChatClick()">CHAT</a>
         <a routerLink="/trascendence/leaderboard">LEADERBOARD</a>
         <a routerLink="/trascendence/friends">FRIENDS</a>
         <a [routerLink]="['/trascendence/profile', user]">{{ user }}</a>
