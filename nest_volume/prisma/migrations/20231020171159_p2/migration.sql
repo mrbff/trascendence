@@ -37,6 +37,7 @@ CREATE TABLE "matchHistory" (
 CREATE TABLE "Channel" (
     "id" TEXT NOT NULL,
     "type" "ChannelType" NOT NULL,
+    "img" TEXT DEFAULT '',
     "name" TEXT,
     "password" TEXT,
 
