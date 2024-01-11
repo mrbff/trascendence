@@ -23,6 +23,7 @@ export class PongGateway {
 	private player = -1;
 	private gameMode!: string
 	private index = -1;
+	private started = false;
 
 	constructor(private ngZone: NgZone,) {
 	}
@@ -66,6 +67,7 @@ export class PongGateway {
 
 	start(canvas: HTMLCanvasElement): BABYLON.Scene {
 		this.ngZone.runOutsideAngular(() => {
+			this.waitForPlayer();
 			this.onScoreUpdate();
 			this.onPlayerUpdate();
 			this.onPowerUpdate();
@@ -170,7 +172,6 @@ export class PongGateway {
 		victoryScreen.color = "yellow";
 		victoryScreen.width = "200px";
 		victoryScreen.height = "100px";
-		victoryScreen.isVisible = false;
 		victoryScreen.cornerRadius = 20;
 		victoryScreen.adaptWidthToChildren = true;
 		this.HUD.addControl(victoryScreen);
@@ -181,6 +182,7 @@ export class PongGateway {
 		victoryText.color = "orange";
 		victoryText.fontSize = "20px";
 		victoryText.resizeToFit = true;
+		victoryText.text = "Waiting for players ...";
 		victoryText.paddingLeft = 15;
 		victoryText.paddingRight = 15;
 		victoryScreen.addControl(victoryText);
@@ -192,6 +194,7 @@ export class PongGateway {
 		exitBtn.top = 20;
 		exitBtn.color = "orange";
 		exitBtn.fontSize = "20px";
+		exitBtn.isVisible = false;
 		exitBtn.onPointerUpObservable.add( () =>{
 			window.location.href = '/trascendence/home';
 		});
@@ -374,7 +377,6 @@ export class PongGateway {
 
 	renderScene(): void{
 		var ball = this.scene.getMeshByName('ball')!;
-		var music = this.scene.getSoundByName('music')!;
 		this.engine.hideLoadingUI();
 		this.scene.onBeforeRenderObservable.add(() => {
 			if(this.particleSystem && this.particleSystem.isStopped())
@@ -390,7 +392,6 @@ export class PongGateway {
             }
 		});
 		this.socket.emit('start');
-		music.play();
 		this.engine.runRenderLoop(()=> {
 			this.scene.render();
 		});
@@ -410,6 +411,18 @@ export class PongGateway {
 	//----------------------------------------------------------------------------------------------------------------------//
 	//-------------------------------------------------- EVENT HANDLERS ----------------------------------------------------//
 	//----------------------------------------------------------------------------------------------------------------------//
+
+	waitForPlayer(){
+		this.socket.on('start', () =>{
+			var music = this.scene.getSoundByName('music')!;
+			let victoryScreen = this.HUD.getControlByName('victory')!;
+			let button = this.HUD.getControlByName('exit')!;
+			victoryScreen.isVisible = false;
+			button.isVisible = true;
+			music.play();
+			this.started = true;
+		})
+	}
 
 	ballHandler(){
 		this.socket.on('ball-update', (payload: {move: BABYLON.Vector3, lastPlayer: number}) =>{
@@ -448,7 +461,7 @@ export class PongGateway {
 	moveRacket(direction: string): void {
 		var racket = this.scene.getMeshByName(this.player === 1 ? 'player1': 'player2')!;
 		const maxPos = racket.scaling.y > 1 ? 5 : 7;
-		{
+		if  (this.started){
 			const speed = racket.metadata?.speed || 1;
 			switch (direction) {
 				case 'up':

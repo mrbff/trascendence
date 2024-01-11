@@ -293,6 +293,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				var power = this.getRandomPower();
 				this.server.to(room.name).emit("power-update",{position: location, power: power});
 			}, 30000);
+		this.server.to(room.name).emit('start');
 		this.gameLoop(room, move);
 	}
 
