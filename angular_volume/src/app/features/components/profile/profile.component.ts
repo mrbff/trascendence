@@ -12,7 +12,6 @@ import { Subscription } from 'rxjs';
 })
 export class ProfileComponent implements OnInit, OnDestroy {
   user!: UserInfo;
-  matchHistory!: any[];
   currentUser: boolean;
   isFriend: boolean;
   showQr: boolean;
@@ -60,7 +59,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.$userSubs.add(
         this.userService.getUserObservable().subscribe((user) => {
           this.user = user;
-		  this.loadMatchHistory()
         })
       );
       this.userService.updateUser();
@@ -76,7 +74,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
     if (!this.isBlocked) {
       this.user = await this.friendsService.getFriendInfo(username);
       this.isFriend = await this.friendsService.isFriend(username);
-	  this.loadMatchHistory()
     } else {
       // PLACEHOLDERS USER INFO
       this.user = {
@@ -86,9 +83,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
   }
 
-  private async loadMatchHistory() {
-	this.matchHistory = await this.userService.getMatchHistory(this.user.id);
-  }
 
   async logout() {
     await this.status.setStatus(this.user.id, false);

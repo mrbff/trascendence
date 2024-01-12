@@ -17,6 +17,7 @@ import { SharedModule } from '../shared/shared.module';
 import { ChatComponent } from './components/chat/chat.component';
 import { MessageComponent } from './components/chat/components/message/message.component';
 import { ChatUserComponent } from './components/chat/components/chat-user/chat-user.component';
+import { MatchHistoryComponent } from './components/profile/components/match-history/match-history.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { ChatUserComponent } from './components/chat/components/chat-user/chat-u
     TwoFactorAuthComponent,
     UserButtonsComponent,
     ProfileImageComponent,
+	MatchHistoryComponent,
     ChangeImageDirective,
     ChatComponent,
     MessageComponent,

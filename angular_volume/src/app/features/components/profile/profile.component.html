@@ -17,21 +17,8 @@
           [isBlocked]="isBlocked"
         ></app-user-buttons>
       </ng-container>
-	  <section class="matchHistory">
-		<h1 style="position: relative;
-		grid-row: 1 / 1;
-		text-align: center;
-		font-size: 30px;
-		top: 5px;">
-			Match History
-		</h1>
-		<div style="display: flex;" *ngFor="let match of matchHistory;">
-			<div class="record">{{match.User1Id}}</div>
-			<div class="record">{{match.User2Id}}</div>
-			<div class="record">{{match.score}}</div>
-			<div class="record">{{match.mode}}</div>
-		</div>
-	  </section>
+		<app-match-history   [user]="user">
+		</app-match-history>
       <section class="matchbox">
         <div class="win">WIN</div>
         <div class="winRes">
