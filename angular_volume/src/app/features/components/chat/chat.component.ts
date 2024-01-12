@@ -171,7 +171,9 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.chatGateway.onCreatedNewPublicChannel().subscribe({
         next: (data: any) => {
           this.channels.push(data);
-          this.selectedChannel = data;
+          if (data.user === this.userService.getUser()){
+            this.selectedChannel = data;
+          }
         }
       })
     )
