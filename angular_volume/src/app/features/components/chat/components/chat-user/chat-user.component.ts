@@ -25,6 +25,7 @@ export class ChatUserComponent implements OnInit {
   constructor(private readonly friendService: FriendsService) {}
 
   async ngOnInit() {
+    console.log(this.conversation)
     if (!this.conversation.isGroup) {
     this.user = await this.friendService.getFriendInfo(
       this.conversation.name

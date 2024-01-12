@@ -69,18 +69,18 @@ export class ChatGateway {
       });
     });
   }
-  onMsgFromPriv() {
-    return new Observable((observer) => {
-      this.socket.on('MsgFromPriv', (data) => {
-        observer.next(
-          {
-            msg:data.message,
-            user:data.sender
-          }
-        );
-      });
-    });
-  }
+  // onMsgFromPriv() {
+  //   return new Observable((observer) => {
+  //     this.socket.on('MsgFromPriv', (data) => {
+  //       observer.next(
+  //         {
+  //           msg:data.message,
+  //           user:data.sender
+  //         }
+  //       );
+  //     });
+  //   });
+  // }
 
   receivePrivChannelMsg(receiver?:string, id?:string){
     if (receiver)

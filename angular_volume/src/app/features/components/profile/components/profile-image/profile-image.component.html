@@ -28,7 +28,7 @@
 >
 <ng-template #otherUser>
   <main class="card-profile-image-container">
-    <img *ngIf="conversation.isGroup === false && user"
+    <img *ngIf="!conversation?.isGroup  && user"
       id="image"
       class="profile-image"
       [src]="user.img"
@@ -36,7 +36,7 @@
         color: user.isPlaying ? 'orange' : user.isOnline ? 'green' : 'red'
       }"
     />
-    <img *ngIf="conversation.isGroup"
+    <img *ngIf="conversation?.isGroup"
       id="image"
       class="profile-image"
       [src]="conversation.img"

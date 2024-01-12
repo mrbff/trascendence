@@ -92,8 +92,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const {newChannel, channel} = await this.channelsService.createDirectMessage(receiver, message, sender);
     ///TO DO: creare room della chat o mandarlo all'id dell'user nella map
     if(newChannel){
-      client.emit('CreateNewPublicChannel', channel);
-      userSocketMap[receiver].emit('CreateNewPublicChannel', channel);
+      client.emit('CreatedNewPublicChannel', {channel:{...channel, isGroup:false, name: receiver}});
+      userSocketMap[receiver].emit('CreatedNewPublicChannel', {channel:{...channel, isGroup:false, name: sender},});
     }
     client.emit('MsgFromChannel', [{ user: sender, msg: message, channelId: channel.id , from: sender}]);
     userSocketMap[receiver].emit('MsgFromChannel', [{ user: sender, msg: message, channelId: channel.id , from: sender  }]);
@@ -104,7 +104,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const { sender, receiver } = payload;
     const messages = await this.channelsService.getChannelMsg(sender, receiver);
     ///TO DO: creare room della chat o mandarlo all'id dell'user nella map
-    client.emit('MsgFromChannel', messages.map(message=>{
+    client.emit('ReceiveMsgForChannel', messages.map(message=>{
         return {
           msg:message.content,
           user:message.sender.username,
@@ -126,7 +126,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async createNewPublicChannel(client: Socket, payload: { channelName: string, users: string[], creator: string }) {
     const { channelName, users, creator } = payload;
     const newChannel = await this.channelsService.createNewPublicChannel(channelName, users, creator);
-    this.server.emit('CreatedNewPublicChannel', {channel: newChannel});
+    this.server.emit('CreatedNewPublicChannel', {channel: {...newChannel, isGroup:true}});
   }
 
   @SubscribeMessage('ChannelMsg')

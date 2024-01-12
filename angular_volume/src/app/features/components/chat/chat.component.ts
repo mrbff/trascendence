@@ -54,6 +54,7 @@ export class ChatComponent implements OnInit, OnDestroy {
 
 
   ngOnInit(): void {
+    this.messages = [];
     this.screenW = window.innerWidth;
     console.log(this.screenW);
 
@@ -92,31 +93,30 @@ export class ChatComponent implements OnInit, OnDestroy {
           })
         } else if (id !== undefined) {
           this.chatGateway.receivePrivChannelMsg(undefined, id);
-          this.chatGateway.onReceiveMsgForChannel().pipe(take(1)).subscribe({
-              next: (messages: any) => {
-                this.messages = messages;
-              },
-              error: (error) => {
-                this.errorMsg = `Error receiving message from channel: ${error.message}`;
-              },
-            })
-          this.isOpen = true;
         }
+        this.$subs.add(
+          this.chatGateway.onReceiveMsgForChannel().subscribe({
+            next: (messages: any) => {
+              this.messages = messages;
+            },
+            error: (error) => {
+              this.errorMsg = `Error receiving message from channel: ${error.message}`;
+            },
+          })
+        )
+      this.isOpen = true;
       })
     );
     
     this.$subs.add(
       this.chatGateway.onMsgFromChannel().subscribe({
         next: (messages: any) => {
-          console.log("ECCOMI", messages.length);
-          console.log({ch:this.selectedChannel, msgs: messages})
           this.messages = [...this.messages, ...messages.filter((message:any)=>{
             if (!this.selectedChannel){
               return message.members?.every((mem:string)=>mem === this.queryParams['username'] || mem === this.userService.getUser())
             }
             return (this.selectedChannel.id === message.channelId);
           })];
-          console.log(this.messages);
         },
         error: (error) => {
           this.errorMsg = `Error receiving message from channel: ${error.message}`;
@@ -125,16 +125,16 @@ export class ChatComponent implements OnInit, OnDestroy {
     );
 
 
-    this.$subs.add(
-      this.chatGateway.onMsgFromPriv().subscribe({
-        next: (message) => {
-          this.messages.push(message);
-        },
-        error: (error) => {
-          this.errorMsg = `Error receiving message from user: ${error.message}`;
-        },
-      })
-    );
+    // this.$subs.add(
+    //   this.chatGateway.onMsgFromPriv().subscribe({
+    //     next: (message) => {
+    //       this.messages.push(message);
+    //     },
+    //     error: (error) => {
+    //       this.errorMsg = `Error receiving message from user: ${error.message}`;
+    //     },
+    //   })
+    // );
 
     this.$subs.add(
       this.chatGateway.onUserChannelList().subscribe({
@@ -159,7 +159,7 @@ export class ChatComponent implements OnInit, OnDestroy {
           } else if (this.queryParams['id']){
             this.selectedChannel = this.channels?.find((ch:any)=>ch.id === this.queryParams['id'])
           }
-          console.log({chat:this.channels})
+          // console.log({chat:this.channels})
         },
         error: (error) => {
           this.errorMsg = `Error receiving channel list`;
@@ -170,10 +170,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.$subs.add(
       this.chatGateway.onCreatedNewPublicChannel().subscribe({
         next: (data: any) => {
-          this.channels.push({
-            ...data,
-            isGroup:true,
-          });
+          this.channels.push(data);
+          this.selectedChannel = data;
         }
       })
     )
@@ -193,7 +191,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   sendMessageToUser() {
-    console.log(this.newMessage, this.queryParams)
     if (this.newMessage.trim()) {
       if (this.queryParams['username'])
         this.chatGateway.sendPrivMsg(this.newMessage, this.queryParams['username']);
@@ -231,7 +228,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         {
           relativeTo: this.activatedRoute,
           queryParams: {username:this.search}, 
-          queryParamsHandling: 'merge', // remove to replace all query params by provided
         }
       );
       this.msgToShow = null;
