@@ -1,3 +1,4 @@
+import { channel } from 'diagnostics_channel';
 import { Injectable, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { io } from 'socket.io-client';
@@ -29,6 +30,20 @@ export class ChatGateway {
 
   sendChannelMsg(message:string, channel:string) {
     this.socket.emit('ChannelMsg', { sender:this.userService.getUser(), channel:channel, message:message });
+  }
+
+  createNewPublicChannel(channelName:string, users:string[], creator:string) {
+    this.socket.emit('CreateNewPublicChannel', { channelName:channelName, users:users, creator:creator });
+  }
+
+  onCreatedNewPublicChannel() {
+    return new Observable((observer) => {
+      this.socket.on('CreatedNewPublicChannel', (data) => {
+        observer.next(
+          data.channel,
+        );
+      });
+    });
   }
 
   sendPrivMsg(message:string, receiver:string) {

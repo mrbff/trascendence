@@ -53,6 +53,18 @@ export class UsersService {
     }
   }
 
+  async findChannelByName(name: string) {
+    const channel = await this.prisma.channel.findUnique({ where: { name: name } });
+    if (!channel)
+      return null;
+    return {
+      id: channel.id,
+      type: channel.type,
+      name: channel.name,
+      password: channel.password
+    }
+  }
+  
   async findUserPublicData(username: string) {
     try {
       const user = await this.prisma.user.findUniqueOrThrow({

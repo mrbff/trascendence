@@ -113,7 +113,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.server.emit('UserChannelList', {channels} );
   }
 
-
+  @SubscribeMessage('CreateNewPublicChannel')
+  async createNewPublicChannel(client: Socket, payload: { channelName: string, users: string[], creator: string }) {
+    const { channelName, users, creator } = payload;
+    const newChannel = await this.channelsService.createNewPublicChannel(channelName, users, creator);
+    this.server.emit('CreatedNewPublicChannel', {channel: newChannel});
+  }
 
   @SubscribeMessage('ChannelMsg')
   handleChannelMsg(client: Socket, payload: { sender: string, channel: string, message: string }): void {

@@ -1,3 +1,5 @@
+import { ChatGateway } from 'src/app/core/services/chat.gateway';
+import { channel } from 'diagnostics_channel';
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
 
@@ -16,7 +18,7 @@ export class NewChannelComponent implements OnInit, AfterViewInit {
   errorMsg: string;
   isOpen: boolean;
 
-  constructor(private readonly userService: UserService) {
+  constructor(private readonly userService: UserService, private readonly chatGateway: ChatGateway) {
     this.channelUsers = [];
     this.search = '';
     this.placeholder = 'Add user';
@@ -68,17 +70,20 @@ export class NewChannelComponent implements OnInit, AfterViewInit {
   }
 
   createNewChannel() {
-    console.log(this.channelName);
+    // console.log('channel name', this.channelName);
+    // console.log('user search', this.search);
     if (this.channelName !== '') {
       if (this.channelUsers.length !== 0) {
         this.errorMsg = '';
-        // CREATE CHANNEL
+        this.chatGateway.createNewPublicChannel(this.channelName, this.channelUsers, this.userService.getUser());
         this.changeDialogStatus();
       } else {
         this.errorMsg = 'Insert channel users';
+        this.channelName = '';
       }
     } else {
       this.errorMsg = 'Insert channel name';
+      this.channelUsers = [];
     }
   }
 }

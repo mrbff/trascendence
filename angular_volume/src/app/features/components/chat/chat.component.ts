@@ -63,12 +63,11 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.msgToShow = "USER NOT FOUND"
     setTimeout(()=> this.msgToShow = null, 2500);
   }
+
   initializeChat(): void {
-    // OPEN USER CHAT IF USERNAME IN QUERY PARAMS
     this.$subs.add(
       this.route.queryParams.subscribe((params) => {
         const username = params['username'];
-        //this.userService.
         if (username !== undefined) {
           this.userService.getUserByUsername(username).pipe(take(1)).subscribe({
             next:(user)=>{
@@ -87,9 +86,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         }
       })
     );
-
-    // this.$subs.add(
-    //   this.chatGateway.
     
     this.$subs.add(
       this.chatGateway.onMsgFromChannel().subscribe({
@@ -122,11 +118,14 @@ export class ChatComponent implements OnInit, OnDestroy {
         next: (data: any) => {
           const myUsername = this.userService.getUser();
           this.channels = data.channels.map((channel:any)=> {
+            let isGroup = true;
             if (!channel.name){
+              isGroup = false;
               const otherUser = channel.members.find((m: any)=> m.user.username != myUsername);
               channel.name = otherUser.user.username;
             }
-            return channel;
+          return {...channel,
+                  isGroup,};
           }); 
           console.log({chat:this.channels})
         },
@@ -135,6 +134,17 @@ export class ChatComponent implements OnInit, OnDestroy {
         },
       })
     );
+
+    this.$subs.add(
+      this.chatGateway.onCreatedNewPublicChannel().subscribe({
+        next: (data: any) => {
+          this.channels.push({
+            ...data,
+            isGroup:true,
+          });
+        }
+      })
+    )
     this.chatGateway.receiveUserChannels(this.userService.getUser())
 
     // To DO: $subscribe user joining, leaving, etc.
@@ -161,7 +171,6 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   // TO DO: handling user joining, leaving, etc.
 
-  // WIP
   openChat(conversation: any) {
     this.messages = [];
     const username = conversation.name;
@@ -188,18 +197,13 @@ export class ChatComponent implements OnInit, OnDestroy {
         }
       );
       this.msgToShow = null;
-      // if (
-      //   this.messages.filter((obj) => obj.username === this.search).length !== 0
-      // ) {
-      //   this.openChat(this.search);
-      // } else {
-      //   this.placeholder = 'Chat not found';
-      //   setTimeout(() => {
-      //     this.placeholder = 'Search user or channel';
-      //   }, 2000);
-      // }
-    }
-    this.search = '';
+      } else {
+        this.placeholder = 'Chat not found';
+        setTimeout(() => {
+          this.placeholder = 'Search user or channel';
+        }, 2000);
+      }
+      this.search = '';
   }
 
   backClick() {

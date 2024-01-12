@@ -1,4 +1,7 @@
+import { Channel, User, UserRole } from '@prisma/client';
+import { ChannelsController } from './channels.controller';
 import { Injectable } from "@nestjs/common";
+import { channel } from 'diagnostics_channel';
 import { PrismaService } from "src/prisma/prisma.service";
 import { UsersService } from "src/users/users.service";
 
@@ -14,6 +17,7 @@ export class ChannelsService {
         data: {
           type: 'PUBLIC',
           name: channelName,
+          img: 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif',
         },
     });
   }
@@ -38,38 +42,12 @@ export class ChannelsService {
     });
   }
 
-  async createMemberChannelMembership(user:any, channel:any) {
+  async createChannelMembership(user:User, channel:Channel, role: UserRole) {
     return this.prisma.channelMembership.create({
       data: {
-        userId: user.id,
-        channelId: channel.id,
         user: { connect: { id: user.id } },
         channel: { connect: { id: channel.id } },
-        role: 'MEMBER'
-      }
-    });
-  }
-
-  async createAdminChannelMembership(user:any, channel:any) {
-    return this.prisma.channelMembership.create({
-      data: {
-        user: user,
-        userId: user.id,
-        channel: channel,
-        channelId: channel.id,
-        role: 'ADMIN'
-      }
-    });
-  }
-
-  async createOwnerChannelMembership(user:any, channel:any) {
-    return this.prisma.channelMembership.create({
-      data: {
-        userId: user.id,
-        user: user,
-        channelId: channel.id,
-        channel: channel,
-        role: 'OWNER'
+        role: role
       }
     });
   }
@@ -107,6 +85,34 @@ export class ChannelsService {
         },
       },
     });
+  }
+
+  async createNewPublicChannel(channelName: string, users: string[], creator: string) {
+    let obJChannel;
+    try {
+      obJChannel = await this.createPublicChannel(channelName);
+    } catch (error) {
+      return null;
+    }
+    const objOwn = await this.usersService.findUserByName(creator);
+    console.log('objChannel',{obJChannel});
+    await this.createChannelMembership(objOwn, obJChannel, 'OWNER');
+    const objUsers = await this.prisma.user.findMany({
+      where: {
+        username:{in:users}
+      }
+    });
+    for (const user of objUsers) {
+      await this.createChannelMembership(user, obJChannel, "MEMBER");
+    }
+    return {
+      ...obJChannel,
+      members:objUsers.map(user=>{
+        return {
+          username: user.username,
+        }
+      })
+    }
   }
 
   async createChannelMessage(channelName:string, content:string, username:string) {

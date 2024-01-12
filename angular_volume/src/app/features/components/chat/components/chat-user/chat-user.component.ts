@@ -16,7 +16,7 @@ import { FriendsService } from 'src/app/core/services/friends.service';
 export class ChatUserComponent implements OnInit {
   @Input() conversation: any;
   @Output() openChat = new EventEmitter<string>();
-  user: any;
+  user: any = null;
 
   @HostListener('click') onClick() {
     this.openChat.emit(this.conversation);
@@ -25,8 +25,10 @@ export class ChatUserComponent implements OnInit {
   constructor(private readonly friendService: FriendsService) {}
 
   async ngOnInit() {
+    if (!this.conversation.isGroup) {
     this.user = await this.friendService.getFriendInfo(
       this.conversation.name
     );
+    }
   }
 }
