@@ -58,7 +58,14 @@ export class UsersService {
       const user = await this.prisma.user.findUniqueOrThrow({
         where: { username: username },
       });
-      
+    //   const matchHistory = await this.prisma.matchHistory.findMany({
+	// 	where: {
+	// 	  OR: [
+	// 		{ User1Id: user.id.toString() },
+	// 		{ User2Id: user.id.toString() }
+	// 	  ]
+	// 	}
+	//   });
       return {
         id: user.id,
         username: user.username,
@@ -69,6 +76,7 @@ export class UsersService {
         Wins: user.Wins,
         Losses: user.Losses,
         played: user.Played,
+		// matchHistory: matchHistory,
       };
     } catch(error) {
       throw new NotFoundException(`No user found with username: ${username}`);
@@ -100,18 +108,36 @@ export class UsersService {
     });
   }
 
-  async updateWinLoss(id: number, update: string) {
+  async updateWinLoss(id: number, update: {res: string, matchId: number}) {
 	console.log(update);
-	if (update == 'Won')
+	if (update.res == 'Won')
 		return this.prisma.user.update({
 			where: { id: id },
-			data: { Wins: {increment: 1}},
+			data: { Wins: {increment: 1}, matchHistory: {push: update.matchId}},
 		});
-	else if (update == 'Lost')
+	else if (update.res == 'Lost')
 		return this.prisma.user.update({
 			where: { id: id },
-			data: { Losses: {increment: 1}},
+			data: { Losses: {increment: 1}, matchHistory: {push: update.matchId}},
 		});
+  }
+
+  async getMatchHistory(userId: number): Promise<any[]> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId }
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const matchHistory = user.matchHistory || [];
+    const matches = await this.prisma.matchHistory.findMany({
+      where: {
+        id: {
+          in: matchHistory,
+        },
+      },
+    });
+    return matches;
   }
 
   async updateIsPlaying(id: number, newStatus: boolean) {

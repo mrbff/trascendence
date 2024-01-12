@@ -70,8 +70,8 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 					let other = room.data.player1 === client ? room.data.player2 : room.data.player1;
 					other.emit('opp-disconnect');
 				}
-				else
-					this.createMatchHistory(room);
+				// else
+				// 	this.createMatchHistory(room);
 				this.rooms.splice(this.rooms.indexOf(room), 1);
 			}
 			break;
@@ -299,7 +299,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	gameLoop(room: {name: string; data: GameInfo;}, move: BABYLON.Vector3) {
 		var ball = room.data.scene?.getMeshByName('ball')!;
-		this.engine.runRenderLoop(() => {
+		this.engine.runRenderLoop( async () => {
 			ball.moveWithCollisions(move);
 			room.data.scene?.render();
 			if (ball.position.z > 32 || ball.position.z < -32){
@@ -312,7 +312,8 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			if (room.data.score1 >= 10 || room.data.score2 >= 10){
 				room.data.winner = room.data.score1 >= 10 ? 1 : 2;
 				let tempSock = room.data.player2;
-				this.server.to(room.name).emit('finished', room.data.winner);
+				let matchId = await this.createMatchHistory(room);
+				this.server.to(room.name).emit('finished', {winned: room.data.winner, matchId: matchId});
 				room.data.player1.disconnect();
 				tempSock.disconnect();
 			}
@@ -381,21 +382,21 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		return powerClasses[randomIndex];
 	}
 	
-	async createMatchHistory(room: {name: string; data: GameInfo;}) {
+	async createMatchHistory(room: {name: string; data: GameInfo;}) : Promise<number>  {
 		try {
-		  const matchHistoryEntry = await this.prisma.matchHistory.create({
-			data: {
-			  User1Id: room.data.id1.toString(),
-			  User2Id: room.data.id2.toString(),
-			  winner: room.data.winner === 1 ? room.data.id1.toString() : room.data.id2.toString(),
-			  score: room.data.score1 + ' - ' + room.data.score2,
-			  mode: room.data.mode === 'normal' ? 'CLASSIC' : 'CYBERPUNK'
-			}
-		  });
-	  
-		  console.log('Match history entry created:', matchHistoryEntry);
+			const matchHistoryEntry = await this.prisma.matchHistory.create({
+				data: {
+					User1Id: room.data.id1.toString(),
+					User2Id: room.data.id2.toString(),
+					winner: room.data.winner === 1 ? room.data.id1.toString() : room.data.id2.toString(),
+					score: room.data.score1 + ' - ' + room.data.score2,
+					mode: room.data.mode === 'normal' ? 'CLASSIC' : 'CYBERPUNK'
+				}
+			});
+			return(matchHistoryEntry.id);
 		} catch (error) {
 		  console.error('Error creating match history entry:', error);
+		  return(-1);
 		}
 	}
 }

@@ -39,6 +39,25 @@
   background-image: linear-gradient(to right, purple, orange);
 }
 
+.matchHistory {
+	width: 500px;
+	height: 350px;
+	overflow-x: hidden;
+	overflow-y: auto;
+	text-align: center;
+	padding: 20px;
+	grid-row: 2 / 2;
+	grid-column: 1 / 1;
+}
+
+.record {
+	position: relative;
+    top: 50%;
+    left: 3vw;
+    font-size: 30px;
+    margin: auto;
+}
+
 .matchbox {
   display: grid;
   grid-template-columns: 1fr;

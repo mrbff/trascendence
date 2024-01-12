@@ -528,21 +528,21 @@ export class PongGateway {
 		})
 	}
 
-	onGameFinish() :Observable<boolean> {
+	onGameFinish() :Observable<{won: boolean, matchId: number}> {
 		return new Observable((observer) =>{
-			this.socket.on('finished', (winner: number) => {
+			this.socket.on('finished', (data: {winner: number, matchId: number}) => {
 				let victoryText = this.HUD.getControlByName('victoryText') as GUI.TextBlock;
 				let player1 = this.HUD.getControlByName('name1') as GUI.TextBlock;
 				let player2 = this.HUD.getControlByName('name2') as GUI.TextBlock;
-				victoryText.text = (winner === 1 ? player1.text : player2.text) + ' won !';
+				victoryText.text = (data.winner === 1 ? player1.text : player2.text) + ' won !';
 				var victoryScreen = this.HUD.getControlByName('victory')!;
 				victoryScreen.isVisible = true;
 				let won;
-				if (winner === 1)
+				if (data.winner === 1)
 					won = this.player === 1 ? true : false;
 				else
 					won = this.player === 2 ? true : false;
-				observer.next(won);
+				observer.next({won: won, matchId: data.matchId});
 			});
 		});
 	}	

@@ -72,9 +72,13 @@ export class UserService {
     return lastValueFrom(this.http.get(`/nest/users/`));
   }
 
-  async updateWinnLoss(id: string, update: string) {
+  async updateWinnLoss(id: string, update: {res: string, matchId: number}) {
 	return lastValueFrom(
 		this.http.patch(`/nest/users/win-loss/${id}`, {update: update})
 	);
+  }
+
+  async getMatchHistory(id: string): Promise<any> {
+	return lastValueFrom(this.http.get(`/nest/users/matchHistory/${id}`));
   }
 }

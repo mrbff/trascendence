@@ -55,12 +55,12 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 			this.opponentConnected = true;
 			this.racket = found.seat;
 		});
-		this.gate.onGameFinish().subscribe((won) =>{
-			console.log(`game finished\nwon: ${won}`);
-			if (won)
-				this.userData.updateWinnLoss(this.user.id, 'Won');
+		this.gate.onGameFinish().subscribe((data: {won: boolean, matchId: number}) =>{
+			console.log(`game finished\nwon: ${data.won}`);
+			if (data.won)
+				this.userData.updateWinnLoss(this.user.id, {res: 'Won', matchId: data.matchId});
 			else	
-				this.userData.updateWinnLoss(this.user.id, 'Lost');
+				this.userData.updateWinnLoss(this.user.id, {res: 'Lost', matchId: data.matchId});
 		})
 	}
 
