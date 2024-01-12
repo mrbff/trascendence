@@ -6,6 +6,7 @@ import { AuthService } from '../auth/auth.service';
 import { Socket } from 'socket.io';
 import { DefaultEventsMap } from '@socket.io/component-emitter';
 import { UserService } from './user.service';
+import { ElementSchemaRegistry } from '@angular/compiler';
 
 @Injectable({
   providedIn: 'root',
@@ -59,7 +60,15 @@ export class ChatGateway {
       });
     });
   }
-
+  onReceiveMsgForChannel() {
+    return new Observable((observer) => {
+      this.socket.on('ReceiveMsgForChannel', (data) => {
+        observer.next(
+          data
+        );
+      });
+    });
+  }
   onMsgFromPriv() {
     return new Observable((observer) => {
       this.socket.on('MsgFromPriv', (data) => {
@@ -73,10 +82,12 @@ export class ChatGateway {
     });
   }
 
-  receivePrivChannelMsg(receiver:string){
-    this.socket.emit('ReceivePrivMsg', { sender:this.userService.getUser(), receiver:receiver });
+  receivePrivChannelMsg(receiver?:string, id?:string){
+    if (receiver)
+      this.socket.emit('ReceivePrivMsg', { sender:this.userService.getUser(), receiver:receiver });
+    else if (id)
+      this.socket.emit('ReceiveChMsg', { id });
   }
-
 
   receiveUserChannels(username:string){
     this.socket.emit('ReceiveUserChannels', { username });

@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { NgxImageCompressService } from 'ngx-image-compress';
 import { UserService } from 'src/app/core/services/user.service';
 import { UserInfo } from 'src/app/models/userInfo.model';
@@ -8,7 +8,7 @@ import { UserInfo } from 'src/app/models/userInfo.model';
   templateUrl: './profile-image.component.html',
   styleUrls: ['./profile-image.component.css'],
 })
-export class ProfileImageComponent {
+export class ProfileImageComponent{
   @Input() conversation: any;
   @Input() user!: UserInfo;
   @Input() currentUser!: boolean;
@@ -16,8 +16,9 @@ export class ProfileImageComponent {
   constructor(
     private readonly imageCompress: NgxImageCompressService,
     private readonly userService: UserService
-  ) {}
-
+  ) {
+    
+  }
   // FOR IMAGE CHANGE
   @ViewChild('fileInput') fileInput!: ElementRef;
 

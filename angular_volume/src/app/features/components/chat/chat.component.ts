@@ -26,7 +26,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   msgToShow: string | null = null;
   screenW: any;
 
+  queryParams: {[key:string]:string} = {}
   chat: any[];
+
+  selectedChannel: any
 
   @HostListener('window:resize', ['$event'])
   onWindowResize() {
@@ -48,6 +51,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
 
+
+
   ngOnInit(): void {
     this.screenW = window.innerWidth;
     console.log(this.screenW);
@@ -67,6 +72,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   initializeChat(): void {
     this.$subs.add(
       this.route.queryParams.subscribe((params) => {
+        this.queryParams = params;
+        const id = params['id'];
         const username = params['username'];
         if (username !== undefined) {
           this.userService.getUserByUsername(username).pipe(take(1)).subscribe({
@@ -77,12 +84,23 @@ export class ChatComponent implements OnInit, OnDestroy {
 
               this.title = username;
               this.isOpen = true;
-              this.chatGateway.receivePrivChannelMsg(username)
+              this.chatGateway.receivePrivChannelMsg(username, undefined);
             },
             error:(err)=>{
               this.onUserNotFound();
             }
           })
+        } else if (id !== undefined) {
+          this.chatGateway.receivePrivChannelMsg(undefined, id);
+          this.chatGateway.onReceiveMsgForChannel().pipe(take(1)).subscribe({
+              next: (messages: any) => {
+                this.messages = messages;
+              },
+              error: (error) => {
+                this.errorMsg = `Error receiving message from channel: ${error.message}`;
+              },
+            })
+          this.isOpen = true;
         }
       })
     );
@@ -90,10 +108,15 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.$subs.add(
       this.chatGateway.onMsgFromChannel().subscribe({
         next: (messages: any) => {
-          this.messages = [...this.messages, ...messages];
-          console.log({messages}); ///debug
+          console.log("ECCOMI", messages.length);
+          console.log({ch:this.selectedChannel, msgs: messages})
+          this.messages = [...this.messages, ...messages.filter((message:any)=>{
+            if (!this.selectedChannel){
+              return message.members?.every((mem:string)=>mem === this.queryParams['username'] || mem === this.userService.getUser())
+            }
+            return (this.selectedChannel.id === message.channelId);
+          })];
           console.log(this.messages);
-          this.chatGateway.receiveUserChannels(this.userService.getUser())
         },
         error: (error) => {
           this.errorMsg = `Error receiving message from channel: ${error.message}`;
@@ -101,11 +124,11 @@ export class ChatComponent implements OnInit, OnDestroy {
       })
     );
 
+
     this.$subs.add(
       this.chatGateway.onMsgFromPriv().subscribe({
         next: (message) => {
           this.messages.push(message);
-          console.log(message); ///debug
         },
         error: (error) => {
           this.errorMsg = `Error receiving message from user: ${error.message}`;
@@ -124,9 +147,18 @@ export class ChatComponent implements OnInit, OnDestroy {
               const otherUser = channel.members.find((m: any)=> m.user.username != myUsername);
               channel.name = otherUser.user.username;
             }
+          
           return {...channel,
                   isGroup,};
           }); 
+          if (this.queryParams['username']){
+            this.selectedChannel = this.channels?.find((ch:any)=>{
+              return ch.name === this.queryParams['username']
+            })
+            console.log(this.selectedChannel)
+          } else if (this.queryParams['id']){
+            this.selectedChannel = this.channels?.find((ch:any)=>ch.id === this.queryParams['id'])
+          }
           console.log({chat:this.channels})
         },
         error: (error) => {
@@ -150,17 +182,23 @@ export class ChatComponent implements OnInit, OnDestroy {
     // To DO: $subscribe user joining, leaving, etc.
   }
 
-  sendMessageToChannel(channel: string): void {
+  sendMessageToChannel(): void {
     if (this.newMessage.trim()) {
-      this.chatGateway.sendChannelMsg(this.newMessage, channel);
+      let id = this.queryParams['id'];
+      if (this.selectedChannel)
+        id = this.selectedChannel.id;
+      this.chatGateway.sendChannelMsg(this.newMessage, id);
       this.newMessage = ''; // Reset the input after sending
     }
   }
 
-  sendMessageToUser(receiver: string): void {
+  sendMessageToUser() {
+    console.log(this.newMessage, this.queryParams)
     if (this.newMessage.trim()) {
-      const sender = ''; // Declare the 'sender' variable
-      this.chatGateway.sendPrivMsg(this.newMessage, receiver);
+      if (this.queryParams['username'])
+        this.chatGateway.sendPrivMsg(this.newMessage, this.queryParams['username']);
+      else if(this.queryParams['id'])
+        this.sendMessageToChannel();
       this.newMessage = ''; // Reset the input after sending
     }
   }
@@ -172,18 +210,18 @@ export class ChatComponent implements OnInit, OnDestroy {
   // TO DO: handling user joining, leaving, etc.
 
   openChat(conversation: any) {
+    if (this.queryParams['id'] === conversation.id)
+      return;
     this.messages = [];
-    const username = conversation.name;
+    this.router.navigate(
+      [], 
+      {
+        relativeTo: this.activatedRoute,
+        queryParams: {id:conversation.id},
+      }
+    );
+    this.selectedChannel = conversation;
     this.msgToShow = null;
-    const newChat = {};
-
-    this.chat = this.messages
-    .filter((obj) => obj.username === username)
-    .map((obj) => obj.chat)
-    console.log({messages:this.messages, chat:this.chat})
-    this.isOpen = true;
-    this.title = username;
-    this.chatGateway.receivePrivChannelMsg(username);
   }
 
   searchChat() {

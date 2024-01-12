@@ -28,7 +28,7 @@
 >
 <ng-template #otherUser>
   <main class="card-profile-image-container">
-    <img *ngIf="!conversation.isGroup"
+    <img *ngIf="conversation.isGroup === false && user"
       id="image"
       class="profile-image"
       [src]="user.img"

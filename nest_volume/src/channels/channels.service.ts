@@ -115,11 +115,11 @@ export class ChannelsService {
     }
   }
 
-  async createChannelMessage(channelName:string, content:string, username:string) {
+  async createChannelMessage(channelId:string, content:string, username:string) {
     ///TO DO: se non trova channel crealo
     const channel = await this.prisma.channel.findUniqueOrThrow({
       where: {
-        name: channelName
+        id: channelId
       }
     });
 
@@ -127,8 +127,8 @@ export class ChannelsService {
 
     return this.prisma.message.create({
       data: {
-        channelId: channel.id,
         senderId: sender.id,
+        channelId: channel.id,
         content: content
       },
     });
@@ -160,17 +160,24 @@ export class ChannelsService {
         ]
       },
     });
+    let newChannel = false;
     if (!channel) {
+      newChannel = true;
       channel = await this.createDirect(username, receiverName);
     }
   
-    return this.prisma.message.create({
+    await this.prisma.message.create({
       data: {
         channelId: channel.id,
         senderId: sender.id,
         content: content,
       },
     });
+    return {newChannel, 
+      channel: {
+        ...channel,
+        members: [{username: sender.username }, {username: receiver.username}]
+      }};
   }  
 
   async getChannelMsg(sender: string, receiver:string){;
@@ -234,4 +241,12 @@ export class ChannelsService {
     })
   }
 
+  async getChannelMsgById(id: string){;
+    return await this.prisma.message.findMany({
+      where:{channelId: id},
+      include:{
+        sender: true,
+      }
+    })
+  }
 }

@@ -38,7 +38,7 @@
         <app-message *ngFor="let message of messages" [message]="message">
         </app-message></section
     ></ng-container>
-    <form class="message-container">
+    <form class="message-container" (submit)="sendMessageToUser()">
       <input
         id="message-input"
         *ngIf="chat.length !== 0 || isOpen"
@@ -53,7 +53,6 @@
       <button
         *ngIf="chat.length !== 0 || isOpen"
         type="submit"
-        (click)="sendMessageToUser(title)"
       >
         Send
       </button>
