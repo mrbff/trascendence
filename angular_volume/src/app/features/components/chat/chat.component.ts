@@ -25,6 +25,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   title: string;
   msgToShow: string | null = null;
   screenW: any;
+  allRead: boolean;
 
   queryParams: {[key:string]:string} = {}
   chat: any[];
@@ -48,20 +49,13 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.placeholder = 'Search user or channel';
     this.isOpen = false;
     this.title = 'CHAT';
+    this.allRead = true;
   }
-
-
-
 
   ngOnInit(): void {
     this.messages = [];
     this.screenW = window.innerWidth;
-    console.log(this.screenW);
-
     const params = this.route.snapshot.queryParams;
-    console.log('params');
-    console.log(params);
-
     this.initializeChat();
   }
 
@@ -111,6 +105,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.$subs.add(
       this.chatGateway.onMsgFromChannel().subscribe({
         next: (messages: any) => {
+          this.allRead = false;
+          console.log("all read", this.allRead);
           this.messages = [...this.messages, ...messages.filter((message:any)=>{
             if (!this.selectedChannel){
               return message.members?.every((mem:string)=>mem === this.queryParams['username'] || mem === this.userService.getUser())
@@ -159,7 +155,6 @@ export class ChatComponent implements OnInit, OnDestroy {
           } else if (this.queryParams['id']){
             this.selectedChannel = this.channels?.find((ch:any)=>ch.id === this.queryParams['id'])
           }
-          // console.log({chat:this.channels})
         },
         error: (error) => {
           this.errorMsg = `Error receiving channel list`;
@@ -211,6 +206,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   openChat(conversation: any) {
     if (this.queryParams['id'] === conversation.id)
       return;
+    conversation = conversation;
     this.messages = [];
     this.router.navigate(
       [], 
@@ -221,6 +217,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     );
     this.selectedChannel = conversation;
     this.msgToShow = null;
+    this.allRead = true;
+    console.log("all read", this.allRead);
   }
 
   searchChat() {

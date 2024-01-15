@@ -33,13 +33,18 @@
       class="profile-image"
       [src]="user.img"
       [ngStyle]="{
-        color: user.isPlaying ? 'orange' : user.isOnline ? 'green' : 'red'
+        color: (conversation.allRead ? 'red' : '')
       }"
     />
+    <div> : {{ conversation.allRead }} </div>
+    <!--(user.isPlaying ? 'orange' : (user.isOnline ? 'green' : 'red')) ||-->
     <img *ngIf="conversation?.isGroup"
       id="image"
       class="profile-image"
       [src]="conversation.img"
+      [ngStyle]="{
+        color: (conversation.allRead ? 'red' : '')
+      }"
     />
   </main>
 </ng-template>

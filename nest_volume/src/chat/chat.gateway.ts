@@ -7,14 +7,11 @@ import {
   WebSocketServer,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { verify } from 'jsonwebtoken';
 import { environment } from 'src/environment/environment';
 import { UsersService } from 'src/users/users.service';
 import * as jwt from 'jsonwebtoken';
-
 import {JwtPayload} from 'jsonwebtoken'
 import { ChannelsService } from 'src/channels/channels.service';
-import { use } from 'passport';
 type MyJwtPayload = {
   userId: number,
 } & JwtPayload;

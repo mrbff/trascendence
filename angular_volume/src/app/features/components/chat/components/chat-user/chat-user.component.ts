@@ -14,7 +14,7 @@ import { FriendsService } from 'src/app/core/services/friends.service';
   styleUrls: ['./chat-user.component.css'],
 })
 export class ChatUserComponent implements OnInit {
-  @Input() conversation: any;
+  @Input() conversation!: any;
   @Output() openChat = new EventEmitter<string>();
   user: any = null;
 
