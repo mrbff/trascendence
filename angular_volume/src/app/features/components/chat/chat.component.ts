@@ -5,6 +5,7 @@ import { Subscription, take } from 'rxjs';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { UserService } from 'src/app/core/services/user.service';
 import { Router } from '@angular/router';
+import { allowedNodeEnvironmentFlags } from 'process';
 
 
 @Component({
@@ -25,7 +26,6 @@ export class ChatComponent implements OnInit, OnDestroy {
   title: string;
   msgToShow: string | null = null;
   screenW: any;
-  allRead: boolean;
 
   queryParams: {[key:string]:string} = {}
   chat: any[];
@@ -49,7 +49,6 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.placeholder = 'Search user or channel';
     this.isOpen = false;
     this.title = 'CHAT';
-    this.allRead = true;
   }
 
   ngOnInit(): void {
@@ -92,6 +91,7 @@ export class ChatComponent implements OnInit, OnDestroy {
           this.chatGateway.onReceiveMsgForChannel().subscribe({
             next: (messages: any) => {
               this.messages = messages;
+              this.messages.at(messages.channelId).allRead = false;
             },
             error: (error) => {
               this.errorMsg = `Error receiving message from channel: ${error.message}`;
@@ -105,8 +105,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.$subs.add(
       this.chatGateway.onMsgFromChannel().subscribe({
         next: (messages: any) => {
-          this.allRead = false;
-          console.log("all read", this.allRead);
+          let allRead = false;
           this.messages = [...this.messages, ...messages.filter((message:any)=>{
             if (!this.selectedChannel){
               return message.members?.every((mem:string)=>mem === this.queryParams['username'] || mem === this.userService.getUser())
@@ -143,13 +142,14 @@ export class ChatComponent implements OnInit, OnDestroy {
               const otherUser = channel.members.find((m: any)=> m.user.username != myUsername);
               channel.name = otherUser.user.username;
             }
-          
+          let allRead = false;
           return {...channel,
-                  isGroup,};
+                  isGroup,
+                  allRead,};
           }); 
           if (this.queryParams['username']){
             this.selectedChannel = this.channels?.find((ch:any)=>{
-              return ch.name === this.queryParams['username']
+              return (ch.name === this.queryParams['username'])
             })
             console.log(this.selectedChannel)
           } else if (this.queryParams['id']){
@@ -217,8 +217,8 @@ export class ChatComponent implements OnInit, OnDestroy {
     );
     this.selectedChannel = conversation;
     this.msgToShow = null;
-    this.allRead = true;
-    console.log("all read", this.allRead);
+    conversation.allRead = true;
+    console.log(`conversation in openchat: ${conversation}`);
   }
 
   searchChat() {

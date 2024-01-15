@@ -8,7 +8,7 @@ import { UserInfo } from 'src/app/models/userInfo.model';
   templateUrl: './profile-image.component.html',
   styleUrls: ['./profile-image.component.css'],
 })
-export class ProfileImageComponent{
+export class ProfileImageComponent implements OnInit{
   @Input() conversation: any;
   @Input() user!: UserInfo;
   @Input() currentUser!: boolean;
@@ -22,6 +22,9 @@ export class ProfileImageComponent{
   // FOR IMAGE CHANGE
   @ViewChild('fileInput') fileInput!: ElementRef;
 
+  ngOnInit(): void {
+    console.log(this.conversation);
+  }
   // SELECT NEW FILE, COMPRESS IMAGE BASE64 AND PATCH USER IMG
   onFileSelected(event: Event) {
     this.fileInput.nativeElement.click();

@@ -46,7 +46,7 @@ model User {
 	gameRequestsSent        Gameinvite[]        @relation("Game_Sender")
   gameRequestsReceived    Gameinvite[]        @relation("Game_Receiver")
 
-
+  lastSeenInChannels      Channel[]           @relation("LastSeen")
   @@map("users")
 }
 
@@ -68,7 +68,8 @@ model Channel {
   password  String?
   members   ChannelMembership[]
   messages  Message[]
-}
+  lastSeen  User[]   @relation("LastSeen")
+  }
 
 model ChannelMembership {
   userId      Int
