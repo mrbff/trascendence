@@ -4,6 +4,7 @@ import { Injectable } from "@nestjs/common";
 import { channel } from 'diagnostics_channel';
 import { PrismaService } from "src/prisma/prisma.service";
 import { UsersService } from "src/users/users.service";
+import { use } from 'passport';
 
 @Injectable()
 export class ChannelsService {
@@ -11,7 +12,7 @@ export class ChannelsService {
     private prisma: PrismaService,
     private usersService: UsersService,
   ) {}
-
+  
   async createPublicChannel(channelName:string) {
     return this.prisma.channel.create({
         data: {
@@ -67,6 +68,7 @@ export class ChannelsService {
         id: direct.id,
       },
       data: {
+        lastSeen: {},
         members: {
           connect: [
             { 
@@ -236,6 +238,11 @@ export class ChannelsService {
               }
             }
           }
+        },
+        lastSeen: {
+          select:{
+            username: true
+          }
         }
       }
     })
@@ -248,5 +255,17 @@ export class ChannelsService {
         sender: true,
       }
     })
+  }
+
+  async flagLastMessage(channelId: string, user: string){
+    const userObj = await this.usersService.findUserByName(user);
+    return await this.prisma.channel.update({
+      where:{
+        id: channelId
+      },
+      data:{
+        lastSeen: {connect: {username:  userObj.username}},
+      }
+    });
   }
 }

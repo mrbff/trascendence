@@ -12,6 +12,7 @@ import { UsersService } from 'src/users/users.service';
 import * as jwt from 'jsonwebtoken';
 import {JwtPayload} from 'jsonwebtoken'
 import { ChannelsService } from 'src/channels/channels.service';
+import { User } from '@prisma/client';
 type MyJwtPayload = {
   userId: number,
 } & JwtPayload;
@@ -133,6 +134,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     ///TO DO: creare room a cui mandarlo
     //this.server.to(/*id della room*/).emit('MsgFromChannel', { sender: sender, channel: channel, message: message });
     this.server.emit('MsgFromChannel', [{ user: sender,  msg: message, channelId }]);
+  }
+
+  @SubscribeMessage('LastSeen')
+  async handleLastSeen(client: Socket, payload: { channelId: string, user: string }) {
+    const { channelId, user } = payload;
+    await this.channelsService.flagLastMessage(channelId, user);
   }
 
   @SubscribeMessage('ReceiveChMsg')

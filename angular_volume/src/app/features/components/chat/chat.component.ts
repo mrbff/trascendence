@@ -106,6 +106,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.chatGateway.onMsgFromChannel().subscribe({
         next: (messages: any) => {
           let allRead = false;
+
           this.messages = [...this.messages, ...messages.filter((message:any)=>{
             if (!this.selectedChannel){
               return message.members?.every((mem:string)=>mem === this.queryParams['username'] || mem === this.userService.getUser())
@@ -135,17 +136,24 @@ export class ChatComponent implements OnInit, OnDestroy {
       this.chatGateway.onUserChannelList().subscribe({
         next: (data: any) => {
           const myUsername = this.userService.getUser();
+          //console.log(data);
           this.channels = data.channels.map((channel:any)=> {
             let isGroup = true;
+            let allRead = false;
             if (!channel.name){
               isGroup = false;
               const otherUser = channel.members.find((m: any)=> m.user.username != myUsername);
               channel.name = otherUser.user.username;
             }
-          let allRead = false;
+            console.log(`console list ${channel.lastSeen}`)
+            for (let userList in channel.lastSeen) {
+              if (userList === myUsername){
+                allRead = true;
+              }
+            }
           return {...channel,
                   isGroup,
-                  allRead,};
+                  allRead};
           }); 
           if (this.queryParams['username']){
             this.selectedChannel = this.channels?.find((ch:any)=>{
@@ -217,7 +225,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     );
     this.selectedChannel = conversation;
     this.msgToShow = null;
-    conversation.allRead = true;
+    this.chatGateway.sendLastSeen(conversation.id, this.userService.getUser());
     console.log(`conversation in openchat: ${conversation}`);
   }
 

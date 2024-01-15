@@ -7,6 +7,7 @@ import { Socket } from 'socket.io';
 import { DefaultEventsMap } from '@socket.io/component-emitter';
 import { UserService } from './user.service';
 import { ElementSchemaRegistry } from '@angular/compiler';
+import { stringify } from 'querystring';
 
 @Injectable({
   providedIn: 'root',
@@ -27,6 +28,11 @@ export class ChatGateway {
       path: '/socket.io/',
       auth:{token: jwt}
     });
+  }
+
+  //this.chatGateway.sendLastSeen(conversation.id, this.userService.getUser());
+  sendLastSeen(id: string, user: string) {
+    this.socket.emit('LastSeen', { channelId: id, user: user });
   }
 
   sendChannelMsg(message:string, channel:string) {
