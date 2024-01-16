@@ -5,6 +5,7 @@ import { channel } from 'diagnostics_channel';
 import { PrismaService } from "src/prisma/prisma.service";
 import { UsersService } from "src/users/users.service";
 import { use } from 'passport';
+import { last } from 'rxjs';
 
 @Injectable()
 export class ChannelsService {
@@ -68,7 +69,7 @@ export class ChannelsService {
         id: direct.id,
       },
       data: {
-        lastSeen: {},
+        lastSeen: [],
         members: {
           connect: [
             { 
@@ -126,7 +127,14 @@ export class ChannelsService {
     });
 
     const sender = await this.usersService.findUserByName(username);
-
+    await this.prisma.channel.update({
+      data:{
+        lastSeen: []
+      },
+      where:{
+        id: channelId
+      }
+    });
     return this.prisma.message.create({
       data: {
         senderId: sender.id,
@@ -239,13 +247,17 @@ export class ChannelsService {
             }
           }
         },
-        lastSeen: {
-          select:{
-            username: true
-          }
-        }
       }
     })
+  }
+
+  async getLastSeen(id: string){
+    const channel = await this.prisma.channel.findUnique({
+      where:{
+        id
+      }
+    });
+    return channel?.lastSeen;
   }
 
   async getChannelMsgById(id: string){;
@@ -264,7 +276,7 @@ export class ChannelsService {
         id: channelId
       },
       data:{
-        lastSeen: {connect: {username:  userObj.username}},
+        lastSeen: {push: userObj.username},
       }
     });
   }

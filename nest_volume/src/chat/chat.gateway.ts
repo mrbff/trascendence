@@ -113,7 +113,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     );
   }
 
-
+  @SubscribeMessage("GetLastSeen")
+  async getLastSeen(client: Socket, payload: { channelId: string}) {
+    const { channelId } = payload;
+    const lastSeen = await this.channelsService.getLastSeen(channelId);
+    client.emit('LastSeen', lastSeen);
+  }
   @SubscribeMessage("ReceiveUserChannels")
   async receiveUserChannels(client: Socket, payload: { username: string }) {
     const channels = await this.channelsService.getUserChannels(payload.username);

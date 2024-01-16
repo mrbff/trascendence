@@ -6,6 +6,7 @@ import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { UserService } from 'src/app/core/services/user.service';
 import { Router } from '@angular/router';
 import { allowedNodeEnvironmentFlags } from 'process';
+import { UserInfo } from 'src/app/models/userInfo.model';
 
 
 @Component({
@@ -26,6 +27,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   title: string;
   msgToShow: string | null = null;
   screenW: any;
+  allRead: boolean;
 
   queryParams: {[key:string]:string} = {}
   chat: any[];
@@ -49,6 +51,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.placeholder = 'Search user or channel';
     this.isOpen = false;
     this.title = 'CHAT';
+    this.allRead = false;
   }
 
   ngOnInit(): void {
@@ -56,6 +59,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.screenW = window.innerWidth;
     const params = this.route.snapshot.queryParams;
     this.initializeChat();
+    console.log('ChatComponent ngOnInit called');
   }
 
   private onUserNotFound(){
@@ -86,27 +90,30 @@ export class ChatComponent implements OnInit, OnDestroy {
           })
         } else if (id !== undefined) {
           this.chatGateway.receivePrivChannelMsg(undefined, id);
+          this.isOpen = true;
+          this.chatGateway.sendLastSeen(id, this.userService.getUser());
         }
+
         this.$subs.add(
           this.chatGateway.onReceiveMsgForChannel().subscribe({
             next: (messages: any) => {
               this.messages = messages;
-              this.messages.at(messages.channelId).allRead = false;
             },
             error: (error) => {
               this.errorMsg = `Error receiving message from channel: ${error.message}`;
             },
           })
         )
-      this.isOpen = true;
+      //   this.$subs.add(
+      //     this.chatGateway.getLastSeen().subscribe((data.channelId){
+      //       this.chatGateway.sendLastSeen(data.channelId, this.userService.getUser());
+      //     })//contuo domani ciao 
       })
     );
     
     this.$subs.add(
       this.chatGateway.onMsgFromChannel().subscribe({
         next: (messages: any) => {
-          let allRead = false;
-
           this.messages = [...this.messages, ...messages.filter((message:any)=>{
             if (!this.selectedChannel){
               return message.members?.every((mem:string)=>mem === this.queryParams['username'] || mem === this.userService.getUser())
@@ -119,18 +126,6 @@ export class ChatComponent implements OnInit, OnDestroy {
         },
       })
     );
-
-
-    // this.$subs.add(
-    //   this.chatGateway.onMsgFromPriv().subscribe({
-    //     next: (message) => {
-    //       this.messages.push(message);
-    //     },
-    //     error: (error) => {
-    //       this.errorMsg = `Error receiving message from user: ${error.message}`;
-    //     },
-    //   })
-    // );
 
     this.$subs.add(
       this.chatGateway.onUserChannelList().subscribe({
@@ -145,8 +140,7 @@ export class ChatComponent implements OnInit, OnDestroy {
               const otherUser = channel.members.find((m: any)=> m.user.username != myUsername);
               channel.name = otherUser.user.username;
             }
-            console.log(`console list ${channel.lastSeen}`)
-            for (let userList in channel.lastSeen) {
+            for (let userList of channel.lastSeen) {
               if (userList === myUsername){
                 allRead = true;
               }
@@ -224,9 +218,8 @@ export class ChatComponent implements OnInit, OnDestroy {
       }
     );
     this.selectedChannel = conversation;
+    console.log(conversation);
     this.msgToShow = null;
-    this.chatGateway.sendLastSeen(conversation.id, this.userService.getUser());
-    console.log(`conversation in openchat: ${conversation}`);
   }
 
   searchChat() {

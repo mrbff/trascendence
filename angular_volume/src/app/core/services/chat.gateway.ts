@@ -30,7 +30,6 @@ export class ChatGateway {
     });
   }
 
-  //this.chatGateway.sendLastSeen(conversation.id, this.userService.getUser());
   sendLastSeen(id: string, user: string) {
     this.socket.emit('LastSeen', { channelId: id, user: user });
   }
@@ -75,18 +74,7 @@ export class ChatGateway {
       });
     });
   }
-  // onMsgFromPriv() {
-  //   return new Observable((observer) => {
-  //     this.socket.on('MsgFromPriv', (data) => {
-  //       observer.next(
-  //         {
-  //           msg:data.message,
-  //           user:data.sender
-  //         }
-  //       );
-  //     });
-  //   });
-  // }
+
 
   receivePrivChannelMsg(receiver?:string, id?:string){
     if (receiver)
