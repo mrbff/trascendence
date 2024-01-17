@@ -168,7 +168,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
             this.selectedChannel = this.channels?.find((ch:any)=>{
               return (ch.name === this.queryParams['username'])
             })
-            console.log(this.selectedChannel)
+            //console.log(this.selectedChannel)
           } else if (this.queryParams['id']){
             this.selectedChannel = this.channels?.find((ch:any)=>ch.id === this.queryParams['id'])
           }
@@ -186,11 +186,11 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           if (data.user === this.userService.getUser()){
             this.selectedChannel = data;
           }
+          this.isOpen = false;
         }
       })
     )
-    this.chatGateway.receiveUserChannels(this.userService.getUser())
-
+    this.chatGateway.receiveUserChannels(this.userService.getUser());
     // To DO: $subscribe user joining, leaving, etc.
   }
 
@@ -235,7 +235,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       }
     );
     this.selectedChannel = conversation;
-    console.log(conversation);
+    //console.log(conversation);
     this.msgToShow = null;
     this.chatGateway.sendLastSeen(conversation.id, this.userService.getUser());
     conversation.allRead = true;

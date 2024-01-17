@@ -1,11 +1,7 @@
 import { Channel, User, UserRole } from '@prisma/client';
-import { ChannelsController } from './channels.controller';
 import { Injectable } from "@nestjs/common";
-import { channel } from 'diagnostics_channel';
 import { PrismaService } from "src/prisma/prisma.service";
 import { UsersService } from "src/users/users.service";
-import { use } from 'passport';
-import { last } from 'rxjs';
 
 @Injectable()
 export class ChannelsService {
@@ -98,7 +94,7 @@ export class ChannelsService {
       return null;
     }
     const objOwn = await this.usersService.findUserByName(creator);
-    console.log('objChannel',{obJChannel});
+    //console.log('objChannel',{obJChannel});
     await this.createChannelMembership(objOwn, obJChannel, 'OWNER');
     const objUsers = await this.prisma.user.findMany({
       where: {
@@ -270,7 +266,7 @@ export class ChannelsService {
   }
 
   async flagLastMessage(channelId: string, user: string){
-    console.log('flagLastMessage', channelId, user);
+    //console.log('flagLastMessage', channelId, user);
     const userObj = await this.usersService.findUserByName(user);
     return await this.prisma.channel.update({
       where:{

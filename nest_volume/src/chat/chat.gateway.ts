@@ -86,7 +86,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage('PrivMsg')
   async handlePriv(client: Socket, payload: { sender: string, receiver: string, message: string }) {
     const { sender, receiver, message } = payload;
-    console.log({payload})
+    //console.log({payload})
     const {newChannel, channel} = await this.channelsService.createDirectMessage(receiver, message, sender);
     ///TO DO: creare room della chat o mandarlo all'id dell'user nella map
     if(newChannel){

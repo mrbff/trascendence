@@ -20,9 +20,9 @@ export class ChatGateway {
     private readonly userService:UserService
     ) {
     
-    console.log('ChatGateway constructor called');
+    //console.log('ChatGateway constructor called');
     const jwt = this.authService.getToken();
-    console.log({ jwt });
+    //console.log({ jwt });
     
     this.socket = io('/chat', { 
       path: '/socket.io/',
