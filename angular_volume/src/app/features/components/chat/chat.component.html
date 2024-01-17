@@ -34,10 +34,11 @@
       {{msgToShow}}
     </div>
     <ng-container *ngIf="isOpen">
-      <section class="message-area">
-        <app-message *ngFor="let message of messages" [message]="message">
-        </app-message></section
-    ></ng-container>
+      <section class="message-area" #messageArea>
+        <app-message *ngFor="let message of messages" [message]="message"></app-message>
+      </section>
+    </ng-container>
+    
     <form class="message-container" (submit)="sendMessageToUser()">
       <input
         id="message-input"
@@ -65,3 +66,4 @@
     (click)="newChannel.changeDialogStatus()"
   ></div>
 </main>
+

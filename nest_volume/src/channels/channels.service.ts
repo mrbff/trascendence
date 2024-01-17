@@ -270,6 +270,7 @@ export class ChannelsService {
   }
 
   async flagLastMessage(channelId: string, user: string){
+    console.log('flagLastMessage', channelId, user);
     const userObj = await this.usersService.findUserByName(user);
     return await this.prisma.channel.update({
       where:{

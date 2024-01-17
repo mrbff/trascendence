@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { channel } from 'diagnostics_channel';
 import { Subscription, take } from 'rxjs';
@@ -13,7 +13,8 @@ import { UserInfo } from 'src/app/models/userInfo.model';
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css'],
 })
-export class ChatComponent implements OnInit, OnDestroy {
+export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
+  @ViewChild('messageArea') messageArea!: ElementRef;
   private $subs = new Subscription();
   public messages: any[] = []; // You might want to create a Message interface or class
   public newMessage: string = '';
@@ -44,6 +45,7 @@ export class ChatComponent implements OnInit, OnDestroy {
     private readonly route: ActivatedRoute, 
     private readonly router: Router,
     private activatedRoute: ActivatedRoute,
+    private renderer: Renderer2,
   ) {
     this.messages = [];
     this.chat = [];
@@ -53,13 +55,29 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.title = 'CHAT';
     this.allRead = false;
   }
+  
+  ngAfterViewChecked(): void {
+    // Controlla se isOpen è true
+    if (this.isOpen) {
+      // Scorri fino in fondo al div
+      this.scrollToBottom();
+    }
+  }
+
+  private scrollToBottom(): void {
+    try {
+      // Usa Renderer2 per eseguire l'operazione in modo sicuro
+      this.renderer.setProperty(this.messageArea.nativeElement, 'scrollTop', this.messageArea.nativeElement.scrollHeight);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   ngOnInit(): void {
     this.messages = [];
     this.screenW = window.innerWidth;
     const params = this.route.snapshot.queryParams;
     this.initializeChat();
-    console.log('ChatComponent ngOnInit called');
   }
 
   private onUserNotFound(){
@@ -89,9 +107,9 @@ export class ChatComponent implements OnInit, OnDestroy {
             }
           })
         } else if (id !== undefined) {
+          ///single user
           this.chatGateway.receivePrivChannelMsg(undefined, id);
           this.isOpen = true;
-          this.chatGateway.sendLastSeen(id, this.userService.getUser());
         }
 
         this.$subs.add(
@@ -102,12 +120,8 @@ export class ChatComponent implements OnInit, OnDestroy {
             error: (error) => {
               this.errorMsg = `Error receiving message from channel: ${error.message}`;
             },
-          })
-        )
-      //   this.$subs.add(
-      //     this.chatGateway.getLastSeen().subscribe((data.channelId){
-      //       this.chatGateway.sendLastSeen(data.channelId, this.userService.getUser());
-      //     })//contuo domani ciao 
+          }),
+        );
       })
     );
     
@@ -120,6 +134,7 @@ export class ChatComponent implements OnInit, OnDestroy {
             }
             return (this.selectedChannel.id === message.channelId);
           })];
+          this.chatGateway.sendLastSeen(this.selectedChannel.id, this.userService.getUser()); ///sussy
         },
         error: (error) => {
           this.errorMsg = `Error receiving message from channel: ${error.message}`;
@@ -193,8 +208,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     if (this.newMessage.trim()) {
       if (this.queryParams['username'])
         this.chatGateway.sendPrivMsg(this.newMessage, this.queryParams['username']);
-      else if(this.queryParams['id'])
+      else if(this.queryParams['id']) {
         this.sendMessageToChannel();
+        this.chatGateway.sendLastSeen(this.queryParams['id'], this.userService.getUser());
+      }
       this.newMessage = ''; // Reset the input after sending
     }
   }
@@ -220,7 +237,10 @@ export class ChatComponent implements OnInit, OnDestroy {
     this.selectedChannel = conversation;
     console.log(conversation);
     this.msgToShow = null;
+    this.chatGateway.sendLastSeen(conversation.id, this.userService.getUser());
+    conversation.allRead = true;
   }
+
 
   searchChat() {
     if (this.search !== '' && this.search !== this.userService.getUser()) {
