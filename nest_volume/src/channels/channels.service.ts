@@ -10,22 +10,23 @@ export class ChannelsService {
     private usersService: UsersService,
   ) {}
   
-  async createPublicChannel(channelName:string) {
+  async createPrivateChannel(channelName:string) {
     return this.prisma.channel.create({
         data: {
-          type: 'PUBLIC',
+          type: 'PRIVATE',
           name: channelName,
           img: 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif',
         },
     });
   }
 
-  async createPrivateChannel(channelName:string, password:string) {
+  async createPublicChannel(channelName:string, password:string) {
     return this.prisma.channel.create({
         data: {
-          type: 'PRIVATE',
+          type: 'PUBLIC',
           name: channelName,
-          password: password
+          password: password,
+          img: 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif',
         },
     });
   }
@@ -86,15 +87,17 @@ export class ChannelsService {
     });
   }
 
-  async createNewPublicChannel(channelName: string, users: string[], creator: string) {
+  async createNewChannel(channelName: string, users: string[], creator: string, groupType: string, password: string) {
     let obJChannel;
     try {
-      obJChannel = await this.createPublicChannel(channelName);
-    } catch (error) {
+    if (groupType === 'public') {
+      obJChannel = await this.createPrivateChannel(channelName);
+    } else {
+      obJChannel = await this.createPublicChannel(channelName, password);
+    } } catch (error) {
       return null;
     }
     const objOwn = await this.usersService.findUserByName(creator);
-    //console.log('objChannel',{obJChannel});
     await this.createChannelMembership(objOwn, obJChannel, 'OWNER');
     const objUsers = await this.prisma.user.findMany({
       where: {

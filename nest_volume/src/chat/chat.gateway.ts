@@ -13,6 +13,7 @@ import * as jwt from 'jsonwebtoken';
 import {JwtPayload} from 'jsonwebtoken'
 import { ChannelsService } from 'src/channels/channels.service';
 import { User } from '@prisma/client';
+import { group } from 'console';
 type MyJwtPayload = {
   userId: number,
 } & JwtPayload;
@@ -125,10 +126,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.server.emit('UserChannelList', {channels} );
   }
 
-  @SubscribeMessage('CreateNewPublicChannel')
-  async createNewPublicChannel(client: Socket, payload: { channelName: string, users: string[], creator: string }) {
-    const { channelName, users, creator } = payload;
-    const newChannel = await this.channelsService.createNewPublicChannel(channelName, users, creator);
+  @SubscribeMessage('CreateNewChannel')
+  async createNewChannel(client: Socket, payload: { channelName: string, users: string[], creator: string, groupType: string, password: string }) {
+    const { channelName, users, creator, groupType, password } = payload;
+    const newChannel = await this.channelsService.createNewChannel(channelName, users, creator, groupType, password);
     this.server.emit('CreatedNewPublicChannel', {channel: {...newChannel, isGroup:true}});
   }
 
