@@ -1,4 +1,5 @@
-<dialog class="newChannel">
+<dialog class="newChannel" [ngStyle]="{'height': selectedGroupType !== 'public' ? '65vh' : '75vh'}">
+  <!-- Il resto del tuo codice rimane invariato -->
   <p>CREATE NEW CHANNEL</p>
   <input
     id="channel-input"
@@ -16,6 +17,24 @@
     (keydown.enter)="addUser()"
     spellcheck="false"
   />
+
+  <select [(ngModel)]="selectedGroupType" class="channel-input">
+    <option value="private">Private</option>
+    <option value="public">Public</option>
+  </select>
+  
+  <div *ngIf="selectedGroupType === 'public'">
+    <input
+      id="password-input"
+      [(ngModel)]="password"
+      class="channel-input"
+      type="text"
+      placeholder="Insert password"
+      style="width: 100%"
+    />
+  </div>
+  
+
   <section class="select-area">
     <span>CHANNEL USERS:</span>
     <div class="space">

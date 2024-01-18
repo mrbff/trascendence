@@ -17,6 +17,8 @@ export class NewChannelComponent implements OnInit, AfterViewInit {
   channelName: string;
   errorMsg: string;
   isOpen: boolean;
+  selectedGroupType: string = 'private';
+  password: string = '';
 
   constructor(private readonly userService: UserService, private readonly chatGateway: ChatGateway) {
     this.channelUsers = [];
