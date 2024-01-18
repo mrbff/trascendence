@@ -90,7 +90,7 @@ export class ChannelsService {
   async createNewChannel(channelName: string, users: string[], creator: string, groupType: string, password: string) {
     let obJChannel;
     try {
-    if (groupType === 'public') {
+    if (groupType !== 'public') {
       obJChannel = await this.createPrivateChannel(channelName);
     } else {
       obJChannel = await this.createPublicChannel(channelName, password);

@@ -72,10 +72,6 @@ export class NewChannelComponent implements OnInit, AfterViewInit {
   }
 
   createNewChannel() {
-    // console.log('channel name', this.channelName);
-    // console.log('user search', this.search);
-    console.log('channel users', this.selectedGroupType);
-    console.log('password' , this.password);
     if (this.channelName !== '') {
       if (this.channelUsers.length !== 0) {
         this.errorMsg = '';
