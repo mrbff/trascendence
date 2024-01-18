@@ -269,7 +269,6 @@ export class ChannelsService {
   }
 
   async flagLastMessage(channelId: string, user: string){
-    //console.log('flagLastMessage', channelId, user);
     const userObj = await this.usersService.findUserByName(user);
     return await this.prisma.channel.update({
       where:{
@@ -277,6 +276,33 @@ export class ChannelsService {
       },
       data:{
         lastSeen: {push: userObj.username},
+      }
+    });
+  }
+
+  async setAdmin(channelId: string, user: string){
+    const userObj = await this.usersService.findUserByName(user);
+    return await this.prisma.channelMembership.update({
+      where:{
+        userId_channelId:{
+          userId: userObj.id,
+          channelId: channelId
+        }
+      },
+      data:{
+        role: "ADMIN",
+      }
+    });
+  }
+
+  async rmUserFromChannel(channelId: string, user: string){
+    const userObj = await this.usersService.findUserByName(user);
+    return await this.prisma.channelMembership.delete({
+      where:{
+        userId_channelId:{
+          userId: userObj.id,
+          channelId: channelId
+        }
       }
     });
   }
