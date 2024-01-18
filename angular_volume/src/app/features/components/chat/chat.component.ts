@@ -5,8 +5,6 @@ import { Subscription, take } from 'rxjs';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { UserService } from 'src/app/core/services/user.service';
 import { Router } from '@angular/router';
-import { allowedNodeEnvironmentFlags } from 'process';
-import { UserInfo } from 'src/app/models/userInfo.model';
 
 
 @Component({
@@ -248,11 +246,11 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         [], 
         {
           relativeTo: this.activatedRoute,
-          queryParams: {username:this.search}, 
+          queryParams: {username: this.search}, 
         }
       );
       this.msgToShow = null;
-      } else {
+    } else {
         this.placeholder = 'Chat not found';
         setTimeout(() => {
           this.placeholder = 'Search user or channel';

@@ -74,8 +74,6 @@ export class ChatGateway {
       });
     });
   }
-
-
   receivePrivChannelMsg(receiver?:string, id?:string){
     if (receiver)
       this.socket.emit('ReceivePrivMsg', { sender:this.userService.getUser(), receiver:receiver });
@@ -95,4 +93,11 @@ export class ChatGateway {
     });
   }
 
+  onUserInfos(){
+    return new Observable((observer) => {
+      this.socket.on('UserInfos', (data) => {
+        observer.next(data);
+      });
+    });
+  }
 }
