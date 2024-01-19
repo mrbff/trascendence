@@ -189,6 +189,21 @@ export class ChannelsService {
       }};
   }  
 
+  async getChannelById(id: string){
+    return await this.prisma.channel.findUnique({
+      where:{
+        id
+      },
+      include:{
+        members: {
+          include:{
+            user: true
+          }
+        },
+      }
+    });
+  }
+
   async getChannelMsg(sender: string, receiver:string){;
     const senderUser = await this.usersService.findUserByName(sender);
     const receiverUser = await this.usersService.findUserByName(receiver);
@@ -291,6 +306,30 @@ export class ChannelsService {
       },
       data:{
         role: "ADMIN",
+      }
+    });
+  }
+
+
+  async rmAdmin(channelId: string, user: string){
+    const userObj = await this.usersService.findUserByName(user);
+    return await this.prisma.channelMembership.update({
+      where:{
+        userId_channelId:{
+          userId: userObj.id,
+          channelId: channelId
+        }
+      },
+      data:{
+        role: "MEMBER",
+      }
+    });
+  }
+
+  async rmChannel(channelId: string){
+    return await this.prisma.channel.delete({
+      where:{
+        id: channelId
       }
     });
   }

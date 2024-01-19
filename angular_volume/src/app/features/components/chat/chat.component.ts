@@ -1,10 +1,10 @@
 import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { channel } from 'diagnostics_channel';
 import { Subscription, take } from 'rxjs';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { UserService } from 'src/app/core/services/user.service';
 import { Router } from '@angular/router';
+import { runInThisContext } from 'vm';
 
 
 @Component({
@@ -107,8 +107,23 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         } else if (id !== undefined) {
           ///single user
           this.chatGateway.receivePrivChannelMsg(undefined, id);
+          this.chatGateway.reciveUserList(id);
           this.isOpen = true;
+
         }
+
+        this.$subs.add(
+          this.chatGateway.onUserList().subscribe({
+            next: (data: any) => {
+              this.users = data.members;
+              console.log("porca merda")
+              console.log(this.users);
+            },
+            error: (error) => {
+              this.errorMsg = `Error receiving channel list`;
+            },
+          })
+        );
 
         this.$subs.add(
           this.chatGateway.onReceiveMsgForChannel().subscribe({
@@ -144,13 +159,13 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.chatGateway.onUserChannelList().subscribe({
         next: (data: any) => {
           const myUsername = this.userService.getUser();
-          //console.log(data);
           this.channels = data.channels.map((channel:any)=> {
             let isGroup = true;
             let allRead = false;
+            let otherUser = '' as any;
             if (!channel.name){
               isGroup = false;
-              const otherUser = channel.members.find((m: any)=> m.user.username != myUsername);
+              otherUser = channel.members.find((m: any)=> m.user.username != myUsername);
               channel.name = otherUser.user.username;
             }
             for (let userList of channel.lastSeen) {
@@ -158,18 +173,21 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
                 allRead = true;
               }
             }
-          return {...channel,
-                  isGroup,
-                  allRead};
-          }); 
-          if (this.queryParams['username']){
-            this.selectedChannel = this.channels?.find((ch:any)=>{
-              return (ch.name === this.queryParams['username'])
-            })
-            //console.log(this.selectedChannel)
-          } else if (this.queryParams['id']){
-            this.selectedChannel = this.channels?.find((ch:any)=>ch.id === this.queryParams['id'])
-          }
+            return {...channel,
+              isGroup,
+              allRead,
+              otherUser};
+            });
+
+            if (this.queryParams['username']){
+              this.selectedChannel = this.channels?.find((ch:any)=>{
+                this.users = ch.members;
+                return (ch.name === this.queryParams['username'])
+              })
+            } else if (this.queryParams['id']){
+              this.selectedChannel = this.channels?.find((ch:any)=>ch.id === this.queryParams['id'])
+              this.users = this.selectedChannel.members; 
+            }
         },
         error: (error) => {
           this.errorMsg = `Error receiving channel list`;
@@ -221,10 +239,12 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   // TO DO: handling user joining, leaving, etc.
 
   openChat(conversation: any) {
+    console.log(conversation);
     if (this.queryParams['id'] === conversation.id)
       return;
     conversation = conversation;
     this.messages = [];
+    this.users = [];
     this.router.navigate(
       [], 
       {
@@ -233,7 +253,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       }
     );
     this.selectedChannel = conversation;
-    //console.log(conversation);
     this.msgToShow = null;
     this.chatGateway.sendLastSeen(conversation.id, this.userService.getUser());
     conversation.allRead = true;

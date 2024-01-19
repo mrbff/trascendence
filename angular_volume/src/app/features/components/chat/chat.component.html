@@ -19,10 +19,9 @@
         (keydown.enter)="searchChat()"
       />
       <ng-container *ngFor="let conversation of channels">
-        <!-- *ngIf="conversation.username !== userService.getUser() && !isOpen" -->
         <app-chat-user
-          [conversation]="conversation"
-          (openChat)="openChat($event)"
+        [conversation]="conversation"
+        (openChat)="openChat($event)"
         >
         </app-chat-user>
       </ng-container>
@@ -30,12 +29,14 @@
         <i class="fa-solid fa-people-group fa-2xl"></i>
       </div>
     </section>
-    <div *ngIf="msgToShow" style="pointer-events: none;position: absolute; top: 0; left: 0; display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">
+    <div *ngIf="msgToShow" class="centered-message">
       {{msgToShow}}
     </div>
     <ng-container *ngIf="isOpen">
       <section class="message-area" #messageArea>
         <app-message *ngFor="let message of messages" [message]="message"></app-message>
+        <app-userlist *ngFor="let user of users" [user]="user"></app-userlist>
+        {{users}}
       </section>
     </ng-container>
     

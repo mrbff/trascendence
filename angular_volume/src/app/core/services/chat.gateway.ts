@@ -81,8 +81,21 @@ export class ChatGateway {
       this.socket.emit('ReceiveChMsg', { id });
   }
 
+  reciveUserList(id:string){
+    this.socket.emit('ReceiveUserList', { id });
+  }
+
   receiveUserChannels(username:string){
     this.socket.emit('ReceiveUserChannels', { username });
+  }
+
+  onUserList(){
+    return new Observable((observer) => {
+      this.socket.on('UserList', (data) => {
+        observer.next(data);
+        console.log('onUserList', data);
+      });
+    });
   }
 
   onUserChannelList(){
