@@ -1,10 +1,12 @@
 import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { channel } from 'diagnostics_channel';
 import { Subscription, take } from 'rxjs';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { UserService } from 'src/app/core/services/user.service';
 import { Router } from '@angular/router';
-import { runInThisContext } from 'vm';
+import { allowedNodeEnvironmentFlags } from 'process';
+import { UserInfo } from 'src/app/models/userInfo.model';
 
 
 @Component({
@@ -20,6 +22,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   public channels!: string[]; // Populate with actual channels
   public users!: string[]; // Populate with actual user list
 
+
   search: string;
   placeholder: string;
   isOpen: boolean;
@@ -27,6 +30,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   msgToShow: string | null = null;
   screenW: any;
   allRead: boolean;
+  selectedOption: string | undefined;
+
 
   queryParams: {[key:string]:string} = {}
   chat: any[];
@@ -36,6 +41,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   @HostListener('window:resize', ['$event'])
   onWindowResize() {
     this.screenW = window.innerWidth;
+  
   }
   constructor(
     readonly userService: UserService,
@@ -53,18 +59,15 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.title = 'CHAT';
     this.allRead = false;
   }
-  
+
   ngAfterViewChecked(): void {
-    // Controlla se isOpen è true
     if (this.isOpen) {
-      // Scorri fino in fondo al div
       this.scrollToBottom();
     }
   }
 
   private scrollToBottom(): void {
     try {
-      // Usa Renderer2 per eseguire l'operazione in modo sicuro
       this.renderer.setProperty(this.messageArea.nativeElement, 'scrollTop', this.messageArea.nativeElement.scrollHeight);
     } catch (error) {
       console.error(error);
@@ -76,6 +79,11 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.screenW = window.innerWidth;
     const params = this.route.snapshot.queryParams;
     this.initializeChat();
+  }
+
+  onDropdownChange(event: any): void {
+    this.selectedOption = event.target.value;
+    console.log('Selected option:', this.selectedOption);
   }
 
   private onUserNotFound(){
@@ -107,21 +115,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         } else if (id !== undefined) {
           ///single user
           this.chatGateway.receivePrivChannelMsg(undefined, id);
-          this.chatGateway.reciveUserList(id);
           this.isOpen = true;
-
         }
-
-        this.$subs.add(
-          this.chatGateway.onUserList().pipe(take(1)).subscribe({
-            next: (data: any) => {
-              this.users = data.members;
-            },
-            error: (error) => {
-              this.errorMsg = `Error receiving channel list`;
-            },
-          })
-        );
 
         this.$subs.add(
           this.chatGateway.onReceiveMsgForChannel().subscribe({
@@ -157,13 +152,13 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.chatGateway.onUserChannelList().subscribe({
         next: (data: any) => {
           const myUsername = this.userService.getUser();
+          //console.log(data);
           this.channels = data.channels.map((channel:any)=> {
             let isGroup = true;
             let allRead = false;
-            let otherUser = '' as any;
             if (!channel.name){
               isGroup = false;
-              otherUser = channel.members.find((m: any)=> m.user.username != myUsername);
+              const otherUser = channel.members.find((m: any)=> m.user.username != myUsername);
               channel.name = otherUser.user.username;
             }
             for (let userList of channel.lastSeen) {
@@ -171,21 +166,18 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
                 allRead = true;
               }
             }
-            return {...channel,
-              isGroup,
-              allRead,
-              otherUser};
-            });
-
-            if (this.queryParams['username']){
-              this.selectedChannel = this.channels?.find((ch:any)=>{
-                this.users = ch.members;
-                return (ch.name === this.queryParams['username'])
-              })
-            } else if (this.queryParams['id']){
-              this.selectedChannel = this.channels?.find((ch:any)=>ch.id === this.queryParams['id'])
-              this.users = this.selectedChannel.members; 
-            }
+          return {...channel,
+                  isGroup,
+                  allRead};
+          }); 
+          if (this.queryParams['username']){
+            this.selectedChannel = this.channels?.find((ch:any)=>{
+              return (ch.name === this.queryParams['username'])
+            })
+            //console.log(this.selectedChannel)
+          } else if (this.queryParams['id']){
+            this.selectedChannel = this.channels?.find((ch:any)=>ch.id === this.queryParams['id'])
+          }
         },
         error: (error) => {
           this.errorMsg = `Error receiving channel list`;
@@ -237,12 +229,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   // TO DO: handling user joining, leaving, etc.
 
   openChat(conversation: any) {
-    console.log(conversation);
     if (this.queryParams['id'] === conversation.id)
       return;
     conversation = conversation;
     this.messages = [];
-    this.users = [];
     this.router.navigate(
       [], 
       {
@@ -251,6 +241,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       }
     );
     this.selectedChannel = conversation;
+    //console.log(conversation);
     this.msgToShow = null;
     this.chatGateway.sendLastSeen(conversation.id, this.userService.getUser());
     conversation.allRead = true;
@@ -263,11 +254,11 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         [], 
         {
           relativeTo: this.activatedRoute,
-          queryParams: {username: this.search}, 
+          queryParams: {username:this.search}, 
         }
       );
       this.msgToShow = null;
-    } else {
+      } else {
         this.placeholder = 'Chat not found';
         setTimeout(() => {
           this.placeholder = 'Search user or channel';
