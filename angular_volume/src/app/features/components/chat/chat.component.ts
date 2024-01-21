@@ -113,11 +113,9 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         }
 
         this.$subs.add(
-          this.chatGateway.onUserList().subscribe({
+          this.chatGateway.onUserList().pipe(take(1)).subscribe({
             next: (data: any) => {
               this.users = data.members;
-              console.log("porca merda")
-              console.log(this.users);
             },
             error: (error) => {
               this.errorMsg = `Error receiving channel list`;
