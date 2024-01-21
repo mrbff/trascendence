@@ -1,11 +1,7 @@
+import { MessageComponent } from './../message/message.component';
 import { AfterViewChecked, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { channel } from 'diagnostics_channel';
-import { Subscription, take } from 'rxjs';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
-import { UserService } from 'src/app/core/services/user.service';
-import { Router } from '@angular/router';
-import { allowedNodeEnvironmentFlags } from 'process';
+import { Subscription, take } from 'rxjs';
 import { UserInfo } from 'src/app/models/userInfo.model';
 
 @Component({
@@ -13,25 +9,45 @@ import { UserInfo } from 'src/app/models/userInfo.model';
 	templateUrl: './user-list.component.html',
 	styleUrls: ['./user-list.component.css'],
 })
-export class UserListComponent  {
+export class UserListComponent implements OnInit, OnDestroy{
 	@Input() conversation!: any;
 	@Input() user!: any;
-	@Input() otherUser!: any;
 
-	players: any[] = [
-		{ name: 'Player 1', showMenu: false },
-		{ name: 'Player 2', showMenu: false },
-	];
+	private $subs = new Subscription();
+	public otherUsers!: UserInfo[];
 
-	constructor(
+	players: any[] = [];
+
+	constructor(private readonly chatGateway: ChatGateway
 	  ) {
-		this.players = [
-		  { name: 'Player 1', showMenu: false },
-		  { name: 'Player 2', showMenu: false },
-		];
+		this.otherUsers = [];
+		this.players = [];
 	  }
 
-	
+	ngOnInit(): void {
+		this.userList();
+	}
+
+	userList()
+	{
+		this.$subs.add(
+			this.chatGateway.onChannelId().pipe().subscribe({
+				next: (data: any) => {
+					for (let user of data.channel.members) {
+						const username = user.user.username;
+						if (username !== this.user.username)
+							this.players.push({ name: username, showMenu: false });
+					}
+				},
+				
+			})
+		);
+	}
+
+	ngOnDestroy(): void {
+		this.$subs.unsubscribe();
+	}
+
 	togglePlayerMenu(player: any): void {
 		this.players.forEach((p) => (p.showMenu = false));
 		player.showMenu = !player.showMenu;

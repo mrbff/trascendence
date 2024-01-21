@@ -248,7 +248,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.chatGateway.sendLastSeen(conversation.id, this.userService.getUser());
     conversation.allRead = true;
     this.whoami = await this.userService.getUserInfo();
-    //const channels = await this.channelsService.getChannelById(id);
+    this.chatGateway.getChannelById(conversation.id);
   }
 
 

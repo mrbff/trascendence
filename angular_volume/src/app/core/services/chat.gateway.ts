@@ -56,6 +56,17 @@ export class ChatGateway {
     this.socket.emit('PrivMsg', { sender:this.userService.getUser(), receiver:receiver, message:message });
   }
 
+
+  onChannelId() {
+    return new Observable((observer) => {
+      this.socket.on('Channel', (data) => {
+        observer.next(
+          data
+        );
+      });
+    });
+  }
+
   onMsgFromChannel() {
     return new Observable((observer) => {
       this.socket.on('MsgFromChannel', (data) => {
@@ -74,7 +85,11 @@ export class ChatGateway {
       });
     });
   }
-  
+
+  getChannelById(id:string) {
+    this.socket.emit('GetChannelById', { id });
+  }
+
   receivePrivChannelMsg(receiver?:string, id?:string){
     if (receiver)
       this.socket.emit('ReceivePrivMsg', { sender:this.userService.getUser(), receiver:receiver });

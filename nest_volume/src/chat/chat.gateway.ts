@@ -98,6 +98,21 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     userSocketMap[receiver].emit('MsgFromChannel', [{ user: sender, msg: message, channelId: channel.id , from: sender, allRead: false }]);
   }
   
+
+  @SubscribeMessage("GetChannelId")
+  async getChannelId(client: Socket, payload: { id: string}) {
+    const { id } = payload;
+    const channel = await this.channelsService.getChannelById(id);
+    client.emit('ChannelId', {channelId: channel?.id} );
+  }
+
+  @SubscribeMessage("GetChannelById")
+  async getChannelById(client: Socket, payload: { id: string}) {
+    const { id } = payload;
+    const channel = await this.channelsService.getChannelById(id);
+    client.emit('Channel', {channel} );
+  }
+
   @SubscribeMessage("ReceivePrivMsg")
   async receivePrivChannelMsg(client: Socket, payload: { sender: string, receiver: string}) {
     const { sender, receiver } = payload;
