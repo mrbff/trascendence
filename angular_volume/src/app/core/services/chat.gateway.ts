@@ -74,6 +74,7 @@ export class ChatGateway {
       });
     });
   }
+  
   receivePrivChannelMsg(receiver?:string, id?:string){
     if (receiver)
       this.socket.emit('ReceivePrivMsg', { sender:this.userService.getUser(), receiver:receiver });

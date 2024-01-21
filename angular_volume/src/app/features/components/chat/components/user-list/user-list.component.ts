@@ -1,13 +1,23 @@
-import {
-	Component
-  } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { channel } from 'diagnostics_channel';
+import { Subscription, take } from 'rxjs';
+import { ChatGateway } from 'src/app/core/services/chat.gateway';
+import { UserService } from 'src/app/core/services/user.service';
+import { Router } from '@angular/router';
+import { allowedNodeEnvironmentFlags } from 'process';
+import { UserInfo } from 'src/app/models/userInfo.model';
 
 @Component({
 	selector: 'app-user-list',
 	templateUrl: './user-list.component.html',
 	styleUrls: ['./user-list.component.css'],
 })
-export class UserListComponent {
+export class UserListComponent  {
+	@Input() conversation!: any;
+	@Input() user!: any;
+	@Input() otherUser!: any;
+
 	players: any[] = [
 		{ name: 'Player 1', showMenu: false },
 		{ name: 'Player 2', showMenu: false },
@@ -21,6 +31,7 @@ export class UserListComponent {
 		];
 	  }
 
+	
 	togglePlayerMenu(player: any): void {
 		this.players.forEach((p) => (p.showMenu = false));
 		player.showMenu = !player.showMenu;
@@ -33,11 +44,11 @@ export class UserListComponent {
 	DM(player: any): void {
 		console.log('DM:', player.name);
 	}
-	
+		
 	inviteToGame(player: any): void {
 		console.log('inviteToGame:', player.name);
 	}
-	
+		
 	block(player: any): void {
 		console.log('block:', player.name);
 	}
@@ -45,7 +56,7 @@ export class UserListComponent {
 	mute(player: any): void {
 		console.log('mute:', player.name);
 	}
-	
+		
 	kick(player: any): void {
 		console.log('kick:', player.name);
 	}
