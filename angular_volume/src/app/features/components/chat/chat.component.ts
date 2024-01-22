@@ -177,9 +177,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           });
           this.channels = this.channels.filter((channel: any) => {
             return channel.members.some((member: any) => {
-              console.log(member.user.username);
-              console.log('status', member.status);
-              console.log('user', this.userService.getUser());
               return (member.user.username === this.userService.getUser() && !["KICKED", "BANNED"].includes(member.status));
             });
           });

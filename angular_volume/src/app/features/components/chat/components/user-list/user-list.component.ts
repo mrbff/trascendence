@@ -74,6 +74,16 @@ export class UserListComponent implements OnInit, OnDestroy{
 							this.myRole = role;
 						}
 					}
+					if (this.players.length === 0) {
+						this.players.push({ 
+							id: '',
+							name: 'No users in this channel',
+							showMenu: false,
+							role: '',
+							isBlock: false,
+							banOrKick: ''
+						});
+					}
 				},	
 			})
 		);
