@@ -54,7 +54,6 @@ export class UserListComponent implements OnInit, OnDestroy{
 						const id = user.user.id;
 						const blockList = user.user.blockedBy;
 						const banOrKick = user.status;
-						console.log('banOrKick:', banOrKick);
 						let isBlock = false;
 						for (let blockUser of blockList) {
 							if (blockUser.blocker.username === this.user.username) {
@@ -73,7 +72,6 @@ export class UserListComponent implements OnInit, OnDestroy{
 						}
 						else {
 							this.myRole = role;
-							console.log('myRole:', this.myRole);
 						}
 					}
 				},	
