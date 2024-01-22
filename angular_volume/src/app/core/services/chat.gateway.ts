@@ -1,3 +1,4 @@
+import { UseGuards } from '@nestjs/common';
 import { channel } from 'diagnostics_channel';
 import { Injectable, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -30,8 +31,20 @@ export class ChatGateway {
     });
   }
 
+  changeUserStatus(channelId: string, username: string, status:string | null) {
+    this.socket.emit('ChangeUserStatus', { channelId: channelId, username: username, status:status });
+  }
+
   sendLastSeen(id: string, user: string) {
     this.socket.emit('LastSeen', { channelId: id, user: user });
+  }
+
+  deleteAllChannels() {
+    this.socket.emit('DeleteAllChannels');
+  }
+
+  deleteChannel(id: string) {
+    this.socket.emit('DeleteChannel', { channelId: id });
   }
 
   sendChannelMsg(message:string, channel:string) {
@@ -84,6 +97,19 @@ export class ChatGateway {
         );
       });
     });
+  }
+
+  leaveChannel(id:string, username:string) {
+    this.socket.emit('LeaveChannel', { id, username });
+  }
+
+  setAdmin(id:string, username:string) {
+    console.log('setAdmin', id, username);
+    this.socket.emit('SetAdmin', { id, username });
+  }
+
+  removeAdmin(id:string, username:string) {
+    this.socket.emit('RemoveAdmin', { id, username });
   }
 
   getChannelById(id:string) {

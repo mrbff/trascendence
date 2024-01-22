@@ -1,7 +1,8 @@
 import { Channel, User, UserRole } from '@prisma/client';
-import { Injectable } from "@nestjs/common";
+import { ConsoleLogger, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UsersService } from "src/users/users.service";
+import { UserStatus } from '@prisma/client';
 
 @Injectable()
 export class ChannelsService {
@@ -9,7 +10,38 @@ export class ChannelsService {
     private prisma: PrismaService,
     private usersService: UsersService,
   ) {}
-  
+
+
+  async deleteAllChannels(){
+    await this.prisma.message.deleteMany();
+    await this.prisma.channelMembership.deleteMany();
+    await this.prisma.channel.deleteMany();
+    return true;
+  }
+
+
+  async changeUserStatus(channelId: string, username: string, status: string | null) {
+    console.log('changeUserStatus', channelId, username, status);
+    const user = await this.usersService.findUserByName(username);
+    const channel = await this.prisma.channel.findUnique({
+      where:{
+        id: channelId
+      }
+    });
+    return this.prisma.channelMembership.update({
+      where:{
+        userId_channelId:{
+          userId: user.id,
+          channelId: channel!.id
+        }
+      },
+      data: {
+        status: status as UserStatus | null
+      }
+    });
+    }
+
+
   async createPrivateChannel(channelName:string) {
     return this.prisma.channel.create({
         data: {
@@ -327,8 +359,8 @@ export class ChannelsService {
   }
 
 
-  async rmAdmin(channelId: string, user: string){
-    const userObj = await this.usersService.findUserByName(user);
+  async rmAdmin(channelId: string, username: string){
+    const userObj = await this.usersService.findUserByName(username);
     return await this.prisma.channelMembership.update({
       where:{
         userId_channelId:{
@@ -350,8 +382,8 @@ export class ChannelsService {
     });
   }
 
-  async rmUserFromChannel(channelId: string, user: string){
-    const userObj = await this.usersService.findUserByName(user);
+  async rmUserFromChannel(channelId: string, username: string){
+    const userObj = await this.usersService.findUserByName(username);
     return await this.prisma.channelMembership.delete({
       where:{
         userId_channelId:{

@@ -78,6 +78,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
   }
 
+  @SubscribeMessage('DeleteAllChannels')
+  async deleteAllChannels(client: Socket) {
+    await this.channelsService.deleteAllChannels();
+  }
+
+  @SubscribeMessage('DeleteChannel')
+  async deleteChannel(client: Socket, payload: { channelId: string }) {
+    const { channelId } = payload;
+    await this.channelsService.rmChannel(channelId);
+  }
+
   @SubscribeMessage('Authenticate')
   authentcate(client: Socket, payload: { token: string }): void {
     const { token } = payload;
@@ -142,6 +153,24 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     client.emit('UserList', {userlist} );
   }
 
+  @SubscribeMessage("LeaveChannel")
+  async leaveChannel(client: Socket, payload: { id: string, username: string}) {
+    const { id, username } = payload;
+    await this.channelsService.rmUserFromChannel(id, username);
+  }
+
+  @SubscribeMessage("SetAdmin")
+  async setAdmin(client: Socket, payload: { id: string, username: string}) {
+    const { id, username } = payload;
+    await this.channelsService.setAdmin(id, username);
+  }
+
+  @SubscribeMessage("RemoveAdmin")
+  async removeAdmin(client: Socket, payload: { id: string, username: string}) {
+    const { id, username } = payload;
+    await this.channelsService.rmAdmin(id, username);
+  }
+
   @SubscribeMessage("GetLastSeen")
   async getLastSeen(client: Socket, payload: { channelId: string}) {
     const { channelId } = payload;
@@ -175,6 +204,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const { channelId, user } = payload;
     await this.channelsService.flagLastMessage(channelId, user);
   }
+
+  @SubscribeMessage('ChangeUserStatus')
+  async handleChangeUserStatus(client: Socket, payload: { channelId: string, username: string, status: string | null}) {
+    const { channelId, username, status } = payload;
+    await this.channelsService.changeUserStatus(channelId, username, status);
+  }
+
 
   @SubscribeMessage('ReceiveChMsg')
   async receiveChannelMsg(client: Socket, payload: { id: string}) {

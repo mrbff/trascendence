@@ -85,5 +85,6 @@ export class NewChannelComponent implements OnInit, AfterViewInit {
       this.errorMsg = 'Insert channel name';
       this.channelUsers = [];
     }
+    this.channelUsers = [];
   }
 }

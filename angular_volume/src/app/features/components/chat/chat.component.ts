@@ -78,6 +78,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnInit(): void {
+    //this.chatGateway.deleteAllChannels();
     this.messages = [];
     this.screenW = window.innerWidth;
     const params = this.route.snapshot.queryParams;
