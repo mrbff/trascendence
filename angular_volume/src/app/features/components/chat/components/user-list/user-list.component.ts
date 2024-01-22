@@ -2,7 +2,10 @@ import { MessageComponent } from './../message/message.component';
 import { AfterViewChecked, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { Subscription, take } from 'rxjs';
+import { Router } from '@angular/router';
+import { FriendsService } from 'src/app/core/services/friends.service';
 import { UserInfo } from 'src/app/models/userInfo.model';
+import * as path from 'path';
 
 @Component({
 	selector: 'app-user-list',
@@ -10,18 +13,23 @@ import { UserInfo } from 'src/app/models/userInfo.model';
 	styleUrls: ['./user-list.component.css'],
 })
 export class UserListComponent implements OnInit, OnDestroy{
-	@Input() conversation!: any;
 	@Input() user!: any;
 
 	private $subs = new Subscription();
 	public otherUsers!: UserInfo[];
+	public isGroupChat: boolean = false;
 
 	players: any[] = [];
+attr: any;
 
-	constructor(private readonly chatGateway: ChatGateway
+	constructor(
+		private readonly chatGateway: ChatGateway,
+		private readonly router: Router,
+		private readonly friendsService: FriendsService,
 	  ) {
 		this.otherUsers = [];
 		this.players = [];
+		this.isGroupChat = false;
 	  }
 
 	ngOnInit(): void {
@@ -33,10 +41,23 @@ export class UserListComponent implements OnInit, OnDestroy{
 		this.$subs.add(
 			this.chatGateway.onChannelId().pipe().subscribe({
 				next: (data: any) => {
-					for (let user of data.channel.members) {
+					if (data.channel.type === 'DIRECT')
+						this.isGroupChat = false;
+					for (let user of data.channel.members) {						
 						const username = user.user.username;
-						if (username !== this.user.username)
-							this.players.push({ name: username, showMenu: false });
+						const role = user.user.role;
+						const id = user.user.id;
+						const blockList = user.user.blockedBy;
+						let isBlock = false;
+						for (let blockUser of blockList) {
+							if (blockUser.blocker.username === this.user.username) {
+								isBlock = true;
+							}
+						}
+						if (username !== this.user.username){
+							console.log('isBlock:', isBlock);
+							this.players.push({ id: id, name: username, showMenu: false, role: role, isBlock: isBlock });
+						}
 					}
 				},
 				
@@ -55,6 +76,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 
 	profile(player: any): void {
 		console.log('profile:', player.name);
+		this.router.navigate(['/trascendence/profile', player.name]);
 	}
 	  
 	DM(player: any): void {
@@ -65,10 +87,18 @@ export class UserListComponent implements OnInit, OnDestroy{
 		console.log('inviteToGame:', player.name);
 	}
 		
-	block(player: any): void {
+	async block(player: any): Promise<void>{
 		console.log('block:', player.name);
+		await this.friendsService
+      .blockUser(player.name)
+      .then(() => (player.isBlock = true));
 	}
 
+  async unblock(player: any): Promise<void> {
+    await this.friendsService
+      .unblockUser(player.name)
+      .then(() => (player.isBlock = false));
+  }
 	mute(player: any): void {
 		console.log('mute:', player.name);
 	}

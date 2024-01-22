@@ -107,7 +107,19 @@
 }
 
 .block {
-	background-color: darkslateblue; 
+	background-color: rgb(131, 12, 12); 
+	color: orange; 
+	padding: 15px 30px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	margin-right: 5px;
+	margin-bottom: 10px;
+	width: 100%;
+}
+
+.unblock {
+	background-color: rgb(42, 100, 25); 
 	color: orange; 
 	padding: 15px 30px;
 	border: none;

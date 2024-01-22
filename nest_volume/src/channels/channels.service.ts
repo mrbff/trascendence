@@ -197,10 +197,26 @@ export class ChannelsService {
       include:{
         members: {
           include:{
-            user: true
-          }
+            user: {
+              select:{
+                id: true,
+                username: true,
+                blockedUsers: true,
+                  blockedBy: {
+                    select:{
+                      blocker:
+                      {
+                        select:{
+                          username: true
+                        }
+                      }
+                  }
+                }
+              },
+            },
+          },
         },
-      }
+      },
     });
   }
 
