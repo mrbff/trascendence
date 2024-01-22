@@ -54,6 +54,14 @@ export class UsersController {
 	}
 	}
 
+	@Get(':id')
+	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
+	@ApiOkResponse()
+	async findUser(@Param('id', ParseIntPipe) id: number){
+		return await this.usersService.findOne(id);
+	}
+
 	@Get(':username')
 	@UseGuards(JwtAuthGuard)
 	@ApiBearerAuth()

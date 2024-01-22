@@ -6,7 +6,6 @@ import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import * as GUI from '@babylonjs/gui';
 import { UserInfo } from 'src/app/models/userInfo.model';
-// import { Inspector } from '@babylonjs/inspector';
 
 @Injectable()
 export class PongGateway {
@@ -32,7 +31,14 @@ export class PongGateway {
 		this.gameMode = gameMode;
 		this.user = user;
 		
-		this.socket = io('/pong', {path: '/socket.io/', reconnection: true, reconnectionDelay: 60000, timeout: 60000, query: {gameMode, name: user.username}});
+		this.socket = io('/pong', {
+			path: '/socket.io/',
+			reconnection: true,
+			reconnectionDelay: 60000,
+			timeout: 180000,
+			query: {gameMode, name: user.username, id: user.id},
+			/*transports: ['websocket']*/
+			});
 		this.socket.on('disconnect', function (reason) {
 		console.log('Socket disconnected because of ' + reason);
 		});
@@ -219,7 +225,7 @@ export class PongGateway {
 			lastPlayer: -1,
 		};
 
-		BABYLON.SceneLoader.ImportMesh("", "../../assets/", "test.glb", this.scene, (meshes)=> {
+		BABYLON.SceneLoader.ImportMesh("", "../../assets/", "edit2.glb", this.scene, (meshes)=> {
 			meshes[1].name = 'board';
 		});
 

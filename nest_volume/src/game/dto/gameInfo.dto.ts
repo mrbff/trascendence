@@ -13,6 +13,7 @@ export interface GameInfo{
 	mode?: string;
 	timer?: NodeJS.Timeout;
 	winner: number;
+	renderFunction?: any;
 }
 
 // export const START_GAME_DATA: GameInfo = {

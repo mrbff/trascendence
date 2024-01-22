@@ -36,6 +36,10 @@ export class UserService {
     return this.cookieService.get('user');
   }
 
+  getOther(id: string): Promise<any> {
+	return lastValueFrom(this.http.get(`/nest/users/${id}`));
+  }
+
   setUserId(decodedJwt: any) {
     this.cookieService.set('id', decodedJwt.userId, 1 / 24, '/');
   }
