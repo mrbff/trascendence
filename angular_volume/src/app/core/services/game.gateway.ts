@@ -23,6 +23,7 @@ export class PongGateway {
 	private gameMode!: string
 	private index = -1;
 	private started = false;
+	private readyPing!: NodeJS.Timeout;
 
 	constructor(private ngZone: NgZone,) {
 	}
@@ -397,7 +398,9 @@ export class PongGateway {
 				}
             }
 		});
-		this.socket.emit('start');
+		this.readyPing = setInterval(() => {
+			this.socket.emit('start');
+		}, 10000);
 		this.engine.runRenderLoop(()=> {
 			this.scene.render();
 		});
@@ -427,6 +430,7 @@ export class PongGateway {
 			button.isVisible = true;
 			music.play();
 			this.started = true;
+			clearInterval(this.readyPing);
 		})
 	}
 

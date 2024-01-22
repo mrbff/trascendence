@@ -14,6 +14,7 @@ export interface GameInfo{
 	timer?: NodeJS.Timeout;
 	winner: number;
 	renderFunction?: any;
+	playersReady: Set<string>;
 }
 
 // export const START_GAME_DATA: GameInfo = {

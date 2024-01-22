@@ -29,7 +29,6 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	private specialQueue: {username: string, id: string, client: Socket}[] = [];
 	private rooms: {name: string; data: GameInfo}[] = [];
 	private engine!: BABYLON.Engine;
-	private playersReady: Set<string> = new Set(); // Set to track players who have sent the "start" signal
 
 	//---------------------- CONNECTION HANDLING -------------------------//
 
@@ -105,7 +104,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			this.specialQueue = this.specialQueue.filter((elem) => elem.client.id !== client.id);
 	}
 
- 	private async matchmake(queue: {username: string, id: string, client: Socket}[], mode: string) {
+ 	private matchmake(queue: {username: string, id: string, client: Socket}[], mode: string) {
 		console.log(queue);
 		if (queue.length >= 2) {
 			const player1 = queue[0];
@@ -115,7 +114,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			let roomName = `room_${Math.random().toString(36).substring(2, 8)}`;
 			player1?.client.join(roomName);
 			player2?.client.join(roomName);
-			let size = this.rooms.push({name: roomName, data: {player1: player1.client, id1: parseInt(player1.id), player2: player2.client, id2: parseInt(player2.id), score1: 0, score2: 0, winner: -1, mode: mode}});
+			let size = this.rooms.push({name: roomName, data: {player1: player1.client, id1: parseInt(player1.id), player2: player2.client, id2: parseInt(player2.id), score1: 0, score2: 0, winner: -1, mode: mode, playersReady: new Set()}});
 			console.log(`\n\nMatch found! Players ${player1?.client.id} and ${player2?.client.id} are in room ${roomName}`);
 			player1?.client.emit('opponent-found', {user: player2.client.id, username: player2.username, seat: 1});
 			player2?.client.emit('opponent-found', {user: player1.client.id, username: player1.username, seat: 2});
@@ -127,19 +126,14 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	  let room = this.findClientRoom(client);
 	  if (room) {
 		console.log(`player ${client.id} ready`);
-		this.playersReady.add(client.id);
-		if (this.playersReady.size === 2) {
-		  this.handleStart(room);
+		room.data.playersReady.add(client.id);
+		if (room.data.playersReady.size === 2) {
+			room.data.playersReady.clear();
+			if (!room.data.scene) {
+			  this.createScene(room);
+			  room.data.scene!.executeWhenReady(() => this.initHandlers(room!));
+			}
 		}
-	  }
-	}
-  
-	private handleStart(room: {name: string; data: GameInfo}) {
-	  this.playersReady.clear();
-  
-	  if (!room.data.scene) {
-		this.createScene(room);
-		room.data.scene!.executeWhenReady(() => this.initHandlers(room));
 	  }
 	}
 
@@ -312,9 +306,8 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	gameLoop(room: {name: string; data: GameInfo;}, move: BABYLON.Vector3) {
 		var ball = room.data.scene?.getMeshByName('ball')!;
-		room.data.renderFunction = this.engine.runRenderLoop( async  () => {
+		room.data.scene?.onBeforeRenderObservable.add( async () => {
 			ball.moveWithCollisions(move);
-			room.data.scene?.render();
 			if (ball.position.z > 32 || ball.position.z < -32){
 				ball.position.z > 32 ? room.data.score1++ : room.data.score2++;
 				ball.position = new BABYLON.Vector3(0, 4.5, 0);
@@ -331,6 +324,9 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				tempSock.disconnect();
 			}
 			this.server.to(room.name).emit('ball-update', {move:move, lastPlayer: ball.metadata?.last_hit || undefined});
+		});
+		room.data.renderFunction = this.engine.runRenderLoop(() => {
+			room.data.scene?.render();
 		});
 	}
 

@@ -23,6 +23,7 @@
     "@nestjs/typeorm": "^10.0.0",
     "@nestjs/websockets": "^10.2.8",
     "angular-in-memory-web-api": "^0.16.0",
+    "babylonjs-gltf2interface": "^6.39.0",
     "ng-speed-test": "^2.6.1",
     "ngx-cookie-service": "^16.0.2",
     "ngx-image-compress": "^15.1.6",
