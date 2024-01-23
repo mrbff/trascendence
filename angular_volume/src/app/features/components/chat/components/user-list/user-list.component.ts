@@ -110,6 +110,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 		if (this.isGroupChat) {
 			console.log('DM:', player.name);
 			const channel = await this.chatGateway.getPrivateChatById(this.user.username, player.name);
+			this.chatGateway.getChannelById(channel.id);
 			this.router.navigate(
 				[], 
 				{
@@ -119,9 +120,6 @@ export class UserListComponent implements OnInit, OnDestroy{
 			);
 		}
 	}
-
-	//create a function that take my id and the id of the other user and search for the channel were we are only the two
-	//if it doesn't exist create it
 
 	inviteToGame(player: any): void {
 		console.log('inviteToGame:', player.name);
@@ -147,29 +145,32 @@ export class UserListComponent implements OnInit, OnDestroy{
 	kick(player: any): void {
 		console.log('kick:', player.name);
 		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KICKED');
-		this.chatGateway.getChannelById(this.channelId);
+		this.chatGateway.emitChannelChanes(this.channelId, player.name);
 	}
 
 	ban(player: any): void {
 		console.log('ban:', player.name);
 		this.chatGateway.changeUserStatus(this.channelId, player.name, 'BANNED');
-		this.chatGateway.getChannelById(this.channelId);
+		this.chatGateway.emitChannelChanes(this.channelId, player.name);
 	}
 
 	unban(player: any): void {
 		console.log('ban:', player.name);
-		this.chatGateway.changeUserStatus(this.channelId, player.name, null);
+		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KICKED');
+		this.chatGateway.emitChannelChanes(this.channelId, player.name);
 	}
 
 	async set_admin(player: any) {
 		console.log('set_admin:', player.name);
 		this.chatGateway.setAdmin(this.channelId, player.name);
 		player.role = 'ADMIN';
+		this.chatGateway.emitChannelChanes(this.channelId, player.name);
 	}
 
 	async rm_admin(player: any) {
 		console.log('rm_admin:', player.name);
 		this.chatGateway.removeAdmin(this.channelId, player.name);
 		player.role = 'MEMBER';
+		this.chatGateway.emitChannelChanes(this.channelId, player.name);
 	}
 }

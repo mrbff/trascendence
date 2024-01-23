@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { UseGuards } from '@nestjs/common';
+import { UseGuards, ConsoleLogger } from '@nestjs/common';
 import { channel } from 'diagnostics_channel';
 import { Injectable, OnInit } from '@angular/core';
 import { Observable, lastValueFrom } from 'rxjs';
@@ -31,6 +31,11 @@ export class ChatGateway {
       path: '/socket.io/',
       auth:{token: jwt}
     });
+  }
+
+  emitChannelChanes(channelId: string, user: string) {
+    this.socket.emit('ReceiveUserChannels', { user });
+    this.socket.emit('GetChannelById', { id:channelId });
   }
 
   changeUserStatus(channelId: string, username: string, status:string | null) {
