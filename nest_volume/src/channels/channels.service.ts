@@ -4,13 +4,13 @@ import { PrismaService } from "src/prisma/prisma.service";
 import { UsersService } from "src/users/users.service";
 import { UserStatus } from '@prisma/client';
 
+
 @Injectable()
 export class ChannelsService {
   constructor(
     private prisma: PrismaService,
     private usersService: UsersService,
   ) {}
-
 
   async deleteAllChannels(){
     await this.prisma.message.deleteMany();
@@ -121,13 +121,11 @@ export class ChannelsService {
 
   async createNewChannel(channelName: string, users: string[], creator: string, groupType: string, password: string) {
     let obJChannel;
-    try {
+
     if (groupType !== 'public') {
       obJChannel = await this.createPrivateChannel(channelName);
     } else {
       obJChannel = await this.createPublicChannel(channelName, password);
-    } } catch (error) {
-      return null;
     }
     const objOwn = await this.usersService.findUserByName(creator);
     await this.createChannelMembership(objOwn, obJChannel, 'OWNER');

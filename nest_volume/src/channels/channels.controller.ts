@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Param,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -94,5 +95,64 @@ export class ChannelsController {
         });
         
         return channelMembers;
+    }
+
+    @Get('getChat/:username')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOkResponse()
+    async getPrivateChannel(
+      @Param('username') username: string,
+      @Query('otherusername') otherusername: string,
+    ) {
+      try {
+        const channel = await this.prisma.channel.findFirstOrThrow({
+          where: {
+            type: "DIRECT",
+            AND: [
+              {
+                members: {
+                  some: {
+                    user: {
+                      username: username,
+                    },
+                  },
+                },
+              },
+              {
+                members: {
+                  some: {
+                    user: {
+                      username: otherusername,
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        });
+        return channel;
+      } catch (error: any) {
+        return null;
+      }
+    }
+
+    @Get('getChannel/:chName')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOkResponse()
+    async findChannelByName(
+      @Param('chName') chName: string,
+    ) {
+      try {
+        const channel = await this.prisma.channel.findFirstOrThrow({
+        where: {
+            name: chName,
+            },
+        });
+        return channel;
+        } catch (error: any) {
+            return null;
+        }
     }
 }

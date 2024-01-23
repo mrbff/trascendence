@@ -1,7 +1,9 @@
+import { HttpClient } from '@angular/common/http';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { channel } from 'diagnostics_channel';
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
+import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-new-channel',
@@ -20,7 +22,7 @@ export class NewChannelComponent implements OnInit, AfterViewInit {
   selectedGroupType: string = 'private';
   password: string = '';
 
-  constructor(private readonly userService: UserService, private readonly chatGateway: ChatGateway) {
+  constructor(private readonly userService: UserService, private readonly chatGateway: ChatGateway, private readonly httpClient: HttpClient) {
     this.channelUsers = [];
     this.search = '';
     this.placeholder = 'Add user';
@@ -42,6 +44,10 @@ export class NewChannelComponent implements OnInit, AfterViewInit {
   changeDialogStatus() {
     if (this.dialog.open) {
       this.isOpen = false;
+      this.errorMsg = '';
+      this.channelUsers = [];
+      this.channelName = '';
+      this.search = '';
       this.dialog.close();
     } else {
       this.isOpen = true;
@@ -71,8 +77,15 @@ export class NewChannelComponent implements OnInit, AfterViewInit {
     }, 2000);
   }
 
-  createNewChannel() {
+  async createNewChannel() {
     if (this.channelName !== '') {
+      const ch = await this.chatGateway.getChannelByNameHttp(this.channelName)
+      console.log(ch);
+      if (ch !== null) {
+        this.errorMsg = 'Channel name already exists';
+        this.channelName = '';
+        return;
+      }
       if (this.channelUsers.length !== 0) {
         this.errorMsg = '';
         this.chatGateway.createNewChannel(this.channelName, this.channelUsers, this.userService.getUser(), this.selectedGroupType, this.password);
@@ -87,4 +100,5 @@ export class NewChannelComponent implements OnInit, AfterViewInit {
     }
     this.channelUsers = [];
   }
+
 }

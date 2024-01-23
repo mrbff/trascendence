@@ -1,8 +1,10 @@
+import { channel } from 'diagnostics_channel';
+import { UseGuards, ConsoleLogger } from '@nestjs/common';
 import { MessageComponent } from './../message/message.component';
 import { AfterViewChecked, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { Subscription, skip, take } from 'rxjs';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FriendsService } from 'src/app/core/services/friends.service';
 import { UserInfo } from 'src/app/models/userInfo.model';
 import * as path from 'path';
@@ -29,6 +31,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 		private readonly chatGateway: ChatGateway,
 		private readonly router: Router,
 		private readonly friendsService: FriendsService,
+		private activatedRoute: ActivatedRoute,
 	  ) {
 	  }
 
@@ -79,7 +82,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 							id: '',
 							name: 'No users in this channel',
 							showMenu: false,
-							role: '',
+							role: 'EMPTY',
 							isBlock: false,
 							banOrKick: ''
 						});
@@ -103,9 +106,22 @@ export class UserListComponent implements OnInit, OnDestroy{
 		this.router.navigate(['/trascendence/profile', player.name]);
 	}
 
-	DM(player: any): void {
-		console.log('DM:', player.name);
+	async DM(player: any): Promise<void> {
+		if (this.isGroupChat) {
+			console.log('DM:', player.name);
+			const channel = await this.chatGateway.getPrivateChatById(this.user.username, player.name);
+			this.router.navigate(
+				[], 
+				{
+					relativeTo: this.activatedRoute,
+					queryParams: {id:channel.id},
+				}
+			);
+		}
 	}
+
+	//create a function that take my id and the id of the other user and search for the channel were we are only the two
+	//if it doesn't exist create it
 
 	inviteToGame(player: any): void {
 		console.log('inviteToGame:', player.name);
@@ -131,11 +147,13 @@ export class UserListComponent implements OnInit, OnDestroy{
 	kick(player: any): void {
 		console.log('kick:', player.name);
 		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KICKED');
+		this.chatGateway.getChannelById(this.channelId);
 	}
 
 	ban(player: any): void {
 		console.log('ban:', player.name);
 		this.chatGateway.changeUserStatus(this.channelId, player.name, 'BANNED');
+		this.chatGateway.getChannelById(this.channelId);
 	}
 
 	unban(player: any): void {

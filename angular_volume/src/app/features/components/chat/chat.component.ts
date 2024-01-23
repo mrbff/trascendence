@@ -7,7 +7,6 @@ import { Subscription, take } from 'rxjs';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { UserService } from 'src/app/core/services/user.service';
 import { Router } from '@angular/router';
-import { allowedNodeEnvironmentFlags } from 'process';
 import { UserInfo } from 'src/app/models/userInfo.model';
 
 
@@ -258,8 +257,18 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
 
-  searchChat() {
+  async searchChat() {
     if (this.search !== '' && this.search !== this.userService.getUser()) {
+      const channel = await this.chatGateway.getPrivateChatById(this.userService.getUser(), this.search);
+      if (channel) {
+        this.router.navigate(
+          [], 
+          {
+            relativeTo: this.activatedRoute,
+            queryParams: {id:channel.id},
+          }
+        );
+      } else if (!channel) {
       this.router.navigate(
         [], 
         {
@@ -275,6 +284,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         }, 2000);
       }
       this.search = '';
+    }
   }
 
   backClick() {

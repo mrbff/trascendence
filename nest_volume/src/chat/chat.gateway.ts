@@ -12,8 +12,6 @@ import { UsersService } from 'src/users/users.service';
 import * as jwt from 'jsonwebtoken';
 import {JwtPayload} from 'jsonwebtoken'
 import { ChannelsService } from 'src/channels/channels.service';
-import { User } from '@prisma/client';
-import { group } from 'console';
 type MyJwtPayload = {
   userId: number,
 } & JwtPayload;
@@ -128,7 +126,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async receivePrivChannelMsg(client: Socket, payload: { sender: string, receiver: string}) {
     const { sender, receiver } = payload;
     const messages = await this.channelsService.getChannelMsg(sender, receiver);
-    ///TO DO: creare room della chat o mandarlo all'id dell'user nella map
     client.emit('ReceiveMsgForChannel', messages.map(message=>{
         return {
           msg:message.content,
@@ -194,8 +191,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async handleChannelMsg(client: Socket, payload: { sender: string, channel: string, message: string }) {
     const { sender, channel, message } = payload;
     const { channelId } = await this.channelsService.createChannelMessage(channel, message, sender);
-    ///TO DO: creare room a cui mandarlo
-    //this.server.to(/*id della room*/).emit('MsgFromChannel', { sender: sender, channel: channel, message: message });
     this.server.emit('MsgFromChannel', [{ user: sender,  msg: message, channelId }]);
   }
 
@@ -216,7 +211,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async receiveChannelMsg(client: Socket, payload: { id: string}) {
     const { id } = payload;
     const messages = await this.channelsService.getChannelMsgById(id);
-    ///TO DO: creare room della chat o mandarlo all'id dell'user nella map
     client.emit('ReceiveMsgForChannel', messages.map(message=>{
         return {
           msg:message.content,

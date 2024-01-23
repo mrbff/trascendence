@@ -1,7 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { UseGuards } from '@nestjs/common';
 import { channel } from 'diagnostics_channel';
 import { Injectable, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, lastValueFrom } from 'rxjs';
 import { io } from 'socket.io-client';
 import { AuthService } from '../auth/auth.service';
 import { Socket } from 'socket.io';
@@ -18,7 +19,8 @@ export class ChatGateway {
 
   constructor(
     private authService:AuthService,
-    private readonly userService:UserService
+    private readonly userService:UserService,
+    private readonly httpClient:HttpClient,
     ) {
     
     //console.log('ChatGateway constructor called');
@@ -89,6 +91,17 @@ export class ChatGateway {
       });
     });
   }
+
+  onPrivateChat() {
+    return new Observable((observer) => {
+      this.socket.on('PrivateChat', (data) => {
+        observer.next(
+          data
+        );
+      });
+    });
+  }
+
   onReceiveMsgForChannel() {
     return new Observable((observer) => {
       this.socket.on('ReceiveMsgForChannel', (data) => {
@@ -114,6 +127,10 @@ export class ChatGateway {
 
   getChannelById(id:string) {
     this.socket.emit('GetChannelById', { id });
+  }
+
+  getPrivateChat(userId: string, otherId: string) {
+    this.socket.emit('GetPrivateChat', { userId, otherId });
   }
 
   receivePrivChannelMsg(receiver?:string, id?:string){
@@ -148,11 +165,22 @@ export class ChatGateway {
     });
   }
 
-  onUserInfos(){
-    return new Observable((observer) => {
-      this.socket.on('UserInfos', (data) => {
-        observer.next(data);
+    onUserInfos(){
+      return new Observable((observer) => {
+        this.socket.on('UserInfos', (data) => {
+          observer.next(data);
+        });
       });
-    });
-  }
+    }
+
+    getPrivateChatById(user: string, otheruser: string): Promise<any> {
+      return lastValueFrom(this.httpClient.get(`/nest/channels/getChat/${user}`, {
+        params: { otheruser: otheruser },
+      }));
+    }
+
+    getChannelByNameHttp(name: string): Promise<any> {
+      return lastValueFrom(this.httpClient.get(`/nest/channels/getChannel/${name}`));
+    }
+    
 }
