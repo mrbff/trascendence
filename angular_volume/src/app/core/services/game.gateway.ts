@@ -476,13 +476,13 @@ export class PongGateway {
 			switch (direction) {
 				case 'up':
 					if (racket.position.x > -maxPos){
-						racket.position.x -= 0.1 * speed;
+						racket.position.x -= 0.2 * speed;
 						this.socket.emit('moveRacket', direction);
 					}
 					break;
 				case 'down':
 					if (racket.position.x < maxPos){
-						racket.position.x += 0.1 * speed;
+						racket.position.x += 0.2 * speed;
 						this.socket.emit('moveRacket', direction);
 					}
 					break;
@@ -498,10 +498,10 @@ export class PongGateway {
 				const speed = racketOpp.metadata?.speed || 1;
 				switch (dir) {
 					case 'up':
-						racketOpp.position.x -= 0.1 * speed;
+						racketOpp.position.x -= 0.2 * speed;
 						break;
 					case 'down':
-						racketOpp.position.x += 0.1 * speed;
+						racketOpp.position.x += 0.2 * speed;
 						break;
 					}
 			}

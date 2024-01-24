@@ -56,13 +56,18 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				return
 			}
 		}
-		if (client.handshake.query.gameMode === "normal"){
-			this.normalQueue.push(element);
-			this.matchmake(this.normalQueue, "normal");
+		if (client.handshake.query.invited){
+			this.inviteSetup(element);
 		}
-		else{
-			this.specialQueue.push(element);
-			this.matchmake(this.specialQueue, "special");
+		else {
+			if (client.handshake.query.gameMode === "normal"){
+				this.normalQueue.push(element);
+				this.matchmake(this.normalQueue, "normal");
+			}
+			else{
+				this.specialQueue.push(element);
+				this.matchmake(this.specialQueue, "special");
+			}
 		}
 	}
 
@@ -96,6 +101,14 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			}
 		}
 	}
+
+	inviteSetup(user: {username: string, id: string, client: Socket}){
+		let roomName = `room_${Math.random().toString(36).substring(2, 8)}`;
+		user.client.join(roomName);
+		this.rooms.push({name: roomName, data: {player1: user.client, id1: parseInt(user.id), player2: user.client, id2: parseInt(user.client.handshake.query.friendId as string), score1: 0, score2: 0, winner: -1, mode: user.client.handshake.query.gamemode as string, playersReady: new Set()}});
+	}
+
+
 
 	private removeFromQueue(client: Socket) {
 		if (this.normalQueue.find((elem) => elem.client.id == client.id))
@@ -265,12 +278,12 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				move.z *= -1;
 				if (collidedMesh === c1Bottom || collidedMesh === c2Bottom)
 					if (move.x == 0)
-						move.x = 0.2;
+						move.x = 0.4;
 					else
 						move.x *= move.x > 0 ? 1 : -1;
 				else if (collidedMesh === c1Top || collidedMesh === c2Top)
 					if (move.x == 0)
-						move.x = -0.2;
+						move.x = -0.4;
 					else
 						move.x *= move.x > 0 ? -1 : 1;
 				if (collidedMesh === c1Middle || collidedMesh === c1Bottom || collidedMesh === c1Top)
@@ -359,10 +372,10 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		const speed = racket.metadata?.speed || 1;
 		switch (direction) {
 			case 'up':
-				racket.position.x -= 0.1 * speed;
+				racket.position.x -= 0.2 * speed;
 				break;
 			case 'down':
-				racket.position.x += 0.1 * speed;
+				racket.position.x += 0.2 * speed;
 				break;
 		}
 		racket.getChildMeshes().forEach((value)=> {value.refreshBoundingInfo()});
