@@ -137,14 +137,16 @@ export class ChannelsService {
     for (const user of objUsers) {
       await this.createChannelMembership(user, obJChannel, "MEMBER");
     }
+
+    const members = [
+      ...objUsers.map(user => ({ username: user.username })),
+      { username: objOwn.username }
+    ];
+  
     return {
       ...obJChannel,
-      members:objUsers.map(user=>{
-        return {
-          username: user.username,
-        }
-      })
-    }
+      members: members,
+    };
   }
 
   async createChannelMessage(channelId:string, content:string, username:string) {

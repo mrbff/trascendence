@@ -42,8 +42,9 @@ export class UserListComponent implements OnInit, OnDestroy{
 	userList()
 	{
 		this.$subs.add(
-			this.chatGateway.onChannelId().pipe().subscribe({
+			this.chatGateway.onChannelId().subscribe({
 				next: (data: any) => {
+					console.log('onChannelId Data:', data);
 					this.isGroupChat = true;
 					if (data.channel.type === 'DIRECT'){
 						this.isGroupChat = false;
@@ -57,6 +58,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 						const id = user.user.id;
 						const blockList = user.user.blockedBy;
 						const banOrKick = user.status;
+						const listable = true;
 						let isBlock = false;
 						for (let blockUser of blockList) {
 							if (blockUser.blocker.username === this.user.username) {
@@ -70,7 +72,8 @@ export class UserListComponent implements OnInit, OnDestroy{
 									showMenu: false,
 									role: role,
 									isBlock: isBlock,
-									banOrKick: banOrKick
+									banOrKick: banOrKick,
+									listable: listable,
 								});
 						}
 						else {
@@ -142,21 +145,21 @@ export class UserListComponent implements OnInit, OnDestroy{
 		console.log('mute:', player.name);
 	}
 
-	kick(player: any): void {
-		console.log('kick:', player.name);
+	async kick(player: any): Promise<void> {
 		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KICKED');
+		console.log('kick:', player.name);
 		this.chatGateway.emitChannelChanes(this.channelId, player.name);
 	}
 
 	ban(player: any): void {
-		console.log('ban:', player.name);
 		this.chatGateway.changeUserStatus(this.channelId, player.name, 'BANNED');
+		console.log('ban:', player.name);
 		this.chatGateway.emitChannelChanes(this.channelId, player.name);
 	}
 
 	unban(player: any): void {
-		console.log('ban:', player.name);
 		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KICKED');
+		console.log('unban:', player.name);
 		this.chatGateway.emitChannelChanes(this.channelId, player.name);
 	}
 

@@ -157,8 +157,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         next: (data: any) => {
           this.channels = [];
           const myUsername = this.userService.getUser();
-          console.log(`SUBSCRIBE DATA :`);
-          console.log(this.channels);
+          console.log(`onUserChannelList DATA :`);
           this.channels = data.channels.map((channel:any)=> {
             let isGroup = true;
             let allRead = false;
@@ -181,6 +180,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
               return (member.user.username === this.userService.getUser() && !["KICKED", "BANNED"].includes(member.status));
             });
           });
+          console.log(this.channels);
         },
         error: (error) => {
           this.errorMsg = `Error receiving channel list`;
@@ -191,13 +191,15 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.$subs.add(
       this.chatGateway.onCreatedNewPublicChannel().subscribe({
         next: (data: any) => {
-          console.log(data);
+          if (data.members.some((member: any) => member.username === this.userService.getUser())) {
           this.channels.push(data);
+          //console.log(this.channels);
           if (data.user === this.userService.getUser()){
             this.selectedChannel = data;
           }
           this.isOpen = false;
         }
+      }
       })
     )
     this.chatGateway.receiveUserChannels(this.userService.getUser());

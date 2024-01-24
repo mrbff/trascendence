@@ -103,8 +103,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       client.emit('CreatedNewPublicChannel', {channel:{...channel, isGroup:false, name: receiver}});
       userSocketMap[receiver].emit('CreatedNewPublicChannel', {channel:{...channel, isGroup:false, name: sender},});
     }
+    else {
     client.emit('MsgFromChannel', [{ user: sender, msg: message, channelId: channel.id , from: sender}]);
     userSocketMap[receiver].emit('MsgFromChannel', [{ user: sender, msg: message, channelId: channel.id , from: sender, allRead: false }]);
+    }
   }
   
 

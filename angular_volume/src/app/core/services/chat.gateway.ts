@@ -1,15 +1,10 @@
 import { HttpClient } from '@angular/common/http';
-import { UseGuards, ConsoleLogger } from '@nestjs/common';
-import { channel } from 'diagnostics_channel';
 import { Injectable, OnInit } from '@angular/core';
 import { Observable, lastValueFrom } from 'rxjs';
 import { io } from 'socket.io-client';
 import { AuthService } from '../auth/auth.service';
-import { Socket } from 'socket.io';
-import { DefaultEventsMap } from '@socket.io/component-emitter';
 import { UserService } from './user.service';
-import { ElementSchemaRegistry } from '@angular/compiler';
-import { stringify } from 'querystring';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -23,9 +18,7 @@ export class ChatGateway {
     private readonly httpClient:HttpClient,
     ) {
     
-    //console.log('ChatGateway constructor called');
     const jwt = this.authService.getToken();
-    //console.log({ jwt });
     
     this.socket = io('/chat', { 
       path: '/socket.io/',
