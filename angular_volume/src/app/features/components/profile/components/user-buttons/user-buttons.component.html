@@ -32,8 +32,7 @@
   <img
     id="image"
     class="profile-image"
-    [src]="isBlocked ? getBlockedUserImg() : user.img"
-    appChangeImage
-    [ngStyle]="{color: user.isPlaying ? 'orange' : user.isOnline ? 'green' : 'red'}"
-  />
-</main>
+    [src]="!isBlocked ? getBlockedUserImg() : user.img"
+    [ngStyle]="{color: !user.isPlaying ? 'orange' : !user.isOnline ? 'green' : 'red'}"
+    />
+  </main>
