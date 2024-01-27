@@ -78,12 +78,7 @@
 	width: 100%;
 }
 
-.container {
-	display: flex;
-}
-
 .profile {
-	flex-grow: 1;
 	background-color: darkslateblue;
 	color: orange;
 	padding: 10px 20px;
@@ -96,7 +91,6 @@
 }
 
 .DM {
-	flex-grow: 1;
 	background-color: darkslateblue;
 	color: orange;
 	padding: 10px 20px;
