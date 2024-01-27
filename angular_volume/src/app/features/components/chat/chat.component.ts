@@ -96,6 +96,9 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   initializeChat(): void {
+    console.log('Initializing chat...');
+
+
     this.$subs.add(
       this.route.queryParams.subscribe((params) => {
         this.queryParams = params;
@@ -158,6 +161,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           this.channels = [];
           const myUsername = this.userService.getUser();
           console.log(`onUserChannelList DATA :`);
+          console.log(myUsername);
           this.channels = data.channels.map((channel:any)=> {
             let isGroup = true;
             let allRead = false;
@@ -201,7 +205,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         }
       }
       })
-    )
+    );
     this.chatGateway.receiveUserChannels(this.userService.getUser());
   }
 

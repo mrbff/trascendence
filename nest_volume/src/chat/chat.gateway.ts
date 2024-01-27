@@ -140,16 +140,19 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
   
   @SubscribeMessage("ReceiveUserList")
-  async reciveUserList(client: Socket, payload: { id: string}) {
+  async reciveUserList(client: Socket, payload: { id: string }) {
     const { id } = payload;
     const channels = await this.channelsService.getChannelById(id);
-    const userlist: any = channels?.members.map((member:any)=>{
+    const userlist: any = channels?.members?.map((member: any) => {
       return {
         username: member.user.usename,
         role: member.role
-      }
+      };
     });
-    client.emit('UserList', {userlist} );
+    for (let user of channels?.members ?? []) {
+      const receiver = user.user.id;
+      userSocketMap[receiver].emit('ReceiveUserList', { userlist });
+    }
   }
 
   @SubscribeMessage("LeaveChannel")
@@ -179,7 +182,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage("ReceiveUserChannels")
   async receiveUserChannels(client: Socket, payload: { username: string }) {
     const channels = await this.channelsService.getUserChannels(payload.username);
-    this.server.emit('UserChannelList', {channels} );
+    const user = this.usersService.findUserByName(payload.username);
+    userSocketMap[(await user).username].emit('UserChannelList', {channels} );
+    //this.server.emit('UserChannelList', {channels} );
   }
 
   @SubscribeMessage('CreateNewChannel')

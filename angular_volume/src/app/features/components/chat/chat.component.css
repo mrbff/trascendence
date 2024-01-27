@@ -140,7 +140,7 @@
 .message-container button {
   grid-column: 3;
   position: absolute;
-  right: 265px;
+  right: 250px;
   border: none;
   color: white;
   font-size: 15px;

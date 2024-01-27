@@ -1,6 +1,6 @@
+import { Router, ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
-import { channel } from 'diagnostics_channel';
 import { AfterViewInit, Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
 import { combineLatest } from 'rxjs';
@@ -22,7 +22,13 @@ export class NewChannelComponent implements OnInit, AfterViewInit {
   selectedGroupType: string = 'private';
   password: string = '';
 
-  constructor(private readonly userService: UserService, private readonly chatGateway: ChatGateway, private readonly httpClient: HttpClient) {
+  constructor(
+    private readonly userService: UserService,
+    private readonly chatGateway: ChatGateway,
+    private readonly httpClient: HttpClient,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute,
+    private activatedRoute: ActivatedRoute) {
     this.channelUsers = [];
     this.search = '';
     this.placeholder = 'Add user';
@@ -90,6 +96,12 @@ export class NewChannelComponent implements OnInit, AfterViewInit {
         this.chatGateway.createNewChannel(this.channelName, this.channelUsers, this.userService.getUser(), this.selectedGroupType, this.password);
         this.chatGateway.receiveUserChannels(this.userService.getUser())
         this.changeDialogStatus();
+        this.router.navigate(
+          [], 
+          {
+            relativeTo: this.activatedRoute
+          }
+        );
       } else {
         this.errorMsg = 'Insert channel users';
         this.channelName = '';

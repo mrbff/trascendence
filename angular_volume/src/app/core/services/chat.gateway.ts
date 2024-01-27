@@ -4,7 +4,7 @@ import { Observable, lastValueFrom } from 'rxjs';
 import { io } from 'socket.io-client';
 import { AuthService } from '../auth/auth.service';
 import { UserService } from './user.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Server, Socket } from 'socket.io';
 
 @Injectable({
   providedIn: 'root',

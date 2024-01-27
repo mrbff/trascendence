@@ -1,3 +1,4 @@
+import { Router } from '@angular/router';
 import { Component, EventEmitter, HostListener, OnInit, Output } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
 
@@ -13,7 +14,8 @@ export class NavbarComponent implements OnInit {
 
   @Output() openChat = new EventEmitter();
 
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService,
+    private readonly router: Router) {}
 
   ngOnInit(): void {
     this.user =
@@ -25,6 +27,11 @@ export class NavbarComponent implements OnInit {
 
   onChatClick() {
     this.openChat.emit();
+  }
+
+  @HostListener('window:reload', ['$event'])
+  onWindowReload() {
+    this.router.navigate(['/']);
   }
 
   @HostListener('window:resize', ['$event'])
