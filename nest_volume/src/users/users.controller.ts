@@ -8,6 +8,7 @@ import {
   Delete,
   ParseIntPipe,
   UseGuards,
+  ConsoleLogger,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -74,6 +75,24 @@ export class UsersController {
     return await this.usersService.findUserPublicDataNoThrow(username);
   }
   
+  @Get('throw/:username')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOkResponse()
+  async findUserPublicDataThrow(@Param('username') username: string) {
+    console.log('findUserPublicDataThrow');
+    try {
+
+      const user = await this.prisma.user.findUniqueOrThrow({ where: { username: username }, });
+      return {
+        id: user.id,
+        username: user.username,
+      };
+    } catch(error) {
+      return null;
+    }
+  }
+
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()

@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import {
   Controller,
   Get,
@@ -101,7 +102,7 @@ export class ChannelsController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @ApiOkResponse()
-    async getPrivateChannel(
+    async getDirectChat(
       @Param('username') username: string,
       @Query('otherusername') otherusername: string,
     ) {

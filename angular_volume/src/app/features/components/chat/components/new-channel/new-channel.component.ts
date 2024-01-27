@@ -86,6 +86,12 @@ export class NewChannelComponent implements OnInit, AfterViewInit {
   async createNewChannel() {
     if (this.channelName !== '') {
       const ch = await this.chatGateway.getChannelByNameHttp(this.channelName)
+      const user = await this.userService.getUserByUsername(this.channelName);
+      if (user !== null) {
+        this.errorMsg = 'Channel name cant be a user name';
+        this.channelName = '';
+        return;
+      }
       if (ch !== null) {
         this.errorMsg = 'Channel name already exists';
         this.channelName = '';

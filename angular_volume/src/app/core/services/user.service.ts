@@ -75,4 +75,8 @@ export class UserService {
   getUserByUsername(username: string) {
     return this.http.get<UserInfo>(`/nest/users/nothrow/${username}`);
   }
+
+  async getUserByUsernameOrNull(username: string): Promise<any> {
+    return this.http.get<UserInfo>(`/nest/users/throw/${username}`);
+  }
 }

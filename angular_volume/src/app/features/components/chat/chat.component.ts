@@ -82,6 +82,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.messages = [];
     this.screenW = window.innerWidth;
     const params = this.route.snapshot.queryParams;
+    console.log(`Query params: ${JSON.stringify(params)}`); // Object {}
     this.initializeChat();
   }
 
@@ -96,9 +97,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   initializeChat(): void {
-    console.log('Initializing chat...');
-
-
     this.$subs.add(
       this.route.queryParams.subscribe((params) => {
         this.queryParams = params;
@@ -148,6 +146,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
             return (this.selectedChannel.id === message.channelId);
           })];
           this.chatGateway.sendLastSeen(this.selectedChannel.id, this.userService.getUser()); ///sussy
+          this.chatGateway.getChannelById(this.selectedChannel.id);
         },
         error: (error) => {
           this.errorMsg = `Error receiving message from channel: ${error.message}`;
@@ -160,7 +159,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         next: (data: any) => {
           this.channels = [];
           const myUsername = this.userService.getUser();
-          console.log(`onUserChannelList DATA :`);
           console.log(myUsername);
           this.channels = data.channels.map((channel:any)=> {
             let isGroup = true;
@@ -235,8 +233,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.$subs.unsubscribe();
   }
 
-  // TO DO: handling user joining, leaving, etc.
-
   async openChat(conversation: any) {
     if (this.queryParams['id'] === conversation.id)
       return;
@@ -250,7 +246,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       }
     );
     this.selectedChannel = conversation;
-    //console.log(conversation);
     this.msgToShow = null;
     this.chatGateway.sendLastSeen(conversation.id, this.userService.getUser());
     conversation.allRead = true;
@@ -261,24 +256,34 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   async searchChat() {
     if (this.search !== '' && this.search !== this.userService.getUser()) {
-      const channel = await this.chatGateway.getPrivateChatById(this.userService.getUser(), this.search);
-      if (channel) {
+      const user = this.userService.getUserByUsername(this.search);
+      const dirChannel = await this.chatGateway.getDirectChatByNames(this.userService.getUser(), this.search);
+      console.log(dirChannel);
+      if (dirChannel) {
+        this.chatGateway.getChannelById(dirChannel.id);
         this.router.navigate(
           [], 
           {
             relativeTo: this.activatedRoute,
-            queryParams: {id:channel.id},
+            queryParams: {id:dirChannel.id},
           }
         );
-      } else if (!channel) {
-      this.router.navigate(
-        [], 
-        {
-          relativeTo: this.activatedRoute,
-          queryParams: {username:this.search}, 
+        this.search = '';
+        return;
         }
-      );
-      this.msgToShow = null;
+      if (user !== null) {
+        console.log(user);
+        this.chatGateway.sendPrivMsg("", this.search);
+        const newChannel = await this.chatGateway.getDirectChatByNames(this.userService.getUser(), this.search);
+        this.router.navigate(
+          [], 
+          {
+            relativeTo: this.activatedRoute,
+            queryParams: {id:newChannel.id},
+          }
+        );
+        this.search = '';
+        return;
       } else {
         this.placeholder = 'Chat not found';
         setTimeout(() => {

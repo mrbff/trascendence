@@ -33,6 +33,14 @@ export class UserListComponent implements OnInit, OnDestroy{
 		private readonly friendsService: FriendsService,
 		private activatedRoute: ActivatedRoute,
 	  ) {
+			this.players.push({ 
+				id: '',
+				name: 'No users in this channel',
+				showMenu: false,
+				role: 'EMPTY',
+				isBlock: false,
+				banOrKick: ''
+			});
 	  }
 
 	ngOnInit(): void {
@@ -112,7 +120,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 	async DM(player: any): Promise<void> {
 		if (this.isGroupChat) {
 			console.log('DM:', player.name);
-			const channel = await this.chatGateway.getPrivateChatById(this.user.username, player.name);
+			const channel = await this.chatGateway.getDirectChatByNames(this.user.username, player.name);
 			this.chatGateway.getChannelById(channel.id);
 			this.router.navigate(
 				[], 
@@ -148,32 +156,31 @@ export class UserListComponent implements OnInit, OnDestroy{
 	async kick(player: any): Promise<void> {
 		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KICKED');
 		console.log('kick:', player.name);
-		this.chatGateway.emitChannelChanes(this.channelId, player.name);
+		this.chatGateway.sendChannelMsg(`${player.name} has been kicked from the channel by ${this.user.username}`, this.channelId);
 	}
 
 	ban(player: any): void {
 		this.chatGateway.changeUserStatus(this.channelId, player.name, 'BANNED');
 		console.log('ban:', player.name);
-		this.chatGateway.emitChannelChanes(this.channelId, player.name);
+		this.chatGateway.sendChannelMsg(`${player.name} has been banned from the channel by ${this.user.username}`, this.channelId);
 	}
 
 	unban(player: any): void {
 		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KICKED');
 		console.log('unban:', player.name);
-		this.chatGateway.emitChannelChanes(this.channelId, player.name);
 	}
 
 	async set_admin(player: any) {
 		console.log('set_admin:', player.name);
 		this.chatGateway.setAdmin(this.channelId, player.name);
 		player.role = 'ADMIN';
-		this.chatGateway.emitChannelChanes(this.channelId, player.name);
+		this.chatGateway.sendChannelMsg(`${player.name} has been promoted to admin by ${this.user.username}}`, this.channelId);
 	}
 
 	async rm_admin(player: any) {
 		console.log('rm_admin:', player.name);
 		this.chatGateway.removeAdmin(this.channelId, player.name);
 		player.role = 'MEMBER';
-		this.chatGateway.emitChannelChanes(this.channelId, player.name);
+		this.chatGateway.sendChannelMsg(`${player.name} has been demoted to member by ${this.user.username}}`, this.channelId);
 	}
 }

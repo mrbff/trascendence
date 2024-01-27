@@ -1,10 +1,10 @@
 <ng-container *ngIf="currentUser; else otherUser">
-  <section class="message mine">
+  <section *ngIf="message.msg !== ''" class="message mine">
     <span class="message-content">{{ message.msg }}</span>
   </section>
 </ng-container>
 <ng-template #otherUser>
-  <section class="message other">
+  <section *ngIf="message.msg !== ''" class="message other">
     <span *ngIf="!currentUser" class="username">{{ message.user }}</span>
     <span class="message-content">{{ message.msg }}</span>
     <span *ngFor="let mebmer of message.mebmers"> {{mebmer}}</span>

@@ -1,10 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
-import { Observable, lastValueFrom } from 'rxjs';
 import { io } from 'socket.io-client';
 import { AuthService } from '../auth/auth.service';
 import { UserService } from './user.service';
 import { Server, Socket } from 'socket.io';
+import { Observable } from 'rxjs';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -24,11 +25,6 @@ export class ChatGateway {
       path: '/socket.io/',
       auth:{token: jwt}
     });
-  }
-
-  emitChannelChanes(channelId: string, user: string) {
-    this.socket.emit('ReceiveUserChannels', { user });
-    this.socket.emit('GetChannelById', { id:channelId });
   }
 
   changeUserStatus(channelId: string, username: string, status:string | null) {
@@ -163,22 +159,24 @@ export class ChatGateway {
     });
   }
 
-    onUserInfos(){
-      return new Observable((observer) => {
-        this.socket.on('UserInfos', (data) => {
-          observer.next(data);
+    // ...existing code...
+
+      onUserInfos(){
+        return new Observable((observer) => {
+          this.socket.on('UserInfos', (data) => {
+            observer.next(data);
+          });
         });
-      });
-    }
+      }
 
-    getPrivateChatById(user: string, otheruser: string): Promise<any> {
-      return lastValueFrom(this.httpClient.get(`/nest/channels/getChat/${user}`, {
-        params: { otheruser: otheruser },
-      }));
-    }
+      getDirectChatByNames(user: string, otherusername: string): Promise<any> {
+        return lastValueFrom(this.httpClient.get(`/nest/channels/getChat/${user}`, {
+          params: { user: user, otherusername: otherusername },
+        }));
+      }
 
-    getChannelByNameHttp(name: string): Promise<any> {
-      return lastValueFrom(this.httpClient.get(`/nest/channels/getChannel/${name}`));
-    }
+      getChannelByNameHttp(name: string): Promise<any> {
+        return lastValueFrom(this.httpClient.get(`/nest/channels/getChannel/${name}`));
+      }
     
 }
