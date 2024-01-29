@@ -90,6 +90,7 @@ export class UsersService {
     const user = await this.prisma.user.findUnique({
       where: { username: username },
     });
+    console.log('Prisma Query Result:', user);
     if (!user)
       return null;
     return {
