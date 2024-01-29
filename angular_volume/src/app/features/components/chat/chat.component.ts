@@ -271,7 +271,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.search = '';
         return;
         }
-      if (user !== null) {
+      console.log(user);
+      if (user !== null && user !== undefined && user.source !== null) {
         console.log(user);
         this.chatGateway.sendPrivMsg("", this.search);
         const newChannel = await this.chatGateway.getDirectChatByNames(this.userService.getUser(), this.search);
