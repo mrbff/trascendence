@@ -30,7 +30,7 @@
     </div>
     <ng-container *ngIf="isOpen">
       <section class="message-area" #messageArea>
-        <app-message *ngFor="let message of messages" [message]="message"></app-message>
+        <app-message style="display: contents;" *ngFor="let message of messages" [message]="message"></app-message>
       </section>
       <section #userList>
         <app-user-list [user]="whoami"></app-user-list>

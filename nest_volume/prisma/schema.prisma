@@ -80,6 +80,7 @@ model Message {
   read      Boolean  @default(false)
   channel   Channel  @relation(fields: [channelId], references: [id])
   sender    User     @relation("Message_Sender", fields: [senderId], references: [id])
+  isModer   Boolean  @default(false)
 }
 
 model Friendship {
@@ -129,7 +130,7 @@ enum UserStatus {
   ACTIVE
   BANNED
   MUTED
-  KIKED
+  KICKED
 }
 
 enum MatchMode {

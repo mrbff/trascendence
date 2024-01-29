@@ -1,4 +1,4 @@
-<ng-container *ngIf="currentUser; else otherUser">
+<ng-container *ngIf="currentUser; else otherUser; else modMessage">
   <section *ngIf="message.msg !== ''" class="message mine">
     <span class="message-content">{{ message.msg }}</span>
   </section>
@@ -8,5 +8,10 @@
     <span *ngIf="!currentUser" class="username">{{ message.user }}</span>
     <span class="message-content">{{ message.msg }}</span>
     <span *ngFor="let mebmer of message.mebmers"> {{mebmer}}</span>
+  </section>
+</ng-template>
+<ng-template #modMessage>
+  <section *ngIf="message.msg !== ''" class="message mod">
+    <span class="message-content">{{ message.msg }}</span>
   </section>
 </ng-template>

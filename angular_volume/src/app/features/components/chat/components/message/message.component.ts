@@ -10,10 +10,19 @@ export class MessageComponent implements OnInit {
   @Input() message: any;
   username!: string;
   currentUser!: boolean;
+  isModerator!: boolean;
 
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) {
+    this.currentUser = false;
+    this.isModerator = false;
+  }
 
   ngOnInit() {
+    console.log('Message:', this.message.isModer);
+    if (this.message.isModer == true) {
+      this.isModerator = true;
+      return;
+    }
     this.username = this.message.user;
     if (this.username !== this.userService.getUser()) {
       this.currentUser = false;

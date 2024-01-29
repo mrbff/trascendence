@@ -21,7 +21,6 @@ export class ChannelsService {
 
 
   async changeUserStatus(channelId: string, username: string, status: string | null) {
-    console.log('changeUserStatus', channelId, username, status);
     const user = await this.usersService.findUserByName(username);
     const channel = await this.prisma.channel.findUnique({
       where:{
@@ -170,6 +169,32 @@ export class ChannelsService {
         senderId: sender.id,
         channelId: channel.id,
         content: content
+      },
+    });
+  }
+
+  async createModChannelMessage(channelId:string, content:string, username:string) {
+    const channel = await this.prisma.channel.findUniqueOrThrow({
+      where: {
+        id: channelId
+      }
+    });
+
+    const sender = await this.usersService.findUserByName(username);
+    await this.prisma.channel.update({
+      data:{
+        lastSeen: []
+      },
+      where:{
+        id: channelId
+      }
+    });
+    return this.prisma.message.create({
+      data: {
+        senderId: sender.id,
+        channelId: channel.id,
+        content: content,
+        isModer: true
       },
     });
   }

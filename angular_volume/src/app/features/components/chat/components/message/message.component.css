@@ -10,14 +10,20 @@
 
 .mine {
   background-color: rgba(0, 0, 0, 0.5);
-  float: right;
+  align-self: end;
   text-align: left;
 }
 
 .other {
   background-color: rgba(72, 61, 139, 0.5);
-  float: left;
+  align-self: start;
   text-align: left;
+}
+
+.mod {
+  background-color: rgba(40, 138, 125, 0.5);
+  align-self: center;
+  text-align: center;
 }
 
 span {

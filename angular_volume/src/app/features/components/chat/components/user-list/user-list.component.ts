@@ -52,7 +52,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 		this.$subs.add(
 			this.chatGateway.onChannelId().subscribe({
 				next: (data: any) => {
-					console.log('onChannelId Data:', data);
+					//console.log('onChannelId Data:', data);
 					this.isGroupChat = true;
 					if (data.channel.type === 'DIRECT'){
 						this.isGroupChat = false;
@@ -73,7 +73,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 								isBlock = true;
 							}
 						}
-						if (username !== this.user.username && banOrKick !== 'KIKED'){
+						if (username !== this.user.username && banOrKick !== 'KICKED'){
 							this.players.push({ 
 									id: id,
 									name: username,
@@ -113,13 +113,13 @@ export class UserListComponent implements OnInit, OnDestroy{
 	}
 
 	profile(player: any): void {
-		console.log('profile:', player.name);
+		//console.log('profile:', player.name);
 		this.router.navigate(['/transcendence/profile', player.name]);
 	}
 
 	async DM(player: any): Promise<void> {
 		if (this.isGroupChat) {
-			console.log('DM:', player.name);
+			//console.log('DM:', player.name);
 			const channel = await this.chatGateway.getDirectChatByNames(this.user.username, player.name);
 			this.chatGateway.getChannelById(channel.id);
 			this.router.navigate(
@@ -137,7 +137,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 	}
 
 	async block(player: any): Promise<void>{
-		console.log('block:', player.name);
+		//console.log('block:', player.name);
 		await this.friendsService
 		.blockUser(player.name)
 		.then(() => (player.isBlock = true));
@@ -150,37 +150,37 @@ export class UserListComponent implements OnInit, OnDestroy{
 	}
 
 	mute(player: any): void {
-		console.log('mute:', player.name);
+		//console.log('mute:', player.name);
 	}
 
 	async kick(player: any): Promise<void> {
-		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KIKED');
-		console.log('kick:', player.name);
-		this.chatGateway.sendChannelMsg(`${player.name} has been KIKED from the channel by ${this.user.username}`, this.channelId);
+		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KICKED');
+		//console.log('kick:', player.name);
+		this.chatGateway.sendModChannelMsg(`${player.name} has been KICKED from the channel by ${this.user.username}`, this.channelId);
 	}
 
 	ban(player: any): void {
 		this.chatGateway.changeUserStatus(this.channelId, player.name, 'BANNED');
-		console.log('ban:', player.name);
-		this.chatGateway.sendChannelMsg(`${player.name} has been banned from the channel by ${this.user.username}`, this.channelId);
+		//console.log('ban:', player.name);
+		this.chatGateway.sendModChannelMsg(`${player.name} has been BANNED from the channel by ${this.user.username}`, this.channelId);
 	}
 
 	unban(player: any): void {
-		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KIKED');
-		console.log('unban:', player.name);
+		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KICKED');
+		//console.log('unban:', player.name);
 	}
 
 	async set_admin(player: any) {
-		console.log('set_admin:', player.name);
+		//console.log('set_admin:', player.name);
 		this.chatGateway.setAdmin(this.channelId, player.name);
 		player.role = 'ADMIN';
-		this.chatGateway.sendChannelMsg(`${player.name} has been promoted to admin by ${this.user.username}`, this.channelId);
+		this.chatGateway.sendModChannelMsg(`${player.name} has been PROMOTED TO ADMIN by ${this.user.username}`, this.channelId);
 	}
 
 	async rm_admin(player: any) {
-		console.log('rm_admin:', player.name);
+		//console.log('rm_admin:', player.name);
 		this.chatGateway.removeAdmin(this.channelId, player.name);
 		player.role = 'MEMBER';
-		this.chatGateway.sendChannelMsg(`${player.name} has been demoted to member by ${this.user.username}`, this.channelId);
+		this.chatGateway.sendModChannelMsg(`${player.name} has been DEMOTED TO MEMBER by ${this.user.username}`, this.channelId);
 	}
 }

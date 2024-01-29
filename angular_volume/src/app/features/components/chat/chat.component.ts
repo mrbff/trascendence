@@ -147,6 +147,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           })];
           this.chatGateway.sendLastSeen(this.selectedChannel.id, this.userService.getUser()); ///sussy
           this.chatGateway.getChannelById(this.selectedChannel.id);
+          console.log(this.messages);
         },
         error: (error) => {
           this.errorMsg = `Error receiving message from channel: ${error.message}`;
@@ -179,7 +180,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           });
           this.channels = this.channels.filter((channel: any) => {
             return channel.members.some((member: any) => {
-              return (member.user.username === this.userService.getUser() && !["KIKED", "BANNED"].includes(member.status));
+              return (member.user.username === this.userService.getUser() && !["KICKED", "BANNED"].includes(member.status));
             });
           });
           console.log(this.channels);

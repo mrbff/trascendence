@@ -47,6 +47,10 @@ export class ChatGateway {
     this.socket.emit('ChannelMsg', { sender:this.userService.getUser(), channel:channel, message:message });
   }
 
+  sendModChannelMsg(message:string, channel:string) {
+    this.socket.emit('ChannelModMsg', { sender:this.userService.getUser(), channel:channel, message:message });
+  }
+
   createNewChannel(channelName:string, users:string[], creator:string, groupType:string, password:string) {
     this.socket.emit('CreateNewChannel', { channelName:channelName, users:users, creator:creator, groupType:groupType, password:password});
   }

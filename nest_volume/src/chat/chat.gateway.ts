@@ -12,6 +12,7 @@ import { UsersService } from 'src/users/users.service';
 import * as jwt from 'jsonwebtoken';
 import {JwtPayload} from 'jsonwebtoken'
 import { ChannelsService } from 'src/channels/channels.service';
+import { isMobilePhone } from 'class-validator';
 type MyJwtPayload = {
   userId: number,
 } & JwtPayload;
@@ -201,6 +202,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.server.emit('MsgFromChannel', [{ user: sender,  msg: message, channelId }]);
   }
 
+  @SubscribeMessage('ChannelModMsg')
+  async handleModChannelMsg(client: Socket, payload: { sender: string, channel: string, message: string }) {
+    const { sender, channel, message } = payload;
+    const { channelId } = await this.channelsService.createModChannelMessage(channel, message, sender);
+    this.server.emit('MsgFromChannel', [{ user: sender,  msg: message, channelId, isModer:true }]);
+  }
+
   @SubscribeMessage('LastSeen')
   async handleLastSeen(client: Socket, payload: { channelId: string, user: string }) {
     const { channelId, user } = payload;
@@ -222,6 +230,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         return {
           msg:message.content,
           user:message.sender.username,
+          isModer:message.isModer,
         }
       })
     );
