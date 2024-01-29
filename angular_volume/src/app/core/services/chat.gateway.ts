@@ -161,22 +161,22 @@ export class ChatGateway {
 
     // ...existing code...
 
-      onUserInfos(){
-        return new Observable((observer) => {
-          this.socket.on('UserInfos', (data) => {
-            observer.next(data);
-          });
-        });
-      }
+  onUserInfos(){
+    return new Observable((observer) => {
+      this.socket.on('UserInfos', (data) => {
+        observer.next(data);
+      });
+    });
+  }
 
-      getDirectChatByNames(user: string, otherusername: string): Promise<any> {
-        return lastValueFrom(this.httpClient.get(`/nest/channels/getChat/${user}`, {
-          params: { user: user, otherusername: otherusername },
-        }));
-      }
+  getDirectChatByNames(user: string, otherusername: string): Promise<any> {
+    return lastValueFrom(this.httpClient.get(`/nest/channels/getChat/${user}`, {
+      params: { user: user, otherusername: otherusername },
+    }));
+  }
 
-      getChannelByNameHttp(name: string): Promise<any> {
-        return lastValueFrom(this.httpClient.get(`/nest/channels/getChannel/${name}`));
-      }
+  getChannelByNameHttp(name: string): Promise<any> {
+    return lastValueFrom(this.httpClient.get(`/nest/channels/getChannel/${name}`));
+  }
     
 }

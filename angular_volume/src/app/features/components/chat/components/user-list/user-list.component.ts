@@ -73,7 +73,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 								isBlock = true;
 							}
 						}
-						if (username !== this.user.username && banOrKick !== 'KICKED'){
+						if (username !== this.user.username && banOrKick !== 'KIKED'){
 							this.players.push({ 
 									id: id,
 									name: username,
@@ -84,7 +84,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 									listable: listable,
 								});
 						}
-						else {
+						else if (username === this.user.username) {
 							this.myRole = role;
 						}
 					}
@@ -154,9 +154,9 @@ export class UserListComponent implements OnInit, OnDestroy{
 	}
 
 	async kick(player: any): Promise<void> {
-		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KICKED');
+		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KIKED');
 		console.log('kick:', player.name);
-		this.chatGateway.sendChannelMsg(`${player.name} has been kicked from the channel by ${this.user.username}`, this.channelId);
+		this.chatGateway.sendChannelMsg(`${player.name} has been KIKED from the channel by ${this.user.username}`, this.channelId);
 	}
 
 	ban(player: any): void {
@@ -166,7 +166,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 	}
 
 	unban(player: any): void {
-		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KICKED');
+		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KIKED');
 		console.log('unban:', player.name);
 	}
 
@@ -174,13 +174,13 @@ export class UserListComponent implements OnInit, OnDestroy{
 		console.log('set_admin:', player.name);
 		this.chatGateway.setAdmin(this.channelId, player.name);
 		player.role = 'ADMIN';
-		this.chatGateway.sendChannelMsg(`${player.name} has been promoted to admin by ${this.user.username}}`, this.channelId);
+		this.chatGateway.sendChannelMsg(`${player.name} has been promoted to admin by ${this.user.username}`, this.channelId);
 	}
 
 	async rm_admin(player: any) {
 		console.log('rm_admin:', player.name);
 		this.chatGateway.removeAdmin(this.channelId, player.name);
 		player.role = 'MEMBER';
-		this.chatGateway.sendChannelMsg(`${player.name} has been demoted to member by ${this.user.username}}`, this.channelId);
+		this.chatGateway.sendChannelMsg(`${player.name} has been demoted to member by ${this.user.username}`, this.channelId);
 	}
 }

@@ -86,25 +86,35 @@ export class UsersService {
       throw new NotFoundException(`No user found with username: ${username}`);
     }
   }
+
   async findUserPublicDataNoThrow(username: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { username: username },
-    });
-    console.log('Prisma Query Result:', user);
-    if (!user)
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { username: username },
+      });
+    
+      if (!user) {
+        return null;
+      }
+  
+      return {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        img: user.img,
+        isOnline: user.isOnline,
+        isPlaying: user.isPlaying,
+        Wins: user.Wins,
+        Losses: user.Losses,
+        played: user.Played,
+      };
+    } catch (error) {
+      console.error('Error fetching user data:', error);
       return null;
-    return {
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      img: user.img,
-      isOnline: user.isOnline,
-      isPlaying: user.isPlaying,
-      Wins: user.Wins,
-      Losses: user.Losses,
-      played: user.Played,
-    };
+    }
   }
+  
+
   async update(id: number, updateUserDto: UpdateUserDto) {
     const bcrypt = require('bcryptjs');
     if (updateUserDto.password) {

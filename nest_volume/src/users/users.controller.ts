@@ -9,6 +9,7 @@ import {
   ParseIntPipe,
   UseGuards,
   ConsoleLogger,
+  NotFoundException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -72,25 +73,37 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiOkResponse()
   async findUserPublicDataNoThrow(@Param('username') username: string) {
-    return await this.usersService.findUserPublicDataNoThrow(username);
+    const data = await this.usersService.findUserPublicDataNoThrow(username);
+    if (data == null){
+      throw new NotFoundException("No user found with username: " + username);
+    }
+    return data;
   }
   
-  @Get('throw/:username')
+  @Get('promise/:username')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOkResponse()
-  async findUserPublicDataThrow(@Param('username') username: string) {
-    console.log('findUserPublicDataThrow');
-    try {
-
-      const user = await this.prisma.user.findUniqueOrThrow({ where: { username: username }, });
-      return {
-        id: user.id,
-        username: user.username,
-      };
-    } catch(error) {
+  async findUserPublicDataPromise(@Param('username') username: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { username: username },
+    });
+  
+    if (!user) {
       return null;
     }
+
+    return {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      img: user.img,
+      isOnline: user.isOnline,
+      isPlaying: user.isPlaying,
+      Wins: user.Wins,
+      Losses: user.Losses,
+      played: user.Played,
+    };
   }
 
   @Patch(':id')

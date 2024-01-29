@@ -179,7 +179,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           });
           this.channels = this.channels.filter((channel: any) => {
             return channel.members.some((member: any) => {
-              return (member.user.username === this.userService.getUser() && !["KICKED", "BANNED"].includes(member.status));
+              return (member.user.username === this.userService.getUser() && !["KIKED", "BANNED"].includes(member.status));
             });
           });
           console.log(this.channels);
@@ -255,10 +255,17 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
 
   async searchChat() {
+    let user = null;
     if (this.search !== '' && this.search !== this.userService.getUser()) {
-      const user = this.userService.getUserByUsername(this.search);
+      this.userService.getUserByUsername(this.search).pipe(take(1)).subscribe((userData: any) => {
+        return user = userData;
+      },
+      (err) => {
+        this.onUserNotFound();
+        return user = null;
+      });
+      console.log(user);
       const dirChannel = await this.chatGateway.getDirectChatByNames(this.userService.getUser(), this.search);
-      console.log(dirChannel);
       if (dirChannel) {
         this.chatGateway.getChannelById(dirChannel.id);
         this.router.navigate(
@@ -271,9 +278,9 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.search = '';
         return;
         }
+      console.log('user');
       console.log(user);
-      if (user !== null && user !== undefined && user.source !== null) {
-        console.log(user);
+      if (user !== null) {
         this.chatGateway.sendPrivMsg("", this.search);
         const newChannel = await this.chatGateway.getDirectChatByNames(this.userService.getUser(), this.search);
         this.router.navigate(
