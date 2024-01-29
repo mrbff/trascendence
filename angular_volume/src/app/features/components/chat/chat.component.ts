@@ -78,12 +78,15 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnInit(): void {
-    //this.chatGateway.deleteAllChannels();
     this.messages = [];
     this.screenW = window.innerWidth;
     const params = this.route.snapshot.queryParams;
     console.log(`Query params: ${JSON.stringify(params)}`); // Object {}
-    this.initializeChat();
+    this.userService.getUserInfo().then(data=>{
+      //this.chatGateway.deleteAllChannels();
+      this.whoami = data;
+      this.initializeChat();
+    });
   }
 
   onDropdownChange(event: any): void {
@@ -123,16 +126,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           this.isOpen = true;
         }
 
-        this.$subs.add(
-          this.chatGateway.onReceiveMsgForChannel().subscribe({
-            next: (messages: any) => {
-              this.messages = messages;
-            },
-            error: (error) => {
-              this.errorMsg = `Error receiving message from channel: ${error.message}`;
-            },
-          }),
-        );
+        this.chatGateway.receiveUserChannels(this.userService.getUser());
       })
     );
     
@@ -164,6 +158,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           this.channels = data.channels.map((channel:any)=> {
             let isGroup = true;
             let allRead = false;
+            if (channel.id == this.queryParams['id']){
+              this.selectedChannel = channel;
+              console.log("CIA", channel);
+            }
             if (!channel.name){
               isGroup = false;
               const otherUser = channel.members.find((m: any)=> m.user.username != myUsername);
@@ -184,6 +182,19 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
             });
           });
           console.log(this.channels);
+          this.chatGateway.getChannelById(this.selectedChannel.id);
+
+          this.$subs.add(
+            this.chatGateway.onReceiveMsgForChannel().subscribe({
+              next: (messages: any) => {
+                this.messages = messages;
+                this.chatGateway.getChannelById(this.selectedChannel.id);
+              },
+              error: (error) => {
+                this.errorMsg = `Error receiving message from channel: ${error.message}`;
+              },
+            }),
+          );
         },
         error: (error) => {
           this.errorMsg = `Error receiving channel list`;
@@ -205,7 +216,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       }
       })
     );
-    this.chatGateway.receiveUserChannels(this.userService.getUser());
   }
 
   sendMessageToChannel(): void {
@@ -251,8 +261,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.msgToShow = null;
     this.chatGateway.sendLastSeen(conversation.id, this.userService.getUser());
     conversation.allRead = true;
-    this.whoami = await this.userService.getUserInfo();
-    this.chatGateway.getChannelById(conversation.id);
+    
+    ///this.chatGateway.getChannelById(conversation.id);
   }
 
 
@@ -300,4 +310,5 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.title = 'chat';
     console.log('TKM');
   }
+
 }
