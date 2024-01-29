@@ -10,10 +10,12 @@ export class MessageComponent implements OnInit {
   @Input() message: any;
   username!: string;
   currentUser!: boolean;
+  otherUser!: boolean;
   isModerator!: boolean;
 
   constructor(private readonly userService: UserService) {
     this.currentUser = false;
+    this.otherUser = false;
     this.isModerator = false;
   }
 
@@ -26,8 +28,10 @@ export class MessageComponent implements OnInit {
     this.username = this.message.user;
     if (this.username !== this.userService.getUser()) {
       this.currentUser = false;
+      this.otherUser = true;
     } else {
       this.currentUser = true;
+      this.otherUser = false;
     }
   }
 }

@@ -200,7 +200,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           if (data.user === this.userService.getUser()){
             this.selectedChannel = data;
           }
-          this.isOpen = false;
+          //this.isOpen = false;
         }
       }
       })
@@ -246,6 +246,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         queryParams: {id:conversation.id},
       }
     );
+    this.title = conversation.name;
     this.selectedChannel = conversation;
     this.msgToShow = null;
     this.chatGateway.sendLastSeen(conversation.id, this.userService.getUser());
@@ -258,14 +259,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   async searchChat() {
     let user = null;
     if (this.search !== '' && this.search !== this.userService.getUser()) {
-      this.userService.getUserByUsername(this.search).pipe(take(1)).subscribe((userData: any) => {
-        return user = userData;
-      },
-      (err) => {
-        this.onUserNotFound();
-        return user = null;
-      });
-      console.log(user);
+      const user = await this.userService.getUserByUsernamePromise(this.search);
       const dirChannel = await this.chatGateway.getDirectChatByNames(this.userService.getUser(), this.search);
       if (dirChannel) {
         this.chatGateway.getChannelById(dirChannel.id);
@@ -278,9 +272,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         );
         this.search = '';
         return;
-        }
-      console.log('user');
-      console.log(user);
+      }
       if (user !== null) {
         this.chatGateway.sendPrivMsg("", this.search);
         const newChannel = await this.chatGateway.getDirectChatByNames(this.userService.getUser(), this.search);

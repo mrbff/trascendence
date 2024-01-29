@@ -1,3 +1,6 @@
+import { ChatComponent } from './../../chat.component';
+import { UserService } from 'src/app/core/services/user.service';
+import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import {
   Component,
   EventEmitter,
@@ -22,7 +25,9 @@ export class ChatUserComponent implements OnInit {
     this.openChat.emit(this.conversation);
   }
 
-  constructor(private readonly friendService: FriendsService) {}
+  constructor(private readonly friendService: FriendsService,
+    private readonly UserService: UserService,
+    private readonly ChatGateway: ChatGateway) {}
 
   async ngOnInit() {
     if (!this.conversation.isGroup) {
@@ -30,5 +35,11 @@ export class ChatUserComponent implements OnInit {
       this.conversation.name
     );
     }
+  }
+
+  leaveChannel(channelId: string) {
+    console.log(channelId)
+    this.ChatGateway.changeUserStatus(channelId, this.UserService.getUser(), 'KICKED');
+    this.ChatGateway.sendModChannelMsg(`${this.UserService.getUser()} have LEAVE the channel`, channelId);
   }
 }

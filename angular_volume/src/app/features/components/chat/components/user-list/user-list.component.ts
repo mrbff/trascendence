@@ -119,8 +119,12 @@ export class UserListComponent implements OnInit, OnDestroy{
 
 	async DM(player: any): Promise<void> {
 		if (this.isGroupChat) {
-			//console.log('DM:', player.name);
-			const channel = await this.chatGateway.getDirectChatByNames(this.user.username, player.name);
+			console.log('DM:', player.name);
+			let channel = await this.chatGateway.getDirectChatByNames(this.user.username, player.name);
+			if (channel === null) {
+				this.chatGateway.sendPrivMsg("", player.name);
+				channel = await this.chatGateway.getDirectChatByNames(this.user.username, player.name);
+			}
 			this.chatGateway.getChannelById(channel.id);
 			this.router.navigate(
 				[], 
@@ -183,4 +187,5 @@ export class UserListComponent implements OnInit, OnDestroy{
 		player.role = 'MEMBER';
 		this.chatGateway.sendModChannelMsg(`${player.name} has been DEMOTED TO MEMBER by ${this.user.username}`, this.channelId);
 	}
+	
 }

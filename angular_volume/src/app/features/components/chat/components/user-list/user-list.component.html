@@ -10,7 +10,7 @@
 
             <button class="invateToGame" (click)="inviteToGame(player)">Invate to game</button>
             <button class="profile" (click)="profile(player)">Profile</button>
-            <button class="DM" (click)="DM(player)" [attr.disabled]="isGroupChat" [ngStyle]="{'background-color': isGroupChat ? '' : 'grey'}">DM</button>
+            <button class="DM" (click)="DM(player)" [ngStyle]="{'background-color': isGroupChat ? '' : 'grey'}">DM</button>
 
             <button *ngIf="!player.isBlock" class="block" (click)="block(player)">Block</button>
             <button *ngIf="player.isBlock" class="unblock" (click)="unblock(player)">unBlock</button>
