@@ -23,6 +23,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 	public isGroupChat: boolean = true;
 	public myRole : string = 'MEMBER';
 	public channelId: string = '';
+	public channelName: string = '';
 
 	players: any[] = [];
 	attr: any;
@@ -60,6 +61,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 					this.otherUsers = [];
 					this.players = [];
 					this.channelId = data.channel.id;
+					this.channelName = data.channel.name;
 					for (let user of data.channel.members) {
 						const username = user.user.username;
 						const role = user.role;
@@ -74,6 +76,9 @@ export class UserListComponent implements OnInit, OnDestroy{
 							}
 						}
 						if (username !== this.user.username && banOrKick !== 'KICKED'){
+							if (this.channelName == null) {
+								this.channelName = username;
+							}
 							this.players.push({ 
 									id: id,
 									name: username,
@@ -168,6 +173,11 @@ export class UserListComponent implements OnInit, OnDestroy{
 		//console.log('ban:', player.name);
 		this.chatGateway.sendModChannelMsg(`${player.name} has been BANNED from the channel by ${this.user.username}`, this.channelId);
 	}
+
+	leaveChannel(player: any) {
+    this.chatGateway.changeUserStatus(this.channelId, player.name, 'KICKED');
+    this.chatGateway.sendModChannelMsg(`${player.name} have LEAVE the channel`, this.channelId);
+  }
 
 	unban(player: any): void {
 		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KICKED');

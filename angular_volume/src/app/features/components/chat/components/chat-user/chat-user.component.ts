@@ -37,9 +37,4 @@ export class ChatUserComponent implements OnInit {
     }
   }
 
-  leaveChannel(channelId: string) {
-    console.log(channelId)
-    this.ChatGateway.changeUserStatus(channelId, this.UserService.getUser(), 'KICKED');
-    this.ChatGateway.sendModChannelMsg(`${this.UserService.getUser()} have LEAVE the channel`, channelId);
-  }
 }

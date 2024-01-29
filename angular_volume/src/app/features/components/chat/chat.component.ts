@@ -256,13 +256,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         queryParams: {id:conversation.id},
       }
     );
-    this.title = conversation.name;
     this.selectedChannel = conversation;
     this.msgToShow = null;
     this.chatGateway.sendLastSeen(conversation.id, this.userService.getUser());
     conversation.allRead = true;
-    
-    ///this.chatGateway.getChannelById(conversation.id);
   }
 
 
