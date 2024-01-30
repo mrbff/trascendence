@@ -174,11 +174,6 @@ export class UserListComponent implements OnInit, OnDestroy{
 		this.chatGateway.sendModChannelMsg(`${player.name} has been BANNED from the channel by ${this.user.username}`, this.channelId);
 	}
 
-	leaveChannel(player: any) {
-    this.chatGateway.changeUserStatus(this.channelId, player.name, 'KICKED');
-    this.chatGateway.sendModChannelMsg(`${player.name} have LEAVE the channel`, this.channelId);
-  }
-
 	unban(player: any): void {
 		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KICKED');
 		//console.log('unban:', player.name);

@@ -1,5 +1,6 @@
 import { Request } from 'express';
 import {
+  ConsoleLogger,
   Controller,
   Get,
   Param,
@@ -155,5 +156,68 @@ export class ChannelsController {
         } catch (error: any) {
             return null;
         }
+    }
+
+    @Get('getUserList/:id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOkResponse()
+    async getUserList(
+      @Param('id') id: string,
+    ) {
+        const channel = await this.prisma.channel.findUnique({
+          where: {
+            id: id,
+          },
+          include: {
+            members: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        });
+        if (!channel)
+          return null;
+        const { usernames, status }: { usernames: string[], status?: any } = {
+          usernames: channel.members.map((member) => member.user.username),
+          status: channel.members.map((member) => member.status)
+        };
+        console.log('usernames', usernames);
+        console.log('status', status);
+        return { usernames, status };
+    }
+
+    @Get('getInChannelById/:id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOkResponse()
+    async getInChannelById(
+      @Param('id') id: string,
+      @Query('username') username: string,
+    ) {
+        const channel = await this.prisma.channel.findUnique({
+          where: {
+            id: id,
+          },
+          include: {
+            members: {
+              include: {
+                user: true,
+              },
+            },
+          },
+        });
+        if (!channel)
+          return null;
+          const { usernames, status }: { usernames: string[], status?: any } = {
+            usernames: channel.members
+              .filter((member) => member.status !== 'KICKED') // Filter out members with status 'KICKED'
+              .map((member) => member.user.username),
+            status: channel.members
+              .filter((member) => member.status !== 'KICKED') // Filter out members with status 'KICKED'
+              .map((member) => member.status)
+          };
+        return usernames.find((user) => user === username) ? true : false;
     }
 }

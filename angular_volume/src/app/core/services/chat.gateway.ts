@@ -182,5 +182,13 @@ export class ChatGateway {
   getChannelByNameHttp(name: string): Promise<any> {
     return lastValueFrom(this.httpClient.get(`/nest/channels/getChannel/${name}`));
   }
-    
+
+  getUserListByIdHttp(id: string): Promise<any> {
+    return lastValueFrom(this.httpClient.get<any>(`/nest/channels/getUserList/${id}`));
+  }
+
+  getInChannelByIdHttp(id: string, username:string) {
+    return this.httpClient.get<any>(`/nest/channels/getInChannelById/${id}`);
+  }
+
 }

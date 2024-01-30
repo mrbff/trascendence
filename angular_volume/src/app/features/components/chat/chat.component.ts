@@ -108,26 +108,44 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         if (username !== undefined) {
           this.userService.getUserByUsername(username).pipe(take(1)).subscribe({
             next:(user)=>{
-              if (!user) {  
-                return this.onUserNotFound()
-              }
-
               this.title = username;
               this.isOpen = true;
               this.chatGateway.receivePrivChannelMsg(username, undefined);
             },
             error:(err)=>{
+              this.router.navigate(
+                [], 
+                {
+                  relativeTo: this.activatedRoute,
+                  queryParams: {},
+                }
+              );
               this.onUserNotFound();
             }
           })
-        } else if (id !== undefined) {
-          ///single user
-          this.chatGateway.receivePrivChannelMsg(undefined, id);
-          this.isOpen = true;
-        }
-
-        this.chatGateway.receiveUserChannels(this.userService.getUser());
-      })
+          } else if (id !== undefined) {
+            this.chatGateway.getInChannelByIdHttp(id, this.userService.getUser()).pipe(take(1)).subscribe({
+              next:(data)=>{
+                //AIUT
+                if (data === true) {
+                  this.chatGateway.receivePrivChannelMsg(undefined, id);
+                  this.isOpen = true;
+                }
+                else {
+                  this.router.navigate(
+                    [], 
+                    {
+                      relativeTo: this.activatedRoute,
+                      queryParams: {},
+                    }
+                  );
+                  this.onUserNotFound();
+                }
+                }
+            })
+          }
+          this.chatGateway.receiveUserChannels(this.userService.getUser());
+        })
     );
     
     this.$subs.add(
@@ -300,6 +318,15 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       }
       this.search = '';
     }
+  }
+
+  leaveChannel() {
+    const user = this.userService.getUser();
+    this.chatGateway.changeUserStatus(this.queryParams['id'], user, 'KICKED');
+    this.chatGateway.sendModChannelMsg(`${user} LEFT the channel`, this.queryParams['id']);
+    const chList = this.chatGateway.getUserListByIdHttp(this.queryParams['id']);
+    console.log(`leave least`)
+    console.log(chList);
   }
 
   backClick() {
