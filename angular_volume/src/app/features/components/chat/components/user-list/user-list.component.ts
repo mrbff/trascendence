@@ -124,7 +124,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 
 	async DM(player: any): Promise<void> {
 		if (this.isGroupChat) {
-			console.log('DM:', player.name);
+			//console.log('DM:', player.name);
 			let channel = await this.chatGateway.getDirectChatByNames(this.user.username, player.name);
 			if (channel === null) {
 				this.chatGateway.sendPrivMsg("", player.name);
@@ -164,6 +164,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 
 	async kick(player: any): Promise<void> {
 		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KICKED');
+		//this.chatGateway.leaveChannel(this.channelId, player.name);
 		//console.log('kick:', player.name);
 		this.chatGateway.sendModChannelMsg(`${player.name} has been KICKED from the channel by ${this.user.username}`, this.channelId);
 	}

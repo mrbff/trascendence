@@ -150,7 +150,7 @@ export class ChatGateway {
     return new Observable((observer) => {
       this.socket.on('UserList', (data) => {
         observer.next(data);
-        console.log('onUserList', data);
+        //console.log('onUserList', data);
       });
     });
   }

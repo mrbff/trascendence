@@ -20,7 +20,6 @@ export class MessageComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('Message:', this.message.isModer);
     if (this.message.isModer == true) {
       this.isModerator = true;
       return;

@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { AfterViewInit, Component, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
-import { combineLatest } from 'rxjs';
 
 @Component({
   selector: 'app-new-channel',

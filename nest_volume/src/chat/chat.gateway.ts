@@ -99,7 +99,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const { sender, receiver, message } = payload;
     //console.log({payload})
     const {newChannel, channel} = await this.channelsService.createDirectMessage(receiver, message, sender);
-    ///TO DO: creare room della chat o mandarlo all'id dell'user nella map
     if(newChannel){
       client.emit('CreatedNewPublicChannel', {channel:{...channel, isGroup:false, name: receiver}});
       userSocketMap[receiver].emit('CreatedNewPublicChannel', {channel:{...channel, isGroup:false, name: sender},});
@@ -185,7 +184,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const channels = await this.channelsService.getUserChannels(payload.username);
     const user = this.usersService.findUserByName(payload.username);
     userSocketMap[(await user).username].emit('UserChannelList', {channels} );
-    //this.server.emit('UserChannelList', {channels} );
   }
 
   @SubscribeMessage('CreateNewChannel')
@@ -199,6 +197,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async handleChannelMsg(client: Socket, payload: { sender: string, channel: string, message: string }) {
     const { sender, channel, message } = payload;
     const { channelId } = await this.channelsService.createChannelMessage(channel, message, sender);
+
     this.server.emit('MsgFromChannel', [{ user: sender,  msg: message, channelId }]);
   }
 

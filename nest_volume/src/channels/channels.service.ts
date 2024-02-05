@@ -27,6 +27,16 @@ export class ChannelsService {
         id: channelId
       }
     });
+    if (status === 'KICKED'){
+      return this.prisma.channelMembership.delete({
+        where:{
+          userId_channelId:{
+            userId: user.id,
+            channelId: channel!.id
+          }
+        }
+      });
+    }
     return this.prisma.channelMembership.update({
       where:{
         userId_channelId:{

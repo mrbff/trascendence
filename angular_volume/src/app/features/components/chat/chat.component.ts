@@ -1,3 +1,5 @@
+import { FriendCardComponent } from './../friends/components/friend-card/friend-card.component';
+import { MessageComponent } from './components/message/message.component';
 import { ConsoleLogger } from '@nestjs/common';
 import { UserListComponent } from './components/user-list/user-list.component';
 import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
@@ -81,7 +83,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.messages = [];
     this.screenW = window.innerWidth;
     const params = this.route.snapshot.queryParams;
-    console.log(`Query params: ${JSON.stringify(params)}`); // Object {}
+    //console.log(`Query params: ${JSON.stringify(params)}`); // Object {}
     this.userService.getUserInfo().then(data=>{
       //this.chatGateway.deleteAllChannels();
       this.whoami = data;
@@ -91,7 +93,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   onDropdownChange(event: any): void {
     this.selectedOption = event.target.value;
-    console.log('Selected option:', this.selectedOption);
+    //console.log('Selected option:', this.selectedOption);
   }
 
   private onUserNotFound(){
@@ -126,7 +128,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           } else if (id !== undefined) {
             this.chatGateway.getInChannelByIdHttp(id, this.userService.getUser()).pipe(take(1)).subscribe({
               next:(data)=>{
-                //AIUT
                 if (data === true) {
                   this.chatGateway.receivePrivChannelMsg(undefined, id);
                   this.isOpen = true;
@@ -151,15 +152,29 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.$subs.add(
       this.chatGateway.onMsgFromChannel().subscribe({
         next: (messages: any) => {
+          //console.log(messages);
+          const imBan = this.selectedChannel.members.filter((member: any) => {
+            member.user.username === this.userService.getUser() && (member.status === 'BANNED' || member.status === 'KICKED')
+            // console.log(`member`);
+            // console.log(member);
+            // console.log(`ember.user.username`);
+            // console.log(member.user.username);
+            // console.log(`this.userService.getUser()`);
+            // console.log(this.userService.getUser());
+            // console.log(`member.status`);
+            // console.log(member.status);
+          }
+            );
+          //(imBan);
           this.messages = [...this.messages, ...messages.filter((message:any)=>{
             if (!this.selectedChannel){
-              return message.members?.every((mem:string)=>mem === this.queryParams['username'] || mem === this.userService.getUser())
+              return message.members?.every((mem:string)=>mem === this.queryParams['username'] || mem === this.userService.getUser());
             }
             return (this.selectedChannel.id === message.channelId);
           })];
           this.chatGateway.sendLastSeen(this.selectedChannel.id, this.userService.getUser()); ///sussy
           this.chatGateway.getChannelById(this.selectedChannel.id);
-          console.log(this.messages);
+          //console.log(this.messages);
         },
         error: (error) => {
           this.errorMsg = `Error receiving message from channel: ${error.message}`;
@@ -172,13 +187,12 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         next: (data: any) => {
           this.channels = [];
           const myUsername = this.userService.getUser();
-          console.log(myUsername);
+          //(myUsername);
           this.channels = data.channels.map((channel:any)=> {
             let isGroup = true;
             let allRead = false;
             if (channel.id == this.queryParams['id']){
               this.selectedChannel = channel;
-              console.log("CIA", channel);
             }
             if (!channel.name){
               isGroup = false;
@@ -194,12 +208,12 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
                   isGroup,
                   allRead};
           });
-          this.channels = this.channels.filter((channel: any) => {
-            return channel.members.some((member: any) => {
-              return (member.user.username === this.userService.getUser() && !["KICKED", "BANNED"].includes(member.status));
-            });
-          });
-          console.log(this.channels);
+          // this.channels = this.channels.filter((channel: any) => {
+          //   return channel.members.some((member: any) => {
+          //     return (member.user.username === this.userService.getUser() && !["KICKED", "BANNED"].includes(member.status));
+          //   });
+          // }); //controllo se mostrare i canali bannati o meno come listabili! 
+          //console.log(this.channels);
           this.chatGateway.getChannelById(this.selectedChannel.id);
 
           this.$subs.add(
@@ -225,11 +239,9 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         next: (data: any) => {
           if (data.members.some((member: any) => member.username === this.userService.getUser())) {
           this.channels.push(data);
-          //console.log(this.channels);
           if (data.user === this.userService.getUser()){
             this.selectedChannel = data;
           }
-          //this.isOpen = false;
         }
       }
       })
@@ -241,6 +253,12 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       let id = this.queryParams['id'];
       if (this.selectedChannel)
         id = this.selectedChannel.id;
+      const isBlocked = this.selectedChannel.members.find((member: any) => member.user.username === this.userService.getUser() && (member.status === 'BANNED' || member.status === 'KICKED'));
+      if (isBlocked) {
+        this.msgToShow = "You are banned from this channel";
+        setTimeout(()=> this.msgToShow = null, 2500);
+        return;
+      }
       this.chatGateway.sendChannelMsg(this.newMessage, id);
       this.newMessage = ''; // Reset the input after sending
     }
@@ -325,8 +343,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.chatGateway.changeUserStatus(this.queryParams['id'], user, 'KICKED');
     this.chatGateway.sendModChannelMsg(`${user} LEFT the channel`, this.queryParams['id']);
     const chList = this.chatGateway.getUserListByIdHttp(this.queryParams['id']);
-    console.log(`leave least`)
-    console.log(chList);
   }
 
   backClick() {
