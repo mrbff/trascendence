@@ -236,6 +236,17 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     await this.channelsService.changeUserStatus(channelId, username, status);
   }
 
+  @SubscribeMessage('MuteUser')
+  async handleMuteUser(client: Socket, payload: { id: string, username: string }) {
+    const { id, username } = payload;
+    await this.channelsService.muteUser(id, username);
+  }
+
+  @SubscribeMessage('UnMuteUser')
+  async handleUnMuteUser(client: Socket, payload: { id: string, username: string }) {
+    const { id, username } = payload;
+    await this.channelsService.unMuteUser(id, username);
+  }
 
   @SubscribeMessage('ReceiveChMsg')
   async receiveChannelMsg(client: Socket, payload: { id: string}) {

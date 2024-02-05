@@ -1,13 +1,10 @@
-import { channel } from 'diagnostics_channel';
-import { UseGuards, ConsoleLogger } from '@nestjs/common';
-import { MessageComponent } from './../message/message.component';
+import { UseGuards } from '@nestjs/common';
 import { AfterViewChecked, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { Subscription, skip, take } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FriendsService } from 'src/app/core/services/friends.service';
 import { UserInfo } from 'src/app/models/userInfo.model';
-import * as path from 'path';
 
 
 @Component({
@@ -53,7 +50,6 @@ export class UserListComponent implements OnInit, OnDestroy{
 		this.$subs.add(
 			this.chatGateway.onChannelId().subscribe({
 				next: (data: any) => {
-					//console.log('onChannelId Data:', data);
 					this.isGroupChat = true;
 					if (data.channel.type === 'DIRECT'){
 						this.isGroupChat = false;
@@ -70,11 +66,17 @@ export class UserListComponent implements OnInit, OnDestroy{
 						const banOrKick = user.status;
 						const listable = true;
 						let isBlock = false;
+						let isMuted = false;
+						
+						if (user.muteEndTime > new Date().toISOString()) {
+							isMuted = true;
+						}
 						for (let blockUser of blockList) {
 							if (blockUser.blocker.username === this.user.username) {
 								isBlock = true;
 							}
 						}
+
 						if (username !== this.user.username && banOrKick !== 'KICKED'){
 							if (this.channelName == null) {
 								this.channelName = username;
@@ -87,6 +89,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 									isBlock: isBlock,
 									banOrKick: banOrKick,
 									listable: listable,
+									isMuted: isMuted
 								});
 						}
 						else if (username === this.user.username) {
@@ -146,7 +149,6 @@ export class UserListComponent implements OnInit, OnDestroy{
 	}
 
 	async block(player: any): Promise<void>{
-		//console.log('block:', player.name);
 		await this.friendsService
 		.blockUser(player.name)
 		.then(() => (player.isBlock = true));
@@ -158,8 +160,22 @@ export class UserListComponent implements OnInit, OnDestroy{
 		.then(() => (player.isBlock = false));
 	}
 
-	mute(player: any): void {
-		//console.log('mute:', player.name);
+	async mute(player: any) {
+
+		const dateObject = new Date(Date.now() + 1000 * 60 * 15);
+		const hours = dateObject.getHours();
+		const minutes = dateObject.getMinutes();
+		const formattedTime = `${hours}:${minutes}`;
+
+		this.chatGateway.muteUser(this.channelId, player.name);
+		this.chatGateway.sendModChannelMsg(`${player.name} has been MUTED from the channel by ${this.user.username} until ${formattedTime}`, this.channelId);
+		player.isMuted = true;
+	}
+
+	async unmute(player: any) {
+		this.chatGateway.unMuteUser(this.channelId, player.name);
+		this.chatGateway.sendModChannelMsg(`${player.name} has been UNMUTED from the channel by ${this.user.username}`, this.channelId);
+		player.isMuted = false;
 	}
 
 	async kick(player: any): Promise<void> {
@@ -167,12 +183,12 @@ export class UserListComponent implements OnInit, OnDestroy{
 		this.chatGateway.sendModChannelMsg(`${player.name} has been KICKED from the channel by ${this.user.username}`, this.channelId);
 	}
 
-	ban(player: any): void {
+	async ban(player: any) {
 		this.chatGateway.changeUserStatus(this.channelId, player.name, 'BANNED');
 		this.chatGateway.sendModChannelMsg(`${player.name} has been BANNED from the channel by ${this.user.username}`, this.channelId);
 	}
 
-	unban(player: any): void {
+	async unban(player: any) {
 		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KICKED');
 		this.chatGateway.sendModChannelMsg(`${player.name} has been UNBANNED from the channel by ${this.user.username}`, this.channelId);
 	}

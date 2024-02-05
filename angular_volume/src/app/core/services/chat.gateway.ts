@@ -6,6 +6,7 @@ import { UserService } from './user.service';
 import { Server, Socket } from 'socket.io';
 import { Observable } from 'rxjs';
 import { lastValueFrom } from 'rxjs';
+import { channel } from 'diagnostics_channel';
 
 @Injectable({
   providedIn: 'root',
@@ -25,6 +26,14 @@ export class ChatGateway {
       path: '/socket.io/',
       auth:{token: jwt}
     });
+  }
+
+  muteUser(id: string, username: string) {
+    this.socket.emit('MuteUser', { id, username });
+  }
+
+  unMuteUser(id: string, username: string) {
+    this.socket.emit('UnMuteUser', { id, username });
   }
 
   changeUserStatus(channelId: string, username: string, status:string | null) {
@@ -182,6 +191,12 @@ export class ChatGateway {
 
   getChannelByNameHttp(name: string): Promise<any> {
     return lastValueFrom(this.httpClient.get(`/nest/channels/getChannel/${name}`));
+  }
+
+  getUserStatus(channelId: string, userId: string): Observable<any> {
+    return this.httpClient.get<any>(`/nest/channels/getUserStaus/${channelId}`, {
+      params: { userId: userId }
+    });
   }
 
   getUserListByIdHttp(id: string): Promise<any> {

@@ -1,6 +1,6 @@
 <section class="player-column">
   <div class="player-title">
-    <p>{{channelName}}</p>
+    <p>{{channelName | slice:0:7}}</p>
   </div>
   <section class="player-list">
     <div class="player-items" *ngFor="let player of players" (click)="togglePlayerMenu(player)">
@@ -16,7 +16,8 @@
             <button *ngIf="player.isBlock" class="unblock" (click)="unblock(player)">unBlock</button>
             <section *ngIf="isGroupChat && (myRole === 'OWNER' || myRole === 'ADMIN') && player.role !== 'OWNER'">
 
-              <button class="mute" (click)="mute(player)">Mute</button>
+              <button *ngIf="!player.isMuted" class="mute" (click)="mute(player)">Mute</button>
+              <button *ngIf="player.isMuted" class="unmute" (click)="unmute(player)">UnMute</button>
               <button class="kick" (click)="kick(player)">Kick</button>
               <button class="ban" (click)="ban(player)">Ban</button>
 

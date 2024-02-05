@@ -20,6 +20,36 @@ export class ChannelsService {
   }
 
 
+  async muteUser(channelId: string, username: string) {
+    const user = await this.usersService.findUserByName(username);
+    return this.prisma.channelMembership.update({
+      where:{
+        userId_channelId:{
+          userId: user.id,
+          channelId: channelId
+        }
+      },
+      data:{
+        muteEndTime: new Date(Date.now() + 1000 * 60 * 15)
+      }
+    });
+  }
+
+  async unMuteUser(channelId: string, username: string) {
+    const user = await this.usersService.findUserByName(username);
+    return this.prisma.channelMembership.update({
+      where:{
+        userId_channelId:{
+          userId: user.id,
+          channelId: channelId
+        }
+      },
+      data:{
+        muteEndTime: null
+      }
+    });
+  }
+
   async changeUserStatus(channelId: string, username: string, status: string | null) {
     const user = await this.usersService.findUserByName(username);
     const channel = await this.prisma.channel.findUnique({

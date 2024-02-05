@@ -1,4 +1,3 @@
-import { Request } from 'express';
 import {
   ConsoleLogger,
   Controller,
@@ -138,6 +137,34 @@ export class ChannelsController {
         return null;
       }
     }
+
+    @Get('getUserStaus/:channelId')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOkResponse()
+    async findChannelById(
+      @Param('channelId') channelId: string,
+      @Query('userId') userId: number,
+    ) {
+      const channel = await this.prisma.channel.findUnique({
+        where: {
+          id: channelId,
+        },
+        include: {
+          members: true,
+          }
+        });
+      return channel?.members.find((member) => {
+        console.log('member.userId', member.userId);
+        console.log('userId', userId);
+        if(member.userId == userId) {
+          console.log('member', member);
+          return member;
+        }
+        return null;
+       });
+    }
+
 
     @Get('getChannel/:chName')
     @UseGuards(JwtAuthGuard)
