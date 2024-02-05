@@ -164,31 +164,26 @@ export class UserListComponent implements OnInit, OnDestroy{
 
 	async kick(player: any): Promise<void> {
 		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KICKED');
-		//this.chatGateway.leaveChannel(this.channelId, player.name);
-		//console.log('kick:', player.name);
 		this.chatGateway.sendModChannelMsg(`${player.name} has been KICKED from the channel by ${this.user.username}`, this.channelId);
 	}
 
 	ban(player: any): void {
 		this.chatGateway.changeUserStatus(this.channelId, player.name, 'BANNED');
-		//console.log('ban:', player.name);
 		this.chatGateway.sendModChannelMsg(`${player.name} has been BANNED from the channel by ${this.user.username}`, this.channelId);
 	}
 
 	unban(player: any): void {
 		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KICKED');
-		//console.log('unban:', player.name);
+		this.chatGateway.sendModChannelMsg(`${player.name} has been UNBANNED from the channel by ${this.user.username}`, this.channelId);
 	}
 
 	async set_admin(player: any) {
-		//console.log('set_admin:', player.name);
 		this.chatGateway.setAdmin(this.channelId, player.name);
 		player.role = 'ADMIN';
 		this.chatGateway.sendModChannelMsg(`${player.name} has been PROMOTED TO ADMIN by ${this.user.username}`, this.channelId);
 	}
 
 	async rm_admin(player: any) {
-		//console.log('rm_admin:', player.name);
 		this.chatGateway.removeAdmin(this.channelId, player.name);
 		player.role = 'MEMBER';
 		this.chatGateway.sendModChannelMsg(`${player.name} has been DEMOTED TO MEMBER by ${this.user.username}`, this.channelId);

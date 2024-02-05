@@ -36,6 +36,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   screenW: any;
   allRead: boolean;
   selectedOption: string | undefined;
+  isGroup: boolean;
 
 
   queryParams: {[key:string]:string} = {}
@@ -63,6 +64,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.isOpen = false;
     this.title = 'CHAT';
     this.allRead = false;
+    this.isGroup = false;
   }
 
   ngAfterViewChecked(): void {
@@ -129,6 +131,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
             this.chatGateway.getInChannelByIdHttp(id, this.userService.getUser()).pipe(take(1)).subscribe({
               next:(data)=>{
                 if (data === true) {
+                  console.log(data);
                   this.chatGateway.receivePrivChannelMsg(undefined, id);
                   this.isOpen = true;
                 }
@@ -152,20 +155,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.$subs.add(
       this.chatGateway.onMsgFromChannel().subscribe({
         next: (messages: any) => {
-          //console.log(messages);
-          const imBan = this.selectedChannel.members.filter((member: any) => {
-            member.user.username === this.userService.getUser() && (member.status === 'BANNED' || member.status === 'KICKED')
-            // console.log(`member`);
-            // console.log(member);
-            // console.log(`ember.user.username`);
-            // console.log(member.user.username);
-            // console.log(`this.userService.getUser()`);
-            // console.log(this.userService.getUser());
-            // console.log(`member.status`);
-            // console.log(member.status);
-          }
-            );
-          //(imBan);
           this.messages = [...this.messages, ...messages.filter((message:any)=>{
             if (!this.selectedChannel){
               return message.members?.every((mem:string)=>mem === this.queryParams['username'] || mem === this.userService.getUser());
@@ -174,7 +163,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           })];
           this.chatGateway.sendLastSeen(this.selectedChannel.id, this.userService.getUser()); ///sussy
           this.chatGateway.getChannelById(this.selectedChannel.id);
-          //console.log(this.messages);
         },
         error: (error) => {
           this.errorMsg = `Error receiving message from channel: ${error.message}`;
@@ -208,12 +196,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
                   isGroup,
                   allRead};
           });
-          // this.channels = this.channels.filter((channel: any) => {
-          //   return channel.members.some((member: any) => {
-          //     return (member.user.username === this.userService.getUser() && !["KICKED", "BANNED"].includes(member.status));
-          //   });
-          // }); //controllo se mostrare i canali bannati o meno come listabili! 
-          //console.log(this.channels);
           this.chatGateway.getChannelById(this.selectedChannel.id);
 
           this.$subs.add(
@@ -281,8 +263,9 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   async openChat(conversation: any) {
-    if (this.queryParams['id'] === conversation.id)
+    if (this.queryParams['id'] === conversation.id) {
       return;
+    }
     conversation = conversation;
     this.messages = [];
     this.router.navigate(
@@ -338,11 +321,11 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     }
   }
 
-  leaveChannel() {
+  async leaveChannel() {
     const user = this.userService.getUser();
-    this.chatGateway.changeUserStatus(this.queryParams['id'], user, 'KICKED');
     this.chatGateway.sendModChannelMsg(`${user} LEFT the channel`, this.queryParams['id']);
-    const chList = this.chatGateway.getUserListByIdHttp(this.queryParams['id']);
+    this.chatGateway.changeUserStatus(this.queryParams['id'], user, 'KICKED');
+    console.log('LEAVE');
   }
 
   backClick() {

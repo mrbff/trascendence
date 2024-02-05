@@ -21,14 +21,14 @@
       <section class="list">
         <ng-container *ngFor="let conversation of channels">
           <app-chat-user [conversation]="conversation" (openChat)="openChat($event)"></app-chat-user>
+            <div *ngIf="isGroup" class="leave-channel" (click)="leaveChannel()">
+            <i class="fa-solid fa-right-from-bracket"> leave</i>
+          </div>
         </ng-container>
       </section>
-        <div class="create-channel" (click)="newChannel.changeDialogStatus()">
-          <i class="fa-solid fa-user-group"> join</i>
-        </div>
-        <div class="leave-channel" (click)="leaveChannel()">
-          <i class="fa-solid fa-right-from-bracket"> leave</i>
-        </div>
+      <div class="create-channel" (click)="newChannel.changeDialogStatus()">
+        <i class="fa-solid fa-user-group"> join</i>
+      </div>
     </section>
     <div class="not_found" *ngIf="msgToShow">
       {{msgToShow}}

@@ -12,7 +12,6 @@ import { UsersService } from 'src/users/users.service';
 import * as jwt from 'jsonwebtoken';
 import {JwtPayload} from 'jsonwebtoken'
 import { ChannelsService } from 'src/channels/channels.service';
-import { isMobilePhone } from 'class-validator';
 type MyJwtPayload = {
   userId: number,
 } & JwtPayload;
@@ -197,15 +196,32 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async handleChannelMsg(client: Socket, payload: { sender: string, channel: string, message: string }) {
     const { sender, channel, message } = payload;
     const { channelId } = await this.channelsService.createChannelMessage(channel, message, sender);
-
-    this.server.emit('MsgFromChannel', [{ user: sender,  msg: message, channelId }]);
+    const ch = await this.channelsService.getChannelById(channelId);
+      ch?.members?.map((member: any) => {
+        if (member.status === 'ACTIVE') {
+          try {
+            userSocketMap[member.user.username].emit('MsgFromChannel', [{ user: sender,  msg: message, channelId }]);
+          } catch (error) {
+            ;
+          }
+        }
+      });
   }
 
   @SubscribeMessage('ChannelModMsg')
   async handleModChannelMsg(client: Socket, payload: { sender: string, channel: string, message: string }) {
     const { sender, channel, message } = payload;
     const { channelId } = await this.channelsService.createModChannelMessage(channel, message, sender);
-    this.server.emit('MsgFromChannel', [{ user: sender,  msg: message, channelId, isModer:true }]);
+    const ch = await this.channelsService.getChannelById(channelId);
+      ch?.members?.map((member: any) => {
+        if (member.status === 'ACTIVE') {
+          try {
+            userSocketMap[member.user.username].emit('MsgFromChannel', [{ user: sender,  msg: message, channelId, isModer: true}]);
+          } catch (error) {
+            ;
+          }
+        }
+      });
   }
 
   @SubscribeMessage('LastSeen')

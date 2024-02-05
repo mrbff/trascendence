@@ -218,6 +218,6 @@ export class ChannelsController {
               .filter((member) => member.status !== 'KICKED') // Filter out members with status 'KICKED'
               .map((member) => member.status)
           };
-        return usernames.find((user) => user === username) ? false : true;
+        return usernames.find((user) => user === username) ? true : false;
     }
 }

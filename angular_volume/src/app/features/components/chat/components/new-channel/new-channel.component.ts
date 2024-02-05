@@ -62,6 +62,12 @@ export class NewChannelComponent implements OnInit, AfterViewInit {
 
   addUser() {
     if (this.search !== '') {
+      if (this.search === this.userService.getUser()) {
+        this.placeholder = 'You cant add yourself';
+        this.search = '';
+        this.resetPlaceholder();
+        return;
+      }
       if (this.users.includes(this.search)) {
         if (this.channelUsers.includes(this.search) === false) {
           this.channelUsers.push(this.search);

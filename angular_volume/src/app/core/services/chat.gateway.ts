@@ -82,6 +82,7 @@ export class ChatGateway {
 
   onMsgFromChannel() {
     return new Observable((observer) => {
+      console.log('onMsgFromChannel');
       this.socket.on('MsgFromChannel', (data) => {
         observer.next(
           data
@@ -188,7 +189,10 @@ export class ChatGateway {
   }
 
   getInChannelByIdHttp(id: string, username:string) {
-    return this.httpClient.get<any>(`/nest/channels/getInChannelById/${id}`);
+    return this.httpClient.get<any>(`/nest/channels/getInChannelById/${id}`, {
+      params: { username: username },
+    });
   }
+  
 
 }
