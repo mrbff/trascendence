@@ -20,6 +20,7 @@ import { ChatUserComponent } from './components/chat/components/chat-user/chat-u
 import { GameTileComponent } from './components/profile/components/game-tile/game-tile.component';
 import { NewChannelComponent } from './components/chat/components/new-channel/new-channel.component';
 import { UserListComponent } from './components/chat/components/user-list/user-list.component';
+import { ModSectionComponent } from './components/chat/components/mod-section/mod-section.component';
 
 @NgModule({
   declarations: [
@@ -38,6 +39,7 @@ import { UserListComponent } from './components/chat/components/user-list/user-l
     ChatUserComponent,
     GameTileComponent,
     NewChannelComponent,
+    ModSectionComponent,
     UserListComponent,
   ],
   imports: [CommonModule, SharedModule, FeaturesRoutingModule, FormsModule],

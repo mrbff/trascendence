@@ -1,12 +1,11 @@
-import { ConsoleLogger } from '@nestjs/common';
-import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild, Inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, take } from 'rxjs';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { UserService } from 'src/app/core/services/user.service';
 import { Router } from '@angular/router';
 import { UserInfo } from 'src/app/models/userInfo.model';
-import { get } from 'http';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
 @Component({
@@ -53,6 +52,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     private readonly router: Router,
     private activatedRoute: ActivatedRoute,
     private renderer: Renderer2,
+    private snackBar: MatSnackBar,
   ) {
     this.messages = [];
     this.chat = [];
@@ -198,6 +198,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
             this.chatGateway.onReceiveMsgForChannel().subscribe({
               next: (messages: any) => {
                 this.messages = messages;
+                this.snackBar.open(messages, 'Close', { duration: 3000 });
                 this.chatGateway.getChannelById(this.selectedChannel.id);
               },
               error: (error) => {

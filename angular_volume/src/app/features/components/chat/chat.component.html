@@ -40,6 +40,9 @@
       <section #userList>
         <app-user-list [user]="whoami"></app-user-list>
       </section>
+      <section #modSection>
+        <app-mod-section *ngIf="isGroup"></app-mod-section>
+      </section>
     </ng-container>
 
     <form class="message-container" (submit)="sendMessageToUser()">
