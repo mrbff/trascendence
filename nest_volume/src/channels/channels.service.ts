@@ -107,7 +107,8 @@ export class ChannelsService {
       data: { 
         user: { connect: { id: user.id } },
         channel: { connect: { id: channel.id } },
-        role: 'MEMBER'
+        role: 'MEMBER',
+        status: 'ACTIVE'
       }
     });
   }
