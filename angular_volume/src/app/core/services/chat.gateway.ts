@@ -91,7 +91,6 @@ export class ChatGateway {
 
   onMsgFromChannel() {
     return new Observable((observer) => {
-      console.log('onMsgFromChannel');
       this.socket.on('MsgFromChannel', (data) => {
         observer.next(
           data
@@ -125,7 +124,6 @@ export class ChatGateway {
   }
 
   setAdmin(id:string, username:string) {
-    console.log('setAdmin', id, username);
     this.socket.emit('SetAdmin', { id, username });
   }
 
@@ -160,7 +158,6 @@ export class ChatGateway {
     return new Observable((observer) => {
       this.socket.on('UserList', (data) => {
         observer.next(data);
-        //console.log('onUserList', data);
       });
     });
   }

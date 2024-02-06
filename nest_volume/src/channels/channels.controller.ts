@@ -155,10 +155,8 @@ export class ChannelsController {
           }
         });
       return channel?.members.find((member) => {
-        console.log('member.userId', member.userId);
-        console.log('userId', userId);
+
         if(member.userId == userId) {
-          console.log('member', member);
           return member;
         }
         return null;
@@ -210,8 +208,6 @@ export class ChannelsController {
           usernames: channel.members.map((member) => member.user.username),
           status: channel.members.map((member) => member.status)
         };
-        console.log('usernames', usernames);
-        console.log('status', status);
         return { usernames, status };
     }
 

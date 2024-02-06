@@ -94,7 +94,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   onDropdownChange(event: any): void {
     this.selectedOption = event.target.value;
-    //console.log('Selected option:', this.selectedOption);
   }
 
   private onUserNotFound(){
@@ -130,7 +129,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
             this.chatGateway.getInChannelByIdHttp(id, this.userService.getUser()).pipe(take(1)).subscribe({
               next:(data)=>{
                 if (data === true) {
-                  console.log(data);
                   this.chatGateway.receivePrivChannelMsg(undefined, id);
                   this.isOpen = true;
                 }
@@ -233,21 +231,21 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       let id = this.queryParams['id'];
       if (this.selectedChannel)
       id = this.selectedChannel.id;
-      if (this.isGroup) {
-        if(this.chatGateway.getUserStatus(id, this.userService.getUserId()).pipe(take(1)).subscribe({
+      console.log(this.newMessage);
+      const msg = this.newMessage; // Save the message perche altrimenti sparisce nel nulla
+      this.chatGateway.getUserStatus(id, this.userService.getUserId()).pipe(take(1)).subscribe({
           next:(data)=> {
-            console.log(data);
             const status = data.status;
             const muteTime = data.muteEndTime;
             if (status === 'KICKED') {
               this.msgToShow = "You are been kickd from this channel";
               setTimeout(()=> this.msgToShow = null, 2500);
-              return false;
+              return
             }
             if (status === 'BANNED') {
               this.msgToShow = "You are banned from this channel";
               setTimeout(()=> this.msgToShow = null, 2500);
-              return false;
+              return
             }
             if (muteTime > new Date().toISOString()) {
               const dateObject = new Date( muteTime);
@@ -257,16 +255,12 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       
               this.msgToShow = "You are muted until " + formattedTime;
               setTimeout(()=> this.msgToShow = null, 2500);
-              return false;
+              return
             }
-            return true;
+            this.chatGateway.sendChannelMsg(msg, id);
+            return
           }
-        }))
-        this.chatGateway.sendChannelMsg(this.newMessage, id);
-      }
-      else {
-        this.chatGateway.sendChannelMsg(this.newMessage, id);
-      }
+        });
     }
   }
 
