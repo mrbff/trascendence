@@ -1,3 +1,4 @@
+import { ConsoleLogger } from '@nestjs/common';
 import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild, Inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, take } from 'rxjs';
@@ -77,14 +78,11 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnInit(): void {
-    //choamre per vedere se e un gruppo butto forte
     this.isGroup = window.localStorage.getItem('isGroup') === 'true';
     this.messages = [];
     this.screenW = window.innerWidth;
     const params = this.route.snapshot.queryParams;
-    //console.log(`Query params: ${JSON.stringify(params)}`); // Object {}
     this.userService.getUserInfo().then(data=>{
-      //this.chatGateway.deleteAllChannels();
       this.whoami = data;
       this.initializeChat();
     });
@@ -190,8 +188,9 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
                   isGroup,
                   allRead};
           });
-          this.chatGateway.getChannelById(this.selectedChannel.id);
-
+          if (this.selectedChannel !== undefined){
+            this.chatGateway.getChannelById(this.selectedChannel.id);
+          }
           this.$subs.add(
             this.chatGateway.onReceiveMsgForChannel().subscribe({
               next: (messages: any) => {
@@ -229,12 +228,21 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       let id = this.queryParams['id'];
       if (this.selectedChannel)
       id = this.selectedChannel.id;
-      console.log(this.newMessage);
       const msg = this.newMessage; // Save the message perche altrimenti sparisce nel nulla
       this.chatGateway.getUserStatus(id, this.userService.getUserId()).pipe(take(1)).subscribe({
           next:(data)=> {
+            if (!data){
+              this.msgToShow = "You are no more in this channel";
+              setTimeout(()=> this.msgToShow = null, 2500);
+              return
+            }
             const status = data.status;
             const muteTime = data.muteEndTime;
+            if (status === 'LEAVED') {
+              this.msgToShow = "You leaved this channel";
+              setTimeout(()=> this.msgToShow = null, 2500);
+              return
+            }
             if (status === 'KICKED') {
               this.msgToShow = "You are been kickd from this channel";
               setTimeout(()=> this.msgToShow = null, 2500);
@@ -340,10 +348,39 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   async leaveChannel() {
-    const user = this.userService.getUser();
-    this.chatGateway.sendModChannelMsg(`${user} LEFT the channel`, this.queryParams['id']);
-    this.chatGateway.changeUserStatus(this.queryParams['id'], user, 'KICKED');
-    console.log('LEAVE');
+    const userId = this.userService.getUserId();
+    const user = this.userService.getUser(); 
+    this.chatGateway.getUserStatus(this.queryParams['id'], userId).pipe(take(1)).subscribe({
+      next:(data)=> {
+        if (!data){
+          this.msgToShow = "You are no more in this channel";
+          setTimeout(()=> this.msgToShow = null, 2500);
+          return;
+        }
+        const status = data.status;
+        const userRole = data.role;
+        if (status === 'LEAVED') {
+          this.msgToShow = "You leaved this channel";
+          setTimeout(()=> this.msgToShow = null, 2500);
+          return
+        }
+        this.chatGateway.sendModChannelMsg(`${user} LEFT the channel`, this.queryParams['id'], user, 'LEAVED');
+        if (userRole === 'OWNER') {
+          this.chatGateway.getUserListById(this.queryParams['id']).pipe(take(1)).subscribe({
+            next:(data)=>{
+                console.log(data);
+                const index = data.usernames.findIndex((username:string, i:number) => {
+                  return data.status[i] === 'ACTIVE' && username !== user;
+                });
+                if (index !== -1) {
+                  this.chatGateway.setOwner(this.queryParams['id'], data.usernames[index]);
+                  this.chatGateway.sendModChannelMsg(`${data.usernames[index]} is now the owner`, this.queryParams['id'], data.usernames[index], 'ACTIVE');
+              }
+            }
+          });
+          }
+        }
+    });
   }
 
   backClick() {

@@ -56,8 +56,8 @@ export class ChatGateway {
     this.socket.emit('ChannelMsg', { sender:this.userService.getUser(), channel:channel, message:message });
   }
 
-  sendModChannelMsg(message:string, channel:string) {
-    this.socket.emit('ChannelModMsg', { sender:this.userService.getUser(), channel:channel, message:message });
+  sendModChannelMsg(message:string, channel:string, username: string, status:string | null) {
+    this.socket.emit('ChannelModMsg', { sender:this.userService.getUser(), channel:channel, message:message, username:username, status:status });
   }
 
   createNewChannel(channelName:string, users:string[], creator:string, groupType:string, password:string) {
@@ -119,8 +119,9 @@ export class ChatGateway {
     });
   }
 
-  leaveChannel(id:string, username:string) {
-    this.socket.emit('LeaveChannel', { id, username });
+
+  setOwner(id:string, username:string) {
+    this.socket.emit('SetOwner', { id, username });
   }
 
   setAdmin(id:string, username:string) {
@@ -196,8 +197,8 @@ export class ChatGateway {
     });
   }
 
-  getUserListByIdHttp(id: string): Promise<any> {
-    return lastValueFrom(this.httpClient.get<any>(`/nest/channels/getUserList/${id}`));
+  getUserListById(id: string): Observable<any> {
+    return this.httpClient.get<any>(`/nest/channels/getUserList/${id}`);
   }
 
   getInChannelByIdHttp(id: string, username:string) {

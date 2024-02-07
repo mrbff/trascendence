@@ -76,8 +76,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 								isBlock = true;
 							}
 						}
-
-						if (username !== this.user.username && banOrKick !== 'KICKED'){
+						if (username !== this.user.username && banOrKick !== 'KICKED' && banOrKick !== 'LEAVED'){
 							if (this.channelName == null) {
 								this.channelName = username;
 							}
@@ -94,6 +93,10 @@ export class UserListComponent implements OnInit, OnDestroy{
 						}
 						else if (username === this.user.username) {
 							this.myRole = role;
+							console.log('myRole:', banOrKick);
+							if (banOrKick !== 'ACTIVE') {
+								this.players = [];
+							}
 						}
 					}
 					if (this.players.length === 0) {
@@ -127,7 +130,6 @@ export class UserListComponent implements OnInit, OnDestroy{
 
 	async DM(player: any): Promise<void> {
 		if (this.isGroupChat) {
-			//console.log('DM:', player.name);
 			let channel = await this.chatGateway.getDirectChatByNames(this.user.username, player.name);
 			if (channel === null) {
 				this.chatGateway.sendPrivMsg("", player.name);
@@ -167,42 +169,39 @@ export class UserListComponent implements OnInit, OnDestroy{
 		const minutes = dateObject.getMinutes();
 		const formattedTime = `${hours}:${minutes}`;
 
+		this.chatGateway.sendModChannelMsg(`${player.name} has been MUTED from the channel by ${this.user.username} until ${formattedTime}`, this.channelId, player.name, 'ACTIVE');
 		this.chatGateway.muteUser(this.channelId, player.name);
-		this.chatGateway.sendModChannelMsg(`${player.name} has been MUTED from the channel by ${this.user.username} until ${formattedTime}`, this.channelId);
 		player.isMuted = true;
 	}
 
 	async unmute(player: any) {
+		this.chatGateway.sendModChannelMsg(`${player.name} has been UNMUTED from the channel by ${this.user.username}`, this.channelId, player.name, 'ACTIVE');
 		this.chatGateway.unMuteUser(this.channelId, player.name);
-		this.chatGateway.sendModChannelMsg(`${player.name} has been UNMUTED from the channel by ${this.user.username}`, this.channelId);
 		player.isMuted = false;
 	}
 
 	async kick(player: any): Promise<void> {
-		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KICKED');
-		this.chatGateway.sendModChannelMsg(`${player.name} has been KICKED from the channel by ${this.user.username}`, this.channelId);
+		this.chatGateway.sendModChannelMsg(`${player.name} has been KICKED from the channel by ${this.user.username}`, this.channelId, player.name, 'KICKED');
 	}
 
 	async ban(player: any) {
-		this.chatGateway.changeUserStatus(this.channelId, player.name, 'BANNED');
-		this.chatGateway.sendModChannelMsg(`${player.name} has been BANNED from the channel by ${this.user.username}`, this.channelId);
+		this.chatGateway.sendModChannelMsg(`${player.name} has been BANNED from the channel by ${this.user.username}`, this.channelId, player.name, 'BANNED');
 	}
 
 	async unban(player: any) {
-		this.chatGateway.changeUserStatus(this.channelId, player.name, 'KICKED');
-		this.chatGateway.sendModChannelMsg(`${player.name} has been UNBANNED from the channel by ${this.user.username}`, this.channelId);
+		this.chatGateway.sendModChannelMsg(`${player.name} has been UNBANNED from the channel by ${this.user.username}`, this.channelId, player.name, 'KICKED');
 	}
 
 	async set_admin(player: any) {
+		this.chatGateway.sendModChannelMsg(`${player.name} has been PROMOTED TO ADMIN by ${this.user.username}`, this.channelId, player.name, 'ACTIVE');
 		this.chatGateway.setAdmin(this.channelId, player.name);
 		player.role = 'ADMIN';
-		this.chatGateway.sendModChannelMsg(`${player.name} has been PROMOTED TO ADMIN by ${this.user.username}`, this.channelId);
 	}
 
 	async rm_admin(player: any) {
+		this.chatGateway.sendModChannelMsg(`${player.name} has been DEMOTED TO MEMBER by ${this.user.username}`, this.channelId, player.name, 'ACTIVE');
 		this.chatGateway.removeAdmin(this.channelId, player.name);
 		player.role = 'MEMBER';
-		this.chatGateway.sendModChannelMsg(`${player.name} has been DEMOTED TO MEMBER by ${this.user.username}`, this.channelId);
 	}
 	
 }

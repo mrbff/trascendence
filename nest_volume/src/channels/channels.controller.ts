@@ -235,10 +235,10 @@ export class ChannelsController {
           return null;
           const { usernames, status }: { usernames: string[], status?: any } = {
             usernames: channel.members
-              .filter((member) => member.status !== 'KICKED') // Filter out members with status 'KICKED'
+              .filter((member) => member.status !== 'BANNED') // Filter out members with status 'BANNED'
               .map((member) => member.user.username),
             status: channel.members
-              .filter((member) => member.status !== 'KICKED') // Filter out members with status 'KICKED'
+              .filter((member) => member.status !== 'BANNED') // Filter out members with status 'KICKED'
               .map((member) => member.status)
           };
         return usernames.find((user) => user === username) ? true : false;

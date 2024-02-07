@@ -12,6 +12,7 @@ import { UsersService } from 'src/users/users.service';
 import * as jwt from 'jsonwebtoken';
 import {JwtPayload} from 'jsonwebtoken'
 import { ChannelsService } from 'src/channels/channels.service';
+import { rm } from 'fs';
 type MyJwtPayload = {
   userId: number,
 } & JwtPayload;
@@ -154,10 +155,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
   }
 
-  @SubscribeMessage("LeaveChannel")
-  async leaveChannel(client: Socket, payload: { id: string, username: string}) {
+  @SubscribeMessage("SetOwner")
+  async setOwner(client: Socket, payload: { id: string, username: string}) {
     const { id, username } = payload;
-    await this.channelsService.rmUserFromChannel(id, username);
+    await this.channelsService.setOwner(id, username);
   }
 
   @SubscribeMessage("SetAdmin")
@@ -209,19 +210,23 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   @SubscribeMessage('ChannelModMsg')
-  async handleModChannelMsg(client: Socket, payload: { sender: string, channel: string, message: string }) {
-    const { sender, channel, message } = payload;
+  async handleModChannelMsg(client: Socket, payload: { sender: string, channel: string, message: string, username: string, status: string | null}) {
+    const { sender, channel, message, username, status } = payload;
     const { channelId } = await this.channelsService.createModChannelMessage(channel, message, sender);
+    await this.channelsService.changeUserStatus(channelId, username, status);
     const ch = await this.channelsService.getChannelById(channelId);
-      ch?.members?.map((member: any) => {
-        if (member.status === 'ACTIVE') {
-          try {
-            userSocketMap[member.user.username].emit('MsgFromChannel', [{ user: sender,  msg: message, channelId, isModer: true}]);
-          } catch (error) {
-            ;
-          }
+    ch?.members?.map((member: any) => {
+      if (member.status === 'ACTIVE' || (member.user.username === username)) {
+        try {
+          userSocketMap[member.user.username].emit('MsgFromChannel', [{ user: sender,  msg: message, channelId, isModer: true}]);
+        } catch (error) {
+          ;
         }
-      });
+      }
+    });
+    if (status !== null && status !== 'ACTIVE' && status !== 'MUTED' && status !== 'BANNED') {
+      this.channelsService.rmUserFromChannel(channelId, username);
+    }
   }
 
   @SubscribeMessage('LastSeen')

@@ -57,16 +57,6 @@ export class ChannelsService {
         id: channelId
       }
     });
-    if (status === 'KICKED'){
-      return this.prisma.channelMembership.delete({
-        where:{
-          userId_channelId:{
-            userId: user.id,
-            channelId: channel!.id
-          }
-        }
-      });
-    }
     return this.prisma.channelMembership.update({
       where:{
         userId_channelId:{
@@ -359,7 +349,8 @@ export class ChannelsService {
       where:{
         members:{
           some:{
-            userId:user.id
+            userId:user.id,
+            status: "ACTIVE"
           }
         },
       },
@@ -395,14 +386,36 @@ export class ChannelsService {
     })
   }
 
-  async flagLastMessage(channelId: string, user: string){
+  async flagLastMessage(channelId: string, user: string) {
+    try {
+      const userObj = await this.usersService.findUserByName(user);
+      const updatedChannel = await this.prisma.channel.update({
+        where: {
+          id: channelId,
+        },
+        data: {
+          lastSeen: { push: userObj.username },
+        },
+      });
+      return updatedChannel;
+    } catch (error) {
+      console.log('Failed to update channel last seen.');
+      return null;
+    }
+  }
+  
+
+  async setOwner(channelId: string, user: string){
     const userObj = await this.usersService.findUserByName(user);
-    return await this.prisma.channel.update({
+    return await this.prisma.channelMembership.update({
       where:{
-        id: channelId
+        userId_channelId:{
+          userId: userObj.id,
+          channelId: channelId
+        }
       },
       data:{
-        lastSeen: {push: userObj.username},
+        role: "OWNER",
       }
     });
   }
@@ -439,6 +452,16 @@ export class ChannelsService {
   }
 
   async rmChannel(channelId: string){
+    await this.prisma.channelMembership.deleteMany({
+      where:{
+        channelId
+      }
+    });
+    await this.prisma.message.deleteMany({
+      where:{
+        channelId
+      }
+    });
     return await this.prisma.channel.delete({
       where:{
         id: channelId
@@ -446,9 +469,10 @@ export class ChannelsService {
     });
   }
 
+
   async rmUserFromChannel(channelId: string, username: string){
     const userObj = await this.usersService.findUserByName(username);
-    return await this.prisma.channelMembership.delete({
+    await this.prisma.channelMembership.delete({
       where:{
         userId_channelId:{
           userId: userObj.id,
@@ -456,5 +480,32 @@ export class ChannelsService {
         }
       }
     });
+    const ch = await this.prisma.channel.findUnique({
+      where:{
+        id: channelId
+      },
+      include:{
+        members: true
+      }
+    });
+    if (!ch?.members.find((member) => member.status === 'ACTIVE')){
+      await this.prisma.channelMembership.deleteMany({
+        where:{
+          channelId: channelId,
+        }
+      });
+      await this.prisma.message.deleteMany({
+        where:{
+          channelId: channelId
+        }
+      });
+      await this.prisma.channel.delete({
+        where:{
+          id: channelId
+        }
+      });
+      return;
+    }
   }
+
 }

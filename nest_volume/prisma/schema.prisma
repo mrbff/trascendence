@@ -131,6 +131,7 @@ enum UserStatus {
   BANNED
   MUTED
   KICKED
+  LEAVED
 }
 
 enum MatchMode {
