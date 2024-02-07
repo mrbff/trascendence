@@ -406,7 +406,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
                 });
                 if (index !== -1) {
                   this.chatGateway.setOwner(this.queryParams['id'], data.usernames[index]);
-                  this.chatGateway.sendModChannelMsg(`${data.usernames[index]} is now the owner`, this.queryParams['id'], data.usernames[index], 'ACTIVE');
+                  this.chatGateway.sendModChannelMsg(`${data.usernames[index]} is now the OWNER`, this.queryParams['id'], data.usernames[index], 'ACTIVE');
               }
             }
           });
