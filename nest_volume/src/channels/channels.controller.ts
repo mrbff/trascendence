@@ -105,36 +105,52 @@ export class ChannelsController {
     async getDirectChat(
       @Param('username') username: string,
       @Query('otherusername') otherusername: string,
+      @Query('type') type: string,
     ) {
-      try {
-        const channel = await this.prisma.channel.findFirstOrThrow({
-          where: {
-            type: "DIRECT",
-            AND: [
-              {
-                members: {
-                  some: {
-                    user: {
-                      username: username,
+      if (type === 'DIRECT') {
+        try {
+          const channel = await this.prisma.channel.findFirstOrThrow({
+            where: {
+              type: type as any,
+              AND: [
+                {
+                  members: {
+                    some: {
+                      user: {
+                        username: username,
+                      },
                     },
                   },
                 },
-              },
-              {
-                members: {
-                  some: {
-                    user: {
-                      username: otherusername,
+                {
+                  members: {
+                    some: {
+                      user: {
+                        username: otherusername,
+                      },
                     },
                   },
                 },
-              },
-            ],
-          },
-        });
-        return channel;
-      } catch (error: any) {
-        return null;
+              ],
+            },
+          });
+          return channel;
+        } catch (error: any) {
+          return null;
+        }
+      }
+      if (type === "PUBLIC") {
+        try {
+          const channel = await this.prisma.channel.findFirstOrThrow({
+            where: {
+              type: type as any,
+              name: otherusername,
+            },
+          });
+          return channel;
+        } catch (error: any) {
+          return null;
+        }
       }
     }
 

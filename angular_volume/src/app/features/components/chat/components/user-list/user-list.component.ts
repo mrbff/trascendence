@@ -130,10 +130,10 @@ export class UserListComponent implements OnInit, OnDestroy{
 
 	async DM(player: any): Promise<void> {
 		if (this.isGroupChat) {
-			let channel = await this.chatGateway.getDirectChatByNames(this.user.username, player.name);
+			let channel = await this.chatGateway.getChatByNames(this.user.username, player.name, "DIRECT");
 			if (channel === null) {
 				this.chatGateway.sendPrivMsg("", player.name);
-				channel = await this.chatGateway.getDirectChatByNames(this.user.username, player.name);
+				channel = await this.chatGateway.getChatByNames(this.user.username, player.name, "DIRECT");
 			}
 			this.chatGateway.getChannelById(channel.id);
 			this.router.navigate(

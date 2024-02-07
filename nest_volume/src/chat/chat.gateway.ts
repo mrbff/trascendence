@@ -13,6 +13,7 @@ import * as jwt from 'jsonwebtoken';
 import {JwtPayload} from 'jsonwebtoken'
 import { ChannelsService } from 'src/channels/channels.service';
 import { rm } from 'fs';
+import { Prisma } from '@prisma/client';
 type MyJwtPayload = {
   userId: number,
 } & JwtPayload;
@@ -122,6 +123,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const { id } = payload;
     const channel = await this.channelsService.getChannelById(id);
     client.emit('Channel', {channel} );
+  }
+
+  @SubscribeMessage("AddUserToChannel")
+  async addUserToChannel(client: Socket, payload: { channelId: string, username: string}) {
+    const { channelId, username } = payload;
+    await this.channelsService.addUsersToChannel(channelId, username);    
   }
 
   @SubscribeMessage("ReceivePrivMsg")

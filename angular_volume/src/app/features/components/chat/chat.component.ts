@@ -154,8 +154,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
             }
             return (this.selectedChannel.id === message.channelId);
           })];
-          this.chatGateway.sendLastSeen(this.selectedChannel.id, this.userService.getUser());
-          this.chatGateway.getChannelById(this.selectedChannel.id);
+          if (this.selectedChannel !== undefined){
+            this.chatGateway.sendLastSeen(this.selectedChannel.id, this.userService.getUser());
+          }
+            this.chatGateway.getChannelById(this.selectedChannel.id);
         },
         error: (error) => {
           this.errorMsg = `Error receiving message from channel: ${error.message}`;
@@ -310,10 +312,12 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   async searchChat() {
     let user = null;
-    if (this.search !== '' && this.search !== this.userService.getUser()) {
+    const username = this.userService.getUser();
+    if (this.search !== '' && this.search !== username) {
       const user = await this.userService.getUserByUsernamePromise(this.search);
-      const dirChannel = await this.chatGateway.getDirectChatByNames(this.userService.getUser(), this.search);
+      const dirChannel = await this.chatGateway.getChatByNames(username, this.search, "DIRECT");
       if (dirChannel) {
+        this.isGroup = false;
         this.chatGateway.getChannelById(dirChannel.id);
         this.router.navigate(
           [], 
@@ -325,9 +329,37 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.search = '';
         return;
       }
+      const publicChannel = await this.chatGateway.getChatByNames(username, this.search, "PUBLIC");
+      if (publicChannel) {
+        this.chatGateway.getUserListById(publicChannel.id).pipe(take(1)).subscribe({
+          next:(data)=>{
+            if (!data.usernames.includes(username)){
+              this.chatGateway.addUserToChannel(publicChannel.id, username);
+              this.chatGateway.sendModChannelMsg(`${username} JOINED the channel`, publicChannel.id, username, 'ACTIVE');
+              this.chatGateway.getChannelById(publicChannel.id);
+            }
+            if (data.usernames.includes(username) && data.status[data.usernames.indexOf(username)] === 'BANNED'){
+              this.msgToShow = "You are banned from this channel";
+              setTimeout(()=> this.msgToShow = null, 2500);
+              return;
+            }
+            this.isGroup = true;
+            this.router.navigate(
+                [], 
+              {
+                relativeTo: this.activatedRoute,
+                queryParams: {id:publicChannel.id},
+              }
+            );
+        this.search = '';
+          }
+        });
+        return;
+      }
       if (user !== null) {
+        this.isGroup = false;
         this.chatGateway.sendPrivMsg("", this.search);
-        const newChannel = await this.chatGateway.getDirectChatByNames(this.userService.getUser(), this.search);
+        const newChannel = await this.chatGateway.getChatByNames(username, this.search, "DIRECT");
         this.router.navigate(
           [], 
           {

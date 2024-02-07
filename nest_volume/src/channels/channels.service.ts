@@ -1,3 +1,4 @@
+import { channel } from 'diagnostics_channel';
 import { Channel, User, UserRole } from '@prisma/client';
 import { ConsoleLogger, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
@@ -68,23 +69,12 @@ export class ChannelsService {
         status: status as UserStatus | null
       }
     });
-    }
-
-
-  async createPrivateChannel(channelName:string) {
-    return this.prisma.channel.create({
-        data: {
-          type: 'PRIVATE',
-          name: channelName,
-          img: 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif',
-        },
-    });
   }
 
-  async createPublicChannel(channelName:string, password:string) {
+  async createChannel(channelName:string, password:string, typo: string) {
     return this.prisma.channel.create({
         data: {
-          type: 'PUBLIC',
+          type: typo as 'PRIVATE' | 'PUBLIC' | 'DIRECT',
           name: channelName,
           password: password,
           img: 'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif',
@@ -92,18 +82,7 @@ export class ChannelsService {
     });
   }
 
-  async createDirectMembership(user:any, channel:any) {
-    return this.prisma.channelMembership.create({
-      data: { 
-        user: { connect: { id: user.id } },
-        channel: { connect: { id: channel.id } },
-        role: 'MEMBER',
-        status: 'ACTIVE'
-      }
-    });
-  }
-
-  async createChannelMembership(user:User, channel:Channel, role: UserRole) {
+  async createMembership(user:User, channel:Channel, role: UserRole) {
     return this.prisma.channelMembership.create({
       data: {
         user: { connect: { id: user.id } },
@@ -122,8 +101,8 @@ export class ChannelsService {
     });
     const user1 = await this.usersService.findUserByName(username1);
     const user2 = await this.usersService.findUserByName(username2);
-    const membership1 = await this.createDirectMembership(user1, direct);
-    const membership2 = await this.createDirectMembership(user2, direct);
+    const membership1 = await this.createMembership(user1, direct, "MEMBER");
+    const membership2 = await this.createMembership(user2, direct, "MEMBER");
     return this.prisma.channel.update({
       where: {
         id: direct.id,
@@ -154,19 +133,19 @@ export class ChannelsService {
     let obJChannel;
 
     if (groupType !== 'public') {
-      obJChannel = await this.createPrivateChannel(channelName);
+      obJChannel = await this.createChannel(channelName, password, "PRIVATE");
     } else {
-      obJChannel = await this.createPublicChannel(channelName, password);
+      obJChannel = await this.createChannel(channelName, password, "PUBLIC");
     }
     const objOwn = await this.usersService.findUserByName(creator);
-    await this.createChannelMembership(objOwn, obJChannel, 'OWNER');
+    await this.createMembership(objOwn, obJChannel, 'OWNER');
     const objUsers = await this.prisma.user.findMany({
       where: {
         username:{in:users}
       }
     });
     for (const user of objUsers) {
-      await this.createChannelMembership(user, obJChannel, "MEMBER");
+      await this.createMembership(user, obJChannel, "MEMBER");
     }
 
     const members = [
@@ -180,6 +159,33 @@ export class ChannelsService {
     };
   }
 
+  
+  async createModChannelMessage(channelId:string, content:string, username:string) {
+    const channel = await this.prisma.channel.findUniqueOrThrow({
+      where: {
+        id: channelId
+      }
+    });
+    
+    const sender = await this.usersService.findUserByName(username);
+    await this.prisma.channel.update({
+      data:{
+        lastSeen: []
+      },
+      where:{
+        id: channelId
+      }
+    });
+    return this.prisma.message.create({
+      data: {
+        senderId: sender.id,
+        channelId: channel.id,
+        content: content,
+        isModer: true
+      },
+    });
+  }
+  
   async createChannelMessage(channelId:string, content:string, username:string) {
     const channel = await this.prisma.channel.findUniqueOrThrow({
       where: {
@@ -201,32 +207,6 @@ export class ChannelsService {
         senderId: sender.id,
         channelId: channel.id,
         content: content
-      },
-    });
-  }
-
-  async createModChannelMessage(channelId:string, content:string, username:string) {
-    const channel = await this.prisma.channel.findUniqueOrThrow({
-      where: {
-        id: channelId
-      }
-    });
-
-    const sender = await this.usersService.findUserByName(username);
-    await this.prisma.channel.update({
-      data:{
-        lastSeen: []
-      },
-      where:{
-        id: channelId
-      }
-    });
-    return this.prisma.message.create({
-      data: {
-        senderId: sender.id,
-        channelId: channel.id,
-        content: content,
-        isModer: true
       },
     });
   }
@@ -508,4 +488,35 @@ export class ChannelsService {
     }
   }
 
+  async addUsersToChannel(channelId: string, username: string) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          username: username,
+        },
+      });
+  
+      if (!user) {
+        console.error(`User with username ${username} not found.`);
+        return;
+      }
+  
+      const channel = await this.prisma.channel.findUnique({
+        where: {
+          id: channelId,
+        },
+      });
+  
+      if (!channel) {
+        console.error(`Channel with ID ${channelId} not found.`);
+        return;
+      }
+  
+      await this.createMembership(user, channel, 'MEMBER');
+  
+    } catch (error: any) {
+      console.error(error);
+    }
+  }
+  
 }

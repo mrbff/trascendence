@@ -132,6 +132,10 @@ export class ChatGateway {
     this.socket.emit('RemoveAdmin', { id, username });
   }
 
+  addUserToChannel(channelId:string, username:string) {
+    this.socket.emit('AddUserToChannel', { channelId, username});
+  }
+
   getChannelById(id:string) {
     this.socket.emit('GetChannelById', { id });
   }
@@ -181,9 +185,9 @@ export class ChatGateway {
     });
   }
 
-  getDirectChatByNames(user: string, otherusername: string): Promise<any> {
+  getChatByNames(user: string, otherusername: string, type: string): Promise<any> {
     return lastValueFrom(this.httpClient.get(`/nest/channels/getChat/${user}`, {
-      params: { user: user, otherusername: otherusername },
+      params: { user: user, otherusername: otherusername, type: type },
     }));
   }
 
