@@ -6,6 +6,8 @@ import { FriendsComponent } from './components/friends/friends.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
 import { ChatComponent } from './components/chat/chat.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 const routes: Routes = [
   {
@@ -45,7 +47,8 @@ const routes: Routes = [
 @NgModule({
   imports: [
     RouterModule.forChild(routes),
-    MatDialogModule
+    MatDialogModule,
+    MatSnackBarModule,
   ],
   exports: [RouterModule],
 })

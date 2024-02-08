@@ -10,7 +10,6 @@ import { LeaveChannelComponent } from './components/leave-channel/leave-channel.
 import { MatDialog } from '@angular/material/dialog';
 
 
-
 @Component({
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css'],
@@ -160,8 +159,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           })];
           if (this.selectedChannel !== undefined){
             this.chatGateway.sendLastSeen(this.selectedChannel.id, this.userService.getUser());
-          }
             this.chatGateway.getChannelById(this.selectedChannel.id);
+          }
         },
         error: (error) => {
           this.errorMsg = `Error receiving message from channel: ${error.message}`;
@@ -196,6 +195,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           if (this.selectedChannel !== undefined){
             this.chatGateway.getChannelById(this.selectedChannel.id);
           }
+
           this.$subs.add(
             this.chatGateway.onReceiveMsgForChannel().subscribe({
               next: (messages: any) => {
@@ -213,7 +213,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         },
       })
     );
-
+    
     this.$subs.add(
       this.chatGateway.onCreatedNewPublicChannel().subscribe({
         next: (data: any) => {
