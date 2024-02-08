@@ -97,8 +97,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   private onUserNotFound(){
-    this.msgToShow = "USER NOT FOUND"
-    setTimeout(()=> this.msgToShow = null, 2500);
   }
 
   initializeChat(): void {
@@ -335,7 +333,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       const publicChannel = await this.chatGateway.getChatByNames(username, this.search, "PUBLIC");
       if (publicChannel) {
         this.chatGateway.getUserListById(publicChannel.id).pipe(take(1)).subscribe({
-          
           next:(data)=>{
             if (!data.usernames.includes(username)){
               if (publicChannel.password !== null && publicChannel.password !== "") {
@@ -350,23 +347,21 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
                   else if (password && password !== publicChannel.password) {
                     this.msgToShow = "Wrong password please try again.";
                     setTimeout(()=> this.msgToShow = null, 2500);
-                  }});
+                  }
+                  else if (!password) {
+                    return;
+                  }
+                });
               } else {
                 this.chatGateway.addUserToChannel(publicChannel.id, username);
                 this.chatGateway.sendModChannelMsg(`${username} JOINED the channel`, publicChannel.id, username, 'ACTIVE');
-              }
-              
+              } 
             }
             if (data.usernames.includes(username) && data.status[data.usernames.indexOf(username)] === 'BANNED'){
               this.msgToShow = "You are banned from this channel";
               setTimeout(()=> this.msgToShow = null, 2500);
               return;
             }
-            this.isGroup = true;
-            this.selectedChannel = publicChannel;
-            // if (this.channels.find((channel:any)=>channel.id === publicChannel.id) === undefined){
-            //   this.channels.push({...publicChannel, isGroup:true});
-            // }
             this.router.navigate(
                 [], 
               {
@@ -374,7 +369,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
                 queryParams: {id:publicChannel.id},
               }
             );
-        this.search = '';
+              this.search = '';
+              return;
           }
         });
         return;
