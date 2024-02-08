@@ -5,6 +5,7 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { FriendsComponent } from './components/friends/friends.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
 import { ChatComponent } from './components/chat/chat.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 const routes: Routes = [
   {
@@ -42,7 +43,10 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
+  imports: [
+    RouterModule.forChild(routes),
+    MatDialogModule
+  ],
   exports: [RouterModule],
 })
 export class FeaturesRoutingModule {}

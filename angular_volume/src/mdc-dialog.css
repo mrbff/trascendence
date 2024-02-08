@@ -1,0 +1,48 @@
+@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
+
+.mdc-dialog__surface {
+  color: orange;
+  background: darkslateblue !important;
+  border: 2px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 20px !important;
+  backdrop-filter: blur(40px);
+  height: 160px !important;
+  width: 300px !important;
+}
+
+#cancelButton {
+  background-color: rgb(107, 15, 15);
+  color: #fff;
+  border: none;
+  margin-right: 2%;
+  margin-top: 5%;
+  cursor: pointer;
+  border-radius: 20px;
+  padding: 15px 20px;
+}
+
+#submitButton {
+  background-color: green;
+  color: #fff;
+  border: none;
+  margin-left: 2%;
+  margin-top: 5%;
+  margin-top: auto;
+  cursor: pointer;
+  border-radius: 20px;
+  padding: 15px 20px;
+}
+
+.mdc-dialog__surface div {
+  display: flex;
+  justify-content: center;
+}
+
+.mdc-dialog__surface input {
+  border-radius: 10px !important;
+}
+.mdc-dialog__surface h2 {
+  display: flex;
+  justify-content: center;
+}
+

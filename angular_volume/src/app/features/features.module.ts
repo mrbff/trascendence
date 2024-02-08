@@ -21,6 +21,8 @@ import { GameTileComponent } from './components/profile/components/game-tile/gam
 import { NewChannelComponent } from './components/chat/components/new-channel/new-channel.component';
 import { UserListComponent } from './components/chat/components/user-list/user-list.component';
 import { ModSectionComponent } from './components/chat/components/mod-section/mod-section.component';
+import { PasswordComponent } from './components/chat/components/password/password.component';
+import { LeaveChannelComponent } from './components/chat/components/leave-channel/leave-channel.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +43,8 @@ import { ModSectionComponent } from './components/chat/components/mod-section/mo
     NewChannelComponent,
     ModSectionComponent,
     UserListComponent,
+    PasswordComponent,
+    LeaveChannelComponent,
   ],
   imports: [CommonModule, SharedModule, FeaturesRoutingModule, FormsModule],
   exports: [ProfileImageComponent],

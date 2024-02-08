@@ -513,7 +513,11 @@ export class ChannelsService {
       }
   
       await this.createMembership(user, channel, 'MEMBER');
-  
+      return await this.prisma.channel.findUnique({
+        where: {
+          id: channelId,
+        },
+      });
     } catch (error: any) {
       console.error(error);
     }

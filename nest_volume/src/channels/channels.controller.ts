@@ -257,6 +257,6 @@ export class ChannelsController {
               .filter((member) => member.status !== 'BANNED') // Filter out members with status 'KICKED'
               .map((member) => member.status)
           };
-        return usernames.find((user) => user === username) ? true : false;
+        return {result: usernames.find((user) => user === username) ? true : false};
     }
 }

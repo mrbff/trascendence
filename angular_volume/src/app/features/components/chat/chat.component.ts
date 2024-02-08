@@ -1,11 +1,14 @@
-import { ConsoleLogger } from '@nestjs/common';
-import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild, Inject } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, take } from 'rxjs';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { UserService } from 'src/app/core/services/user.service';
 import { Router } from '@angular/router';
 import { UserInfo } from 'src/app/models/userInfo.model';
+import { PasswordComponent } from './components/password/password.component';
+import { LeaveChannelComponent } from './components/leave-channel/leave-channel.component';
+import { MatDialog } from '@angular/material/dialog';
+
 
 
 @Component({
@@ -52,6 +55,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     private readonly router: Router,
     private activatedRoute: ActivatedRoute,
     private renderer: Renderer2,
+    private dialog: MatDialog,
   ) {
     this.messages = [];
     this.chat = [];
@@ -121,28 +125,36 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
               this.onUserNotFound();
             }
           })
-          } else if (id !== undefined) {
-            this.chatGateway.getInChannelByIdHttp(id, this.userService.getUser()).pipe(take(1)).subscribe({
-              next:(data)=>{
-                if (data === true) {
-                  this.chatGateway.receivePrivChannelMsg(undefined, id);
-                  this.isOpen = true;
-                }
-                else {
-                  this.router.navigate(
-                    [], 
-                    {
-                      relativeTo: this.activatedRoute,
-                      queryParams: {},
-                    }
-                  );
-                  this.onUserNotFound();
-                }
-                }
-            })
-          }
-          this.chatGateway.receiveUserChannels(this.userService.getUser());
-        })
+        } else if (id !== undefined) {
+          console.log(id);
+          this.$subs.add(this.chatGateway.getInChannelByIdHttp(id, this.userService.getUser()).subscribe({
+            next:(data)=>{
+              const {result} = data;
+              console.log("data value", data);
+              console.log(`channel: ${this.selectedChannel}`);
+              if (result === true) {
+                this.chatGateway.receivePrivChannelMsg(undefined, id);
+                this.isOpen = true;
+              }
+              else {
+                this.router.navigate(
+                  [], 
+                  {
+                    relativeTo: this.activatedRoute,
+                    queryParams: {},
+                  }
+                );
+                this.onUserNotFound();
+              }
+              },
+              error:(err)=>{
+                console.log(err);
+              }
+          }));
+        }
+
+        this.chatGateway.receiveUserChannels(this.userService.getUser());
+      })
     );
     
     this.$subs.add(
@@ -168,7 +180,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.$subs.add(
       this.chatGateway.onUserChannelList().subscribe({
         next: (data: any) => {
-          this.channels = [];
+          console.log("channel list")
           const myUsername = this.userService.getUser();
           this.channels = data.channels.map((channel:any)=> {
             let isGroup = true;
@@ -189,7 +201,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           return {...channel,
                   isGroup,
                   allRead};
-          });
+          })?.sort((c1: any, c2: any)=>c1.name?.localeCompare(c2?.name ?? "") ?? 0);
           if (this.selectedChannel !== undefined){
             this.chatGateway.getChannelById(this.selectedChannel.id);
           }
@@ -214,6 +226,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.$subs.add(
       this.chatGateway.onCreatedNewPublicChannel().subscribe({
         next: (data: any) => {
+          console.log(data);
           if (data.members.some((member: any) => member.username === this.userService.getUser())) {
           this.channels.push(data);
           if (data.user === this.userService.getUser()){
@@ -311,10 +324,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
 
   async searchChat() {
-    let user = null;
     const username = this.userService.getUser();
     if (this.search !== '' && this.search !== username) {
-      const user = await this.userService.getUserByUsernamePromise(this.search);
       const dirChannel = await this.chatGateway.getChatByNames(username, this.search, "DIRECT");
       if (dirChannel) {
         this.isGroup = false;
@@ -332,11 +343,28 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       const publicChannel = await this.chatGateway.getChatByNames(username, this.search, "PUBLIC");
       if (publicChannel) {
         this.chatGateway.getUserListById(publicChannel.id).pipe(take(1)).subscribe({
+          
           next:(data)=>{
+            console.log(this.selectedChannel)
             if (!data.usernames.includes(username)){
-              this.chatGateway.addUserToChannel(publicChannel.id, username);
-              this.chatGateway.sendModChannelMsg(`${username} JOINED the channel`, publicChannel.id, username, 'ACTIVE');
-              this.chatGateway.getChannelById(publicChannel.id);
+              if (publicChannel.password !== null && publicChannel.password !== "") {
+                const dialogRef = this.dialog.open(PasswordComponent, {
+                  data: { password: '' }
+                });
+                dialogRef.afterClosed().subscribe((password: string) => {
+                  if (password && password === publicChannel.password) {
+                    this.chatGateway.addUserToChannel(publicChannel.id, username);
+                    this.chatGateway.sendModChannelMsg(`${username} JOINED the channel`, publicChannel.id, username, 'ACTIVE');
+                  }
+                  else if (password && password !== publicChannel.password) {
+                    this.msgToShow = "Wrong password please try again.";
+                    setTimeout(()=> this.msgToShow = null, 2500);
+                  }});
+              } else {
+                this.chatGateway.addUserToChannel(publicChannel.id, username);
+                this.chatGateway.sendModChannelMsg(`${username} JOINED the channel`, publicChannel.id, username, 'ACTIVE');
+              }
+              
             }
             if (data.usernames.includes(username) && data.status[data.usernames.indexOf(username)] === 'BANNED'){
               this.msgToShow = "You are banned from this channel";
@@ -344,6 +372,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
               return;
             }
             this.isGroup = true;
+            this.selectedChannel = publicChannel;
+            // if (this.channels.find((channel:any)=>channel.id === publicChannel.id) === undefined){
+            //   this.channels.push({...publicChannel, isGroup:true});
+            // }
             this.router.navigate(
                 [], 
               {
@@ -356,6 +388,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         });
         return;
       }
+      const user = await this.userService.getUserByUsernamePromise(this.search);
       if (user !== null) {
         this.isGroup = false;
         this.chatGateway.sendPrivMsg("", this.search);
@@ -380,38 +413,45 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   async leaveChannel() {
-    const userId = this.userService.getUserId();
-    const user = this.userService.getUser(); 
-    this.chatGateway.getUserStatus(this.queryParams['id'], userId).pipe(take(1)).subscribe({
-      next:(data)=> {
-        if (!data){
-          this.msgToShow = "You are no more in this channel";
-          setTimeout(()=> this.msgToShow = null, 2500);
-          return;
-        }
-        const status = data.status;
-        const userRole = data.role;
-        if (status === 'LEAVED') {
-          this.msgToShow = "You leaved this channel";
-          setTimeout(()=> this.msgToShow = null, 2500);
-          return
-        }
-        this.chatGateway.sendModChannelMsg(`${user} LEFT the channel`, this.queryParams['id'], user, 'LEAVED');
-        if (userRole === 'OWNER') {
-          this.chatGateway.getUserListById(this.queryParams['id']).pipe(take(1)).subscribe({
-            next:(data)=>{
-                console.log(data);
-                const index = data.usernames.findIndex((username:string, i:number) => {
-                  return data.status[i] === 'ACTIVE' && username !== user;
-                });
-                if (index !== -1) {
-                  this.chatGateway.setOwner(this.queryParams['id'], data.usernames[index]);
-                  this.chatGateway.sendModChannelMsg(`${data.usernames[index]} is now the OWNER`, this.queryParams['id'], data.usernames[index], 'ACTIVE');
-              }
+    const dialogRef = this.dialog.open(LeaveChannelComponent, {
+      data: { status : Boolean }
+    });
+    dialogRef.afterClosed().subscribe((status: boolean) => {
+      if (status) {
+        const userId = this.userService.getUserId();
+        const user = this.userService.getUser(); 
+        this.chatGateway.getUserStatus(this.queryParams['id'], userId).pipe(take(1)).subscribe({
+          next:(data)=> {
+            if (!data){
+              this.msgToShow = "You are no more in this channel";
+              setTimeout(()=> this.msgToShow = null, 2500);
+              return;
             }
-          });
+            const status = data.status;
+            const userRole = data.role;
+            if (status === 'LEAVED') {
+              this.msgToShow = "You leaved this channel";
+              setTimeout(()=> this.msgToShow = null, 2500);
+              return
+            }
+            this.chatGateway.sendModChannelMsg(`${user} LEFT the channel`, this.queryParams['id'], user, 'LEAVED');
+            if (userRole === 'OWNER') {
+              this.chatGateway.getUserListById(this.queryParams['id']).pipe(take(1)).subscribe({
+                next:(data)=>{
+                  console.log(data);
+                  const index = data.usernames.findIndex((username:string, i:number) => {
+                    return data.status[i] === 'ACTIVE' && username !== user;
+                  });
+                  if (index !== -1) {
+                    this.chatGateway.setOwner(this.queryParams['id'], data.usernames[index]);
+                    this.chatGateway.sendModChannelMsg(`${data.usernames[index]} is now the OWNER`, this.queryParams['id'], data.usernames[index], 'ACTIVE');
+                  }
+                }
+              });
+            }
           }
-        }
+        });
+      }
     });
   }
 

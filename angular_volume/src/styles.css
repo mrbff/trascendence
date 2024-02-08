@@ -1,3 +1,5 @@
+@import "./mdc-dialog.css";
+
 @font-face {
   font-family: "Azonix";
   src: url("assets/fonts/Azonix.otf") format("opentype");
@@ -7,6 +9,7 @@
   font-family: "Newake";
   src: url("assets/fonts/Newake-Font-Demo.otf") format("opentype");
 }
+
 
 body {
   font-family: Azonix !important;

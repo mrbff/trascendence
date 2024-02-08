@@ -105,8 +105,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       userSocketMap[receiver].emit('CreatedNewPublicChannel', {channel:{...channel, isGroup:false, name: sender},});
     }
     else {
-    client.emit('MsgFromChannel', [{ user: sender, msg: message, channelId: channel.id , from: sender}]);
-    userSocketMap[receiver].emit('MsgFromChannel', [{ user: sender, msg: message, channelId: channel.id , from: sender, allRead: false }]);
+      client.emit('MsgFromChannel', [{ user: sender, msg: message, channelId: channel.id , from: sender}]);
+      userSocketMap[receiver].emit('MsgFromChannel', [{ user: sender, msg: message, channelId: channel.id , from: sender, allRead: false }]);
     }
   }
   
@@ -128,7 +128,8 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   @SubscribeMessage("AddUserToChannel")
   async addUserToChannel(client: Socket, payload: { channelId: string, username: string}) {
     const { channelId, username } = payload;
-    await this.channelsService.addUsersToChannel(channelId, username);    
+    const channel = await this.channelsService.addUsersToChannel(channelId, username); 
+    this.receiveUserChannels(client, {username});
   }
 
   @SubscribeMessage("ReceivePrivMsg")
@@ -188,7 +189,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
   @SubscribeMessage("ReceiveUserChannels")
   async receiveUserChannels(client: Socket, payload: { username: string }) {
-    const channels = await this.channelsService.getUserChannels(payload.username);
+    const channels = (await this.channelsService.getUserChannels(payload.username))?.sort((c1, c2)=>c1.name?.localeCompare(c2?.name ?? "") ?? 0);
     const user = this.usersService.findUserByName(payload.username);
     userSocketMap[(await user).username].emit('UserChannelList', {channels} );
   }

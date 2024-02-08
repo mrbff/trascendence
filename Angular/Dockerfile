@@ -1,6 +1,6 @@
 FROM node:20-alpine
 
-RUN npm install -g @angular/cli
+RUN npm install -g @angular/cli @angular/material @angular/cdk @angular/animations
 
 WORKDIR /usr/src/app
 

@@ -1,0 +1,36 @@
+/* Add your custom styling in a separate CSS file or styles section */
+
+.custom-dialog {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 16px;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.password {
+    font-size: 18px;
+    margin-bottom: 12px;
+}
+
+.content {
+    margin-bottom: 12px;
+}
+
+.actions {
+    text-align: right;
+}
+
+button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px 12px;
+    margin-left: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
