@@ -41,7 +41,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	  });
 	}
   
-	handleConnection(client: Socket) {
+	async handleConnection(client: Socket) {
 		console.log(`\n\nClient connected(pong): ${client.id}`);
 		let element = {username: client.handshake.query.name as string, id:client.handshake.query.id as string, client: client}
 		for (var room of this.rooms)
@@ -49,10 +49,12 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			if (room.data.id1.toString() === element.id){
 				room.data.player1 = client;
 				client.join(room.name);
+				client.emit('opponent-found', {username: (await this.userData.findOne(room.data.id2)).username, seat: 1});
 				return
 			} else if (room.data.id2.toString() === element.id){
 				room.data.player2 = client;
 				client.join(room.name);
+				client.emit('opponent-found', {username: (await this.userData.findOne(room.data.id1)).username, seat: 2});
 				return
 			}
 		}
@@ -104,8 +106,19 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	inviteSetup(user: {username: string, id: string, client: Socket}){
 		let roomName = `room_${Math.random().toString(36).substring(2, 8)}`;
-		user.client.join(roomName);
-		this.rooms.push({name: roomName, data: {player1: user.client, id1: parseInt(user.id), player2: user.client, id2: parseInt(user.client.handshake.query.friendId as string), score1: 0, score2: 0, winner: -1, mode: user.client.handshake.query.gamemode as string, playersReady: new Set()}});
+		this.rooms.push({
+			name: roomName,
+			data: {
+				player1: user.client,
+				id1: parseInt(user.id),
+				player2: user.client,
+				id2: parseInt(user.client.handshake.query.friendId as string),
+				score1: 0,
+				score2: 0,
+				winner: -1,
+				mode: user.client.handshake.query.gamemode as string,
+				playersReady: new Set()
+			}});
 	}
 
 
@@ -127,10 +140,22 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			let roomName = `room_${Math.random().toString(36).substring(2, 8)}`;
 			player1?.client.join(roomName);
 			player2?.client.join(roomName);
-			let size = this.rooms.push({name: roomName, data: {player1: player1.client, id1: parseInt(player1.id), player2: player2.client, id2: parseInt(player2.id), score1: 0, score2: 0, winner: -1, mode: mode, playersReady: new Set()}});
+			this.rooms.push({
+				name: roomName,
+				data: {
+					player1: player1.client,
+					id1: parseInt(player1.id),
+					player2: player2.client,
+					id2: parseInt(player2.id),
+					score1: 0,
+					score2: 0,
+					winner: -1,
+					mode: mode,
+					playersReady: new Set()
+				}});
 			console.log(`\n\nMatch found! Players ${player1?.client.id} and ${player2?.client.id} are in room ${roomName}`);
-			player1?.client.emit('opponent-found', {user: player2.client.id, username: player2.username, seat: 1});
-			player2?.client.emit('opponent-found', {user: player1.client.id, username: player1.username, seat: 2});
+			player1?.client.emit('opponent-found', {username: player2.username, seat: 1});
+			player2?.client.emit('opponent-found', {username: player1.username, seat: 2});
 		}
 	}
 	

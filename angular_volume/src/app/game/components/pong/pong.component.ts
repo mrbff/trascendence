@@ -3,6 +3,7 @@ import { Component, HostListener, OnInit, ViewChild, OnDestroy, AfterViewChecked
 import { UserService } from 'src/app/core/services/user.service';
 import { PongGateway } from 'src/app/core/services/game.gateway';
 import * as BABYLON from '@babylonjs/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-pong',
@@ -17,7 +18,6 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 	user!: UserInfo;
 	opponentConnected = false;
 	starting = false;
-	racket: number = -1;
 	scene!: BABYLON.Scene;
 	gameMode: string = "";
 
@@ -25,10 +25,19 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 	constructor(
 		private readonly userData: UserService,
 		private readonly gate: PongGateway,
+		private route: ActivatedRoute,
 	){}
 	
 	public async  ngOnInit() {
 		this.user = await this.userData.getUserInfo();
+
+	this.route.queryParams.subscribe((params) => {
+		console.log(params);
+		if (params['invited']) {
+			this.gameMode = params['gameMode'];
+			this.start(); 
+		}
+		});
 	}
 
 	
@@ -53,8 +62,7 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 		this.gate.onOpponentFound().subscribe((found) =>{
 			console.log('opponent found starting game');
 			this.opponentConnected = true;
-			this.racket = found.seat;
-		});
+			});
 		this.gate.onGameFinish().subscribe((data: {won: boolean, matchId: number}) =>{
 			console.log(`game finished\nwon: ${data.won}`);
 			if (data.won)
