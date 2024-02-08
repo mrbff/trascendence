@@ -1,4 +1,5 @@
-import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { ConsoleLogger } from '@nestjs/common';
+import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, take } from 'rxjs';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
@@ -401,7 +402,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   async leaveChannel() {
     const dialogRef = this.dialog.open(LeaveChannelComponent, {
-      data: { status : Boolean }
+      data: { channelName: this.selectedChannel.name },
     });
     dialogRef.afterClosed().subscribe((status: boolean) => {
       if (status) {
