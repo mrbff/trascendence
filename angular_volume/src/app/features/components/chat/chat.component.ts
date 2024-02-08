@@ -126,12 +126,9 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
             }
           })
         } else if (id !== undefined) {
-          console.log(id);
           this.$subs.add(this.chatGateway.getInChannelByIdHttp(id, this.userService.getUser()).subscribe({
             next:(data)=>{
               const {result} = data;
-              console.log("data value", data);
-              console.log(`channel: ${this.selectedChannel}`);
               if (result === true) {
                 this.chatGateway.receivePrivChannelMsg(undefined, id);
                 this.isOpen = true;
@@ -147,9 +144,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
                 this.onUserNotFound();
               }
               },
-              error:(err)=>{
-                console.log(err);
-              }
           }));
         }
 
@@ -180,7 +174,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.$subs.add(
       this.chatGateway.onUserChannelList().subscribe({
         next: (data: any) => {
-          console.log("channel list")
           const myUsername = this.userService.getUser();
           this.channels = data.channels.map((channel:any)=> {
             let isGroup = true;
@@ -226,7 +219,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.$subs.add(
       this.chatGateway.onCreatedNewPublicChannel().subscribe({
         next: (data: any) => {
-          console.log(data);
           if (data.members.some((member: any) => member.username === this.userService.getUser())) {
           this.channels.push(data);
           if (data.user === this.userService.getUser()){
@@ -345,7 +337,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.chatGateway.getUserListById(publicChannel.id).pipe(take(1)).subscribe({
           
           next:(data)=>{
-            console.log(this.selectedChannel)
             if (!data.usernames.includes(username)){
               if (publicChannel.password !== null && publicChannel.password !== "") {
                 const dialogRef = this.dialog.open(PasswordComponent, {
@@ -438,7 +429,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
             if (userRole === 'OWNER') {
               this.chatGateway.getUserListById(this.queryParams['id']).pipe(take(1)).subscribe({
                 next:(data)=>{
-                  console.log(data);
                   const index = data.usernames.findIndex((username:string, i:number) => {
                     return data.status[i] === 'ACTIVE' && username !== user;
                   });

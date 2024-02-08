@@ -93,7 +93,6 @@ export class UserListComponent implements OnInit, OnDestroy{
 						}
 						else if (username === this.user.username) {
 							this.myRole = role;
-							console.log('myRole:', banOrKick);
 							if (banOrKick !== 'ACTIVE') {
 								this.players = [];
 							}
@@ -124,7 +123,6 @@ export class UserListComponent implements OnInit, OnDestroy{
 	}
 
 	profile(player: any): void {
-		//console.log('profile:', player.name);
 		this.router.navigate(['/transcendence/profile', player.name]);
 	}
 
