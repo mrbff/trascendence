@@ -1,14 +1,29 @@
 @import '@angular/material/prebuilt-themes/deeppurple-amber.css';
 
 .mdc-dialog__surface {
+  background-color: transparent  !important;
+}
+
+.mdc-dialog__surface.first-dialog {
   color: orange;
   background: darkslateblue !important;
   border: 2px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 20px !important;
   backdrop-filter: blur(40px);
-  height: 160px !important;
   width: 300px !important;
+  height: 160px !important;
 }
+
+.mdc-dialog__surface.second-dialog {
+  color: orange;
+  background: darkslateblue !important;
+  border: 2px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 20px !important;
+  backdrop-filter: blur(40px);
+  width: 550px !important;
+  height: 125px !important;
+}
+
 
 #cancelButton {
   background-color: rgb(107, 15, 15);
@@ -33,6 +48,29 @@
   padding: 15px 20px;
 }
 
+#cancelLeaveButton {
+  background-color: rgb(107, 15, 15);
+  color: #fff;
+  border: none;
+  margin-right: 2%;
+  margin-top: 1%;
+  cursor: pointer;
+  border-radius: 20px;
+  padding: 15px 20px;
+}
+
+#submitLeaveButton {
+  background-color: green;
+  color: #fff;
+  border: none;
+  margin-left: 2%;
+  margin-top: 1%;
+  margin-top: auto;
+  cursor: pointer;
+  border-radius: 20px;
+  padding: 15px 20px;
+}
+
 .mdc-dialog__surface div {
   display: flex;
   justify-content: center;
@@ -41,8 +79,7 @@
 .mdc-dialog__surface input {
   border-radius: 10px !important;
 }
-.mdc-dialog__surface h2 {
+.mdc-dialog__surface h2{
   display: flex;
   justify-content: center;
 }
-

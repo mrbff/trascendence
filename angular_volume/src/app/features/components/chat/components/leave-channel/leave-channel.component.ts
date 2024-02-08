@@ -9,6 +9,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 export class LeaveChannelComponent {
 leftButton: any;
 rightButton: any;
+leaveMsg: any;
 
   constructor(
     public dialogRef: MatDialogRef<LeaveChannelComponent>,
