@@ -1,3 +1,16 @@
-<div class="mod-channel">
+<div class="mod-channel" onclick="toggleButtons()">
   <i class="fa-solid fa-screwdriver-wrench"> mod </i>
+  <button id="button1" style="display: none;">Button 1</button>
+  <button id="button2" style="display: none;">Button 2</button>
 </div>
+
+<script>
+  function toggleButtons() {
+    var button1 = document.getElementById("button1");
+    var button2 = document.getElementById("button2");
+
+    // Toggle the visibility of the buttons
+    button1.style.display = (button1.style.display === 'none') ? 'inline-block' : 'none';
+    button2.style.display = (button2.style.display === 'none') ? 'inline-block' : 'none';
+  }
+</script>
