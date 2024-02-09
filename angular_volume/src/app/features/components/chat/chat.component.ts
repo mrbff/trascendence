@@ -99,7 +99,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   private onUserNotFound(){
   }
 
-  initializeChat(): void {
+  initializeChat() : void {
     this.$subs.add(
       this.route.queryParams.subscribe((params) => {
         this.queryParams = params;
@@ -107,10 +107,20 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         const username = params['username'];
         if (username !== undefined) {
           this.userService.getUserByUsername(username).pipe(take(1)).subscribe({
-            next:(user)=>{
-              this.title = username;
+            next:async (user)=>{
+              this.chatGateway.sendPrivMsg("", this.search);
+              const ch = await this.chatGateway.getChatByNames(this.userService.getUser(), username, "DIRECT");
+              this.selectedChannel = ch;
+              const id = ch.id;
+              this.chatGateway.receiveChannelMsg(id);
               this.isOpen = true;
-              this.chatGateway.receivePrivChannelMsg(username, undefined);
+              this.router.navigate(
+                [], 
+                {
+                  relativeTo: this.activatedRoute,
+                  queryParams: { id: id },
+                }
+              );
             },
             error:(err)=>{
               this.router.navigate(
@@ -128,7 +138,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
             next:(data)=>{
               const {result} = data;
               if (result === true) {
-                this.chatGateway.receivePrivChannelMsg(undefined, id);
+                this.chatGateway.receiveChannelMsg(id);
                 this.isOpen = true;
               }
               else {

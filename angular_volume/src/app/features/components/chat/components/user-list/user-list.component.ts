@@ -5,6 +5,7 @@ import { Subscription, skip, take } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FriendsService } from 'src/app/core/services/friends.service';
 import { UserInfo } from 'src/app/models/userInfo.model';
+import { io } from 'socket.io-client';
 
 
 @Component({
@@ -145,7 +146,18 @@ export class UserListComponent implements OnInit, OnDestroy{
 	}
 
 	inviteToGame(player: any): void {
+		
 		console.log('inviteToGame:', player.name);
+		let socket = io('/pong', {
+			path: '/socket.io/',
+			query: {
+				/*gameMode,*/
+				name: this.user.username,
+				id: this.user.id,
+				setup: true,
+				friendId: player.id
+			},
+		});
 	}
 
 	async block(player: any): Promise<void>{

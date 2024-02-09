@@ -58,7 +58,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				return
 			}
 		}
-		if (client.handshake.query.invited){
+		if (client.handshake.query.setup){
 			this.inviteSetup(element);
 		}
 		else {

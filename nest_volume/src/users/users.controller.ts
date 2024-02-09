@@ -68,7 +68,7 @@ export class UsersController {
 		return await this.usersService.findOne(id);
 	}
 
-	@Get(':username')
+	@Get('basic/:username')
 	@UseGuards(JwtAuthGuard)
 	@ApiBearerAuth()
 	@ApiOkResponse()

@@ -16,6 +16,7 @@ export interface UserInfo {
   secret2fa: string;
   updatedAt: string;
   username: string;
+  allRead: boolean;
 }
 
 export const BLOCKED_USER_INFO: Partial<UserInfo> = {

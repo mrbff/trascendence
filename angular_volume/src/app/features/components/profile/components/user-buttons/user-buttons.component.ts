@@ -24,7 +24,8 @@ export class UserButtonsComponent {
     private readonly router: Router,
     private readonly imageCompress: NgxImageCompressService,
     private readonly userService: UserService
-  ) {}
+  ) {
+  }
 
   async addFriend() {
     await this.friendsService

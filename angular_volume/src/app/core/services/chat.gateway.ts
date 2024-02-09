@@ -144,10 +144,7 @@ export class ChatGateway {
     this.socket.emit('GetPrivateChat', { userId, otherId });
   }
 
-  receivePrivChannelMsg(receiver?:string, id?:string){
-    if (receiver)
-      this.socket.emit('ReceivePrivMsg', { sender:this.userService.getUser(), receiver:receiver });
-    else if (id)
+  receiveChannelMsg(receiver?:string, id?:string){
       this.socket.emit('ReceiveChMsg', { id });
   }
 

@@ -24,6 +24,7 @@ import { ModSectionComponent } from './components/chat/components/mod-section/mo
 import { PasswordComponent } from './components/chat/components/password/password.component';
 import { LeaveChannelComponent } from './components/chat/components/leave-channel/leave-channel.component';
 import { MatchHistoryComponent } from './components/profile/components/match-history/match-history.component';
+import { ChatProfileImageComponent } from './components/chat/components/chat-profile/profile-image.component';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { MatchHistoryComponent } from './components/profile/components/match-his
     UserListComponent,
     PasswordComponent,
     LeaveChannelComponent,
+    ChatProfileImageComponent,
   ],
   imports: [CommonModule, SharedModule, FeaturesRoutingModule, FormsModule],
   exports: [ProfileImageComponent],

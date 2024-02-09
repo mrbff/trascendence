@@ -1,0 +1,18 @@
+<main class="profile-chat-image-container">
+  <img *ngIf="!conversation?.isGroup  && user"
+    id="image"
+    class="profile-image"
+    [src]="user.img"
+    [ngStyle]="{
+      color: !conversation!.allRead ? 'purple' : (user.isPlaying ? 'orange' : (user.isOnline ? 'green' : 'red'))
+    }"
+  />
+  <img *ngIf="conversation?.isGroup"
+    id="image"
+    class="profile-image"
+    [src]="conversation.img"
+    [ngStyle]="{
+      color: (conversation.allRead ? 'red' : '')
+    }"
+  />
+</main>
