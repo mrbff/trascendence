@@ -23,6 +23,7 @@ import { UserListComponent } from './components/chat/components/user-list/user-l
 import { ModSectionComponent } from './components/chat/components/mod-section/mod-section.component';
 import { PasswordComponent } from './components/chat/components/password/password.component';
 import { LeaveChannelComponent } from './components/chat/components/leave-channel/leave-channel.component';
+import { MatchHistoryComponent } from './components/profile/components/match-history/match-history.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +36,7 @@ import { LeaveChannelComponent } from './components/chat/components/leave-channe
     TwoFactorAuthComponent,
     UserButtonsComponent,
     ProfileImageComponent,
+	MatchHistoryComponent,
     ChangeImageDirective,
     ChatComponent,
     MessageComponent,

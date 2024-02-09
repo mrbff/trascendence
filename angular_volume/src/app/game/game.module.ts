@@ -5,10 +5,11 @@ import { GameRoutingModule } from './game-routing.module';
 import { PongComponent } from './components/pong/pong.component';
 import { SharedModule } from '../shared/shared.module';
 import { FeaturesModule } from '../features/features.module';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
   declarations: [PongComponent],
-  imports: [CommonModule, SharedModule, GameRoutingModule, FeaturesModule],
+  imports: [CommonModule, SharedModule, GameRoutingModule, FeaturesModule, FormsModule],
 })
 export class GameModule {}

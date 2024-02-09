@@ -36,6 +36,10 @@ export class UserService {
     return this.cookieService.get('user');
   }
 
+  getOther(id: string): Promise<any> {
+	return lastValueFrom(this.http.get(`/nest/users/${id}`));
+  }
+
   setUserId(decodedJwt: any) {
     this.cookieService.set('id', decodedJwt.userId, 1 / 24, '/');
   }
@@ -78,5 +82,15 @@ export class UserService {
 
   async getUserByUsernamePromise(username: string): Promise<any> {
     return lastValueFrom(this.http.get<UserInfo>(`/nest/users/promise/${username}`));
+  }
+
+  async updateWinnLoss(id: string, update: {res: string, matchId: number}) {
+	return lastValueFrom(
+		this.http.patch(`/nest/users/win-loss/${id}`, {update: update})
+	);
+  }
+
+  async getMatchHistory(id: string): Promise<any> {
+	return lastValueFrom(this.http.get(`/nest/users/matchHistory/${id}`));
   }
 }

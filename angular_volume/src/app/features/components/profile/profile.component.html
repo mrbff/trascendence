@@ -19,19 +19,8 @@
           [isBlocked]="isBlocked"
         ></app-user-buttons>
       </ng-container>
-      <section></section>
-      <div
-        *ngIf="games.length !== 0"
-        [ngClass]="currentUser ? 'match' : 'match-other'"
-      >
-        MATCH HISTORY
-      </div>
-      <section
-        *ngIf="games.length !== 0"
-        [ngClass]="currentUser ? 'gamesbox' : 'gamesbox-other'"
-      >
-        <app-game-tile *ngFor="let game of games" [game]="game"></app-game-tile>
-      </section>
+		<app-match-history   [user]="user">
+		</app-match-history>
       <section class="matchbox">
         <div class="win">WIN</div>
         <div class="winRes">

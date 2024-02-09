@@ -96,6 +96,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
   }
 
+
   async logout() {
     await this.status.setStatus(this.user.id, false);
     this.userService.deleteAllCookie();

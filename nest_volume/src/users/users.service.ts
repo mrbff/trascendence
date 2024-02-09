@@ -28,7 +28,7 @@ export class UsersService {
     return await this.prisma.user.findMany();
   }
 
-  async findOne(id: number) {
+  async findOne(id: number) :Promise<any> {
     try {
       return await this.prisma.user.findUniqueOrThrow({ where: { id: id } });
     } catch(error) {
@@ -70,7 +70,6 @@ export class UsersService {
       const user = await this.prisma.user.findUniqueOrThrow({
         where: { username: username },
       });
-      
       return {
         id: user.id,
         username: user.username,
@@ -138,6 +137,45 @@ export class UsersService {
       where: { id: id },
       data: { isOnline: newStatus },
     });
+  }
+
+  async updateWinLoss(id: number, update: {res: string, matchId: number}) {
+	if (update.res == 'Won')
+		return this.prisma.user.update({
+			where: { id: id },
+			data: { 
+				Wins: {increment: 1},
+				Played: {increment: 1},
+				matchHistory: {push: update.matchId}
+			},
+		});
+	else if (update.res == 'Lost')
+		return this.prisma.user.update({
+			where: { id: id },
+			data: {
+				Losses: {increment: 1},
+				Played: {increment: 1},
+				matchHistory: {push: update.matchId}
+			},
+		});
+  }
+
+  async getMatchHistory(userId: number): Promise<any[]> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId }
+    });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const matchHistory = user.matchHistory || [];
+    const matches = await this.prisma.matchHistory.findMany({
+      where: {
+        id: {
+          in: matchHistory,
+        },
+      },
+    });
+    return matches;
   }
 
   async updateIsPlaying(id: number, newStatus: boolean) {

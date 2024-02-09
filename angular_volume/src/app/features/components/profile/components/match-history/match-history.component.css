@@ -1,0 +1,25 @@
+
+.matchHistory {
+
+	font-family: Newake;
+	border-radius: 15px;
+	border: 2px solid orange;
+	color: orange;
+	background: black;
+	outline: none;
+	font-size: 15px;
+}
+
+.record {
+    top: 50%;
+    left: 3vw;
+    font-size: 15px;
+    margin: auto;
+}
+
+.list {
+	width: 100%;
+	height: 200px;
+	overflow-x: clip;
+	overflow-y: auto;
+}
