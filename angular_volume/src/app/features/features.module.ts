@@ -28,6 +28,10 @@ import { MatchHistoryComponent } from './components/profile/components/match-his
 import { ChatProfileImageComponent } from './components/chat/components/chat-profile/profile-image.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 
 @NgModule({
   declarations: [
@@ -54,7 +58,17 @@ import { ReactiveFormsModule } from '@angular/forms';
     ChatProfileImageComponent,
     ChangePasswordComponent,
   ],
-  imports: [CommonModule, SharedModule, FeaturesRoutingModule, FormsModule, MatDialogModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    SharedModule,
+    FeaturesRoutingModule,
+    FormsModule,
+    MatDialogModule,
+    ReactiveFormsModule, 
+    MatFormFieldModule,
+    MatSelectModule,
+    BrowserAnimationsModule,
+  ],
   exports: [ProfileImageComponent],
 })
 export class FeaturesModule {}

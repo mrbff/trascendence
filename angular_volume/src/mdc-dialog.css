@@ -4,6 +4,8 @@
   background-color: transparent  !important;
 }
 
+/* popup for join in channel with passwor! */
+
 .mdc-dialog__surface.first-dialog {
   color: orange;
   background: darkslateblue !important;
@@ -13,17 +15,6 @@
   width: 300px !important;
   height: 160px !important;
 }
-
-.mdc-dialog__surface.second-dialog {
-  color: orange;
-  background: darkslateblue !important;
-  border: 2px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 20px !important;
-  backdrop-filter: blur(40px);
-  width: 550px !important;
-  height: 125px !important;
-}
-
 
 #cancelButton {
   background-color: rgb(107, 15, 15);
@@ -48,6 +39,19 @@
   padding: 15px 20px;
 }
 
+/* popup for leaving channel cheack! */
+
+
+.mdc-dialog__surface.second-dialog {
+  color: orange;
+  background: darkslateblue !important;
+  border: 2px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 20px !important;
+  backdrop-filter: blur(40px);
+  width: 550px !important;
+  height: 125px !important;
+}
+
 #cancelLeaveButton {
   background-color: rgb(107, 15, 15);
   color: #fff;
@@ -60,6 +64,45 @@
 }
 
 #submitLeaveButton {
+  background-color: green;
+  color: #fff;
+  border: none;
+  margin-left: 2%;
+  margin-top: 1%;
+  margin-top: auto;
+  cursor: pointer;
+  border-radius: 20px;
+  padding: 15px 20px;
+}
+
+/* pop un mod change password or channel type */
+
+.mdc-dialog__surface.third-dialog {
+  color: orange;
+  background: darkslateblue !important;
+  border: 2px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 20px !important;
+  backdrop-filter: blur(40px);
+}
+
+.mdc-dialog__content.third-dialog {
+  display: flex;
+  justify-content: center;
+  padding: 0% 0% 0% 0%;
+}
+ 
+#cancelPasswordButton {
+  background-color: rgb(107, 15, 15);
+  color: #fff;
+  border: none;
+  margin-right: 2%;
+  margin-top: 1%;
+  cursor: pointer;
+  border-radius: 20px;
+  padding: 15px 20px;
+}
+
+#submitPasswordButton {
   background-color: green;
   color: #fff;
   border: none;
