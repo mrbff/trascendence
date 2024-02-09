@@ -22,9 +22,12 @@ import { NewChannelComponent } from './components/chat/components/new-channel/ne
 import { UserListComponent } from './components/chat/components/user-list/user-list.component';
 import { ModSectionComponent } from './components/chat/components/mod-section/mod-section.component';
 import { PasswordComponent } from './components/chat/components/password/password.component';
+import { ChangePasswordComponent } from './components/chat/components/mod-section/components/change-password/change-password.component';
 import { LeaveChannelComponent } from './components/chat/components/leave-channel/leave-channel.component';
 import { MatchHistoryComponent } from './components/profile/components/match-history/match-history.component';
 import { ChatProfileImageComponent } from './components/chat/components/chat-profile/profile-image.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -49,8 +52,9 @@ import { ChatProfileImageComponent } from './components/chat/components/chat-pro
     PasswordComponent,
     LeaveChannelComponent,
     ChatProfileImageComponent,
+    ChangePasswordComponent,
   ],
-  imports: [CommonModule, SharedModule, FeaturesRoutingModule, FormsModule],
+  imports: [CommonModule, SharedModule, FeaturesRoutingModule, FormsModule, MatDialogModule, ReactiveFormsModule],
   exports: [ProfileImageComponent],
 })
 export class FeaturesModule {}

@@ -28,9 +28,10 @@ export class ModSectionComponent implements OnInit, AfterViewInit {
 
   changePassword( ) {
     const dialogRef = this.dialog.open(ChangePasswordComponent, {
-      data: { password: '' }
+      data: { password: ''}
     });
-    dialogRef.afterClosed().subscribe((password: string) => {
+    dialogRef.afterClosed().subscribe((password : string) => {
+      console.log(password);
     });
   }
 

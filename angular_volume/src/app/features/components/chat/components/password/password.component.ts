@@ -7,9 +7,6 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
   styleUrls: ['./password.component.css'],
 })
 export class PasswordComponent {
-leftButton: any;
-rightButton: any;
-
   constructor(
     public dialogRef: MatDialogRef<PasswordComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { password: string }
@@ -18,7 +15,6 @@ rightButton: any;
   onCancelClick(): void {
     this.dialogRef.close();
   }
-
 
   onSubmitClick(password: string) {
     this.dialogRef.close(password);
