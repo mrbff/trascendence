@@ -180,6 +180,73 @@ export class ChannelsController {
     }
 
 
+    @Get('getTypesOfChannel/:channelId')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOkResponse()
+    async getTypesOfChannel(
+      @Param('channelId') channelId: string,
+      @Query('username') username: string,
+    ) {
+      const channel = await this.prisma.channel.findUnique({
+        where: {
+          id: channelId,
+        },
+        include: {
+          members: {
+            include: {
+              user: true,
+            },
+          }
+        },
+      });
+      if (!channel)
+        return null;
+      if (channel.type === 'DIRECT')
+      {
+        if (channel.members.length === 2)
+        {
+          const other = channel.members.find((member) => {
+            if (member.user.username !== username)
+            {
+              return member.user.username;
+            }
+          });
+          const otherInfos = await this.prisma.user.findUnique({
+            where: {
+              username: other?.user.username,
+            },
+            include: {
+              blockedBy: {
+                include: {
+                  blocked: {
+                    select: {
+                      username: true,
+                    },
+                  },
+                  blocker: {
+                    select: {
+                      username: true,
+                    },
+                  },
+                }
+              },
+            },
+          });
+          console.log(otherInfos);
+          if (otherInfos?.blockedBy.find((block) => block.blocked.username === username))
+          {
+            return { type: 'BLOCKED'};
+          }
+          if (otherInfos?.blockedBy.find((block) => block.blocker.username === username))
+          {
+            return { type: 'BLOCKING'};
+          }
+        }
+      }
+      return { type: channel.type};
+    }
+
     @Get('getChannel/:chName')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()

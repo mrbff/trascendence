@@ -41,7 +41,7 @@
         <app-user-list [user]="whoami"></app-user-list>
       </section>
       <section #modSection>
-        <app-mod-section *ngIf="isGroup"></app-mod-section>
+        <app-mod-section *ngIf="isGroup && this.isOwner"></app-mod-section>
       </section>
     </ng-container>
 

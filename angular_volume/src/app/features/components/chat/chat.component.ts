@@ -35,6 +35,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   allRead: boolean;
   selectedOption: string | undefined;
   isGroup: boolean;
+  isOwner: boolean;
 
 
   queryParams: {[key:string]:string} = {}
@@ -64,6 +65,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.title = 'CHAT';
     this.allRead = false;
     this.isGroup = false;
+    this.isOwner = false;
   }
 
   ngAfterViewChecked(): void {
@@ -82,6 +84,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   ngOnInit(): void {
     this.isGroup = window.localStorage.getItem('isGroup') === 'true';
+    this.isOwner = window.localStorage.getItem('isOwner') === 'true';
     this.messages = [];
     this.screenW = window.innerWidth;
     const params = this.route.snapshot.queryParams;
@@ -107,6 +110,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         const username = params['username'];
         if (id === undefined && username === undefined) {
           this.isGroup = false;
+          this.isOwner = false;
         }
         if (username !== undefined) {
           this.userService.getUserByUsername(username).pipe(take(1)).subscribe({
@@ -248,43 +252,58 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       id = this.selectedChannel.id;
       const msg = this.newMessage; // Save the message perche altrimenti sparisce nel nulla
       this.chatGateway.getUserStatus(id, this.userService.getUserId()).pipe(take(1)).subscribe({
-          next:(data)=> {
-            if (!data){
-              this.msgToShow = "You are no more in this channel";
-              setTimeout(()=> this.msgToShow = null, 2500);
-              return
-            }
-            const status = data.status;
-            const muteTime = data.muteEndTime;
-            if (status === 'LEAVED') {
-              this.msgToShow = "You leaved this channel";
-              setTimeout(()=> this.msgToShow = null, 2500);
-              return
-            }
-            if (status === 'KICKED') {
-              this.msgToShow = "You are been kickd from this channel";
-              setTimeout(()=> this.msgToShow = null, 2500);
-              return
-            }
-            if (status === 'BANNED') {
-              this.msgToShow = "You are banned from this channel";
-              setTimeout(()=> this.msgToShow = null, 2500);
-              return
-            }
-            if (muteTime > new Date().toISOString()) {
-              const dateObject = new Date( muteTime);
-              const hours = dateObject.getHours();
-              const minutes = dateObject.getMinutes();
-              const formattedTime = `${hours}:${minutes}`;
-      
-              this.msgToShow = "You are muted until " + formattedTime;
-              setTimeout(()=> this.msgToShow = null, 2500);
-              return
-            }
-            this.chatGateway.sendChannelMsg(msg, id);
+        next:(data)=> {
+          if (!data){
+            this.msgToShow = "You are no more in this channel";
+            setTimeout(()=> this.msgToShow = null, 2500);
             return
           }
-        });
+          this.chatGateway.getTypesOfChannel(id, this.whoami.username).pipe(take(1)).subscribe({
+            next:(data)=>{
+              console.log(data);
+              if (data.type === 'BLOCKED'){
+                this.msgToShow = "You are blocked from this channel";
+                setTimeout(()=> this.msgToShow = null, 2500);
+                return
+              } else if (data.type === 'BLOCKING'){
+                this.msgToShow = "You are blocking this user unlock him to send a message";
+                setTimeout(()=> this.msgToShow = null, 2500);
+                return
+              } else {
+              const status = data.status;
+              const muteTime = data.muteEndTime;
+              if (status === 'LEAVED') {
+                this.msgToShow = "You leaved this channel";
+                setTimeout(()=> this.msgToShow = null, 2500);
+                return
+              }
+              if (status === 'KICKED') {
+                this.msgToShow = "You are been kickd from this channel";
+                setTimeout(()=> this.msgToShow = null, 2500);
+                return
+              }
+              if (status === 'BANNED') {
+                this.msgToShow = "You are banned from this channel";
+                setTimeout(()=> this.msgToShow = null, 2500);
+                return
+              }
+              if (muteTime > new Date().toISOString()) {
+                const dateObject = new Date( muteTime);
+                const hours = dateObject.getHours();
+                const minutes = dateObject.getMinutes();
+                const formattedTime = `${hours}:${minutes}`;
+        
+                this.msgToShow = "You are muted until " + formattedTime;
+                setTimeout(()=> this.msgToShow = null, 2500);
+                return
+              }
+              this.chatGateway.sendChannelMsg(msg, id);
+              return
+              }
+            }
+          });
+        }
+      });
     }
   }
 
@@ -320,6 +339,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       }
     );
     this.selectedChannel = conversation;
+    this.selectedChannel.members.find((m: any)=> m.user.username === this.userService.getUser()).role === 'OWNER' ? this.isOwner = true : this.isOwner = false;
     this.msgToShow = null;
     this.chatGateway.sendLastSeen(conversation.id, this.userService.getUser());
     conversation.allRead = true;
@@ -456,8 +476,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   backClick() {
     this.isOpen = false;
-    this.title = 'chat';
-    console.log('TKM');
   }
 
 }
