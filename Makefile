@@ -2,8 +2,6 @@ COMPOSE_FILE := docker-compose.yml
 
 build:
 	@/nfs/homes/${USER}/sgoinfre/bin/docker-compose -f $(COMPOSE_FILE) build --no-cache
-	#@npm install --prefix ./angular_volume/
-	#@npm install --prefix ./nest_volume/
 
 up:
 	@echo "\e[32mStarting transcendence\e[0m"
