@@ -1,6 +1,5 @@
 import { Component, Inject, Input } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { channel } from 'diagnostics_channel';
 
 @Component({
   selector: 'app-password',
@@ -9,8 +8,6 @@ import { channel } from 'diagnostics_channel';
 })
 export class LeaveChannelComponent {
 @Input() channelName: string | undefined;
-leftButton: any;
-rightButton: any;
 leaveMsg: any;
 
   constructor(

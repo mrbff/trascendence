@@ -8,6 +8,8 @@ import { ChatComponent } from './components/chat/chat.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatSelectModule } from '@angular/material/select';
+import { MatFormFieldModule } from '@angular/material/form-field';
 
 const routes: Routes = [
   {
@@ -49,6 +51,8 @@ const routes: Routes = [
     RouterModule.forChild(routes),
     MatDialogModule,
     MatSnackBarModule,
+    MatSelectModule,
+    MatFormFieldModule,
   ],
   exports: [RouterModule],
 })

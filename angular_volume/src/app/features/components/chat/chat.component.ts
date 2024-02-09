@@ -1,4 +1,3 @@
-import { ConsoleLogger } from '@nestjs/common';
 import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, take } from 'rxjs';
@@ -102,9 +101,13 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   initializeChat() : void {
     this.$subs.add(
       this.route.queryParams.subscribe((params) => {
+        
         this.queryParams = params;
         const id = params['id'];
         const username = params['username'];
+        if (id === undefined && username === undefined) {
+          this.isGroup = false;
+        }
         if (username !== undefined) {
           this.userService.getUserByUsername(username).pipe(take(1)).subscribe({
             next:async (user)=>{
@@ -154,7 +157,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
               },
           }));
         }
-
         this.chatGateway.receiveUserChannels(this.userService.getUser());
       })
     );

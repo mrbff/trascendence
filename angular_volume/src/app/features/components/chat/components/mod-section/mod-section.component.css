@@ -8,3 +8,22 @@
   border-radius: 100px;
   background: rgb(94, 30, 114);
 }
+
+.mod-channel-section {
+  cursor: pointer;
+  position: fixed;
+  padding: 13px;
+  border: 2px solid rgb(0, 0, 0);
+  border-radius: 100px;
+  bottom: 10%;
+}
+
+.pass {
+  background: rgb(171, 137, 182);
+  right: 2%;
+}
+
+.add {
+  background: rgb(141, 182, 137);
+  margin-right: 15%;
+}
