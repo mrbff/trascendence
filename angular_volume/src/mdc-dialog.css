@@ -102,6 +102,10 @@
   padding: 15px 20px;
 }
 
+.mdc-dialog .mdc-dialog__content {
+	padding: 12px 22px 0px 24px;
+}
+
 #submitPasswordButton {
   background-color: green;
   color: #fff;
