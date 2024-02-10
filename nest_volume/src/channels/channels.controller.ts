@@ -180,11 +180,11 @@ export class ChannelsController {
     }
 
 
-    @Get('getTypesOfChannel/:channelId')
+    @Get('getTypesOfRealation/:channelId')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     @ApiOkResponse()
-    async getTypesOfChannel(
+    async getTypesOfRealation(
       @Param('channelId') channelId: string,
       @Query('username') username: string,
     ) {
@@ -212,7 +212,7 @@ export class ChannelsController {
               return member.user.username;
             }
           });
-          const otherInfos = await this.prisma.user.findUnique({
+          const blockOtherInfos = await this.prisma.user.findUnique({
             where: {
               username: other?.user.username,
             },
@@ -233,18 +233,41 @@ export class ChannelsController {
               },
             },
           });
-          console.log(otherInfos);
-          if (otherInfos?.blockedBy.find((block) => block.blocked.username === username))
-          {
-            return { type: 'BLOCKED'};
+          const blockMyInfos = await this.prisma.user.findUnique({
+            where: {
+              username: username,
+            },
+            include: {
+              blockedBy: {
+                include: {
+                  blocked: {
+                    select: {
+                      username: true,
+                    },
+                  },
+                  blocker: {
+                    select: {
+                      username: true,
+                    },
+                  },
+                }
+              },
+            },
+          });
+          const isBlockedByOther = blockOtherInfos?.blockedBy.find((block) => block.blocked.username === username);
+          const isBlockingOther = blockOtherInfos?.blockedBy.find((block) => block.blocker.username === username);
+          const isBlockedByMe = blockMyInfos?.blockedBy.find((block) => block.blocked.username === username);
+          const isBlockingMe = blockMyInfos?.blockedBy.find((block) => block.blocker.username === username);
+
+          if (isBlockedByOther || isBlockedByMe) {
+            return { type: 'BLOCKED' };
           }
-          if (otherInfos?.blockedBy.find((block) => block.blocker.username === username))
-          {
-            return { type: 'BLOCKING'};
+          if (isBlockingOther || isBlockingMe) {
+            return { type: 'BLOCKING' };
           }
         }
       }
-      return { type: channel.type};
+      return { type: 'NONE'};
     }
 
     @Get('getChannel/:chName')

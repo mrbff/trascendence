@@ -192,8 +192,8 @@ export class ChatGateway {
     return lastValueFrom(this.httpClient.get(`/nest/channels/getChannel/${name}`));
   }
 
-  getTypesOfChannel (channelId : string, username: string) : Observable<any> {
-    return this.httpClient.get<any>(`/nest/channels/getTypesOfChannel/${channelId}`, {
+  getTypesOfRealation (channelId : string, username: string) : Observable<any> {
+    return this.httpClient.get<any>(`/nest/channels/getTypesOfRealation/${channelId}`, {
       params: { username: username },
     });
   }

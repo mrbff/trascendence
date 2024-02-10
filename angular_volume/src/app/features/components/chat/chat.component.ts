@@ -258,11 +258,11 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
             setTimeout(()=> this.msgToShow = null, 2500);
             return
           }
-          this.chatGateway.getTypesOfChannel(id, this.whoami.username).pipe(take(1)).subscribe({
+          this.chatGateway.getTypesOfRealation(id, this.whoami.username).pipe(take(1)).subscribe({
             next:(data)=>{
-              console.log(data);
+              console.log(data.type);
               if (data.type === 'BLOCKED'){
-                this.msgToShow = "You are blocked from this channel";
+                this.msgToShow = "You are blocked by this user you can't send a message to him";
                 setTimeout(()=> this.msgToShow = null, 2500);
                 return
               } else if (data.type === 'BLOCKING'){
