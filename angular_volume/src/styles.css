@@ -80,7 +80,7 @@ select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
   font-family: Newake 15px !important;
   font-size: 17px !important;
-  -webkit-text-fill-color: orange;
+  -webkit-text-fill-color: orange !important;
   transition: background-color 5000s ease-in-out 0s;
 }
 

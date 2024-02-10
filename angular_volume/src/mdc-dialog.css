@@ -4,10 +4,17 @@
   background-color: transparent  !important;
 }
 
+.mdc-dialog__content {
+	padding: 0px 22px 0px 24px !important;
+}
+
+.mat-mdc-dialog-container .mdc-dialog__title {
+  color: orange !important;
+}
+
 /* popup for join in channel with passwor! */
 
 .mdc-dialog__surface.first-dialog {
-  color: orange;
   background: darkslateblue !important;
   border: 2px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 20px !important;
@@ -43,7 +50,6 @@
 
 
 .mdc-dialog__surface.second-dialog {
-  color: orange;
   background: darkslateblue !important;
   border: 2px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 20px !important;
@@ -78,7 +84,6 @@
 /* pop un mod change password or channel type */
 
 .mdc-dialog__surface.third-dialog {
-  color: orange;
   background: darkslateblue !important;
   border: 2px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 20px !important;
@@ -100,10 +105,6 @@
   cursor: pointer;
   border-radius: 20px;
   padding: 15px 20px;
-}
-
-.mdc-dialog .mdc-dialog__content {
-	padding: 12px 22px 0px 24px;
 }
 
 #submitPasswordButton {
