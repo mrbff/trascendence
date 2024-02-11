@@ -280,7 +280,7 @@ export class FriendsService {
 
   async unblockUser(blockerId: number, blockedId: number): Promise<void> {
     if (!(await this.isUserBlocked(blockerId, blockedId))) {
-      throw new Error('User not blocked');
+      throw new Error('User not blocked, you are blocked by this user.');
     }
 
     await this.prisma.blockedUser.delete({
