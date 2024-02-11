@@ -71,6 +71,19 @@ export class ChannelsService {
     });
   }
 
+  async changePassword(id: string, password: string, channelType: string) {
+    console.log(id, password, channelType);
+    return this.prisma.channel.update({
+      where: {
+        id: id,
+      },
+      data: {
+        password: password,
+        type: channelType as 'PRIVATE' | 'PUBLIC',
+      },
+    });
+  }
+
   async createChannel(channelName:string, password:string, typo: string) {
     return this.prisma.channel.create({
         data: {

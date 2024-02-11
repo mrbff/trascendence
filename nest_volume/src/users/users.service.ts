@@ -227,4 +227,5 @@ export class UsersService {
     const secretKey = user?.secret2fa as string;
     return this.twoFactorAuthService.validateTwoFactorCode(secretKey, token);
   }
+
 }

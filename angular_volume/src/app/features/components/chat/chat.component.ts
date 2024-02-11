@@ -24,6 +24,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   public users!: string[]; // Populate with actual user list
   public whoami!: UserInfo;
   public userLis!: UserInfo[];
+  public userList: string[] = [];
 
 
   search: string;
@@ -87,7 +88,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.isOwner = window.localStorage.getItem('isOwner') === 'true';
     this.messages = [];
     this.screenW = window.innerWidth;
-    const params = this.route.snapshot.queryParams;
     this.userService.getUserInfo().then(data=>{
       this.whoami = data;
       this.initializeChat();
@@ -260,7 +260,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           }
           this.chatGateway.getTypesOfRealation(id, this.whoami.username).pipe(take(1)).subscribe({
             next:(data)=>{
-              console.log(data.type);
               if (data.type === 'BLOCKED'){
                 this.msgToShow = "You are blocked by this user you can't send a message to him";
                 setTimeout(()=> this.msgToShow = null, 2500);
@@ -365,7 +364,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       }
       const publicChannel = await this.chatGateway.getChatByNames(username, this.search, "PUBLIC");
       if (publicChannel) {
-        this.chatGateway.getUserListById(publicChannel.id).pipe(take(1)).subscribe({
+        this.chatGateway.getUserList(publicChannel.id).pipe(take(1)).subscribe({
           next:(data)=>{
             if (!data.usernames.includes(username)){
               if (publicChannel.password !== null && publicChannel.password !== "") {
@@ -456,7 +455,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
             }
             this.chatGateway.sendModChannelMsg(`${user} LEFT the channel`, this.queryParams['id'], user, 'LEAVED');
             if (userRole === 'OWNER') {
-              this.chatGateway.getUserListById(this.queryParams['id']).pipe(take(1)).subscribe({
+              this.chatGateway.getUserList(this.queryParams['id']).pipe(take(1)).subscribe({
                 next:(data)=>{
                   const index = data.usernames.findIndex((username:string, i:number) => {
                     return data.status[i] === 'ACTIVE' && username !== user;
@@ -474,6 +473,9 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     });
   }
 
+  setList($event: any) {
+    this.userList = $event;
+  }
   backClick() {
     this.isOpen = false;
   }

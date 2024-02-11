@@ -24,6 +24,7 @@ import { ModSectionComponent } from './components/chat/components/mod-section/mo
 import { PasswordComponent } from './components/chat/components/password/password.component';
 import { ChangePasswordComponent } from './components/chat/components/mod-section/components/change-password/change-password.component';
 import { LeaveChannelComponent } from './components/chat/components/leave-channel/leave-channel.component';
+import { AddUserComponent } from './components/chat/components/mod-section/components/add-user/add-user.component';
 import { MatchHistoryComponent } from './components/profile/components/match-history/match-history.component';
 import { ChatProfileImageComponent } from './components/chat/components/chat-profile/profile-image.component';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -44,7 +45,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     TwoFactorAuthComponent,
     UserButtonsComponent,
     ProfileImageComponent,
-	MatchHistoryComponent,
+	  MatchHistoryComponent,
     ChangeImageDirective,
     ChatComponent,
     MessageComponent,
@@ -54,6 +55,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     ModSectionComponent,
     UserListComponent,
     PasswordComponent,
+    AddUserComponent,
     LeaveChannelComponent,
     ChatProfileImageComponent,
     ChangePasswordComponent,

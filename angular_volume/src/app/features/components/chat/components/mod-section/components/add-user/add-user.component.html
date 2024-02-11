@@ -1,0 +1,19 @@
+<div class="mdc-dialog__surface third-dialog">
+  <h2 mat-dialog-title>Add user to a channel</h2>
+  <div>
+    <input
+    id="users-input"
+    [(ngModel)]="search"
+    class="channel-input"
+    type="text"
+    [placeholder]="placeholder"
+    (keydown.enter)="addUser()"
+    spellcheck="false"
+  />
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button id="cancelPasswordButton" (click)="onCancelClick( )">Cancel</button>
+    <!-- Use ngClass to conditionally apply the disabled class -->
+    <button mat-button id="submitPasswordButton" (click)="addUser( )">Submit</button>
+  </div>
+</div>

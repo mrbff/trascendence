@@ -1,3 +1,4 @@
+import { ChangePasswordComponent } from './../../features/components/chat/components/mod-section/components/change-password/change-password.component';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
 import { io } from 'socket.io-client';
@@ -62,6 +63,10 @@ export class ChatGateway {
 
   createNewChannel(channelName:string, users:string[], creator:string, groupType:string, password:string) {
     this.socket.emit('CreateNewChannel', { channelName:channelName, users:users, creator:creator, groupType:groupType, password:password});
+  }
+
+  changePassword(id: string, password: string, channelType: string) {
+    this.socket.emit('ChangePassword', { id, password, channelType });
   }
 
   onCreatedNewPublicChannel() {
@@ -172,8 +177,6 @@ export class ChatGateway {
     });
   }
 
-    // ...existing code...
-
   onUserInfos(){
     return new Observable((observer) => {
       this.socket.on('UserInfos', (data) => {
@@ -204,7 +207,11 @@ export class ChatGateway {
     });
   }
 
-  getUserListById(id: string): Observable<any> {
+  getFullUsersListName(id: string): Observable<string[]> {
+    return this.httpClient.get<string[]>(`/nest/channels/fullUsersList/${id}`);
+  }
+
+  getUserList(id: string): Observable<any> {
     return this.httpClient.get<any>(`/nest/channels/getUserList/${id}`);
   }
 
@@ -212,6 +219,10 @@ export class ChatGateway {
     return this.httpClient.get<any>(`/nest/channels/getInChannelById/${id}`, {
       params: { username: username },
     });
+  }
+
+  getPasswordChannel(id: string): Observable<string[]> {
+    return this.httpClient.get<string[]>(`/nest/channels/getPasswordChannel/${id}`);
   }
   
 

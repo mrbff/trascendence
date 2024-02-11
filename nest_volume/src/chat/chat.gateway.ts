@@ -187,11 +187,16 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const lastSeen = await this.channelsService.getLastSeen(channelId);
     client.emit('LastSeen', lastSeen);
   }
+  
   @SubscribeMessage("ReceiveUserChannels")
   async receiveUserChannels(client: Socket, payload: { username: string }) {
     const channels = (await this.channelsService.getUserChannels(payload.username))?.sort((c1, c2)=>c1.name?.localeCompare(c2?.name ?? "") ?? 0);
     const user = this.usersService.findUserByName(payload.username);
-    userSocketMap[(await user).username].emit('UserChannelList', {channels} );
+    try {
+      userSocketMap[(await user).username].emit('UserChannelList', {channels} );
+    } catch (error) {
+      console.log("User offline");
+    }
   }
 
   @SubscribeMessage('CreateNewChannel')
@@ -199,6 +204,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const { channelName, users, creator, groupType, password } = payload;
     const newChannel = await this.channelsService.createNewChannel(channelName, users, creator, groupType, password);
     this.server.emit('CreatedNewPublicChannel', {channel: {...newChannel, isGroup:true}});
+  }
+
+  @SubscribeMessage('ChangePassword')
+  async changePassword(client: Socket, payload: { id: string, password: string, channelType: string }) {
+    const { id, password, channelType } = payload;
+    await this.channelsService.changePassword(id, password, channelType);
   }
 
   @SubscribeMessage('ChannelMsg')

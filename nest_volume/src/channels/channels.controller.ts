@@ -1,3 +1,4 @@
+import { PassportModule } from '@nestjs/passport';
 import {
   ConsoleLogger,
   Controller,
@@ -348,5 +349,36 @@ export class ChannelsController {
               .map((member) => member.status)
           };
         return {result: usernames.find((user) => user === username) ? true : false};
+    }
+
+    @Get('fullUsersList/:id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOkResponse()
+    async getFullUsersList(
+      @Param('id') id: string,
+    ) {
+      const users = await this.prisma.user.findMany({
+        select: {
+          username: true,
+        },
+      });
+      const userList = users.map((user) => user.username);
+      return userList;
+    }
+
+    @Get('getPasswordChannel/:id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOkResponse()
+    async getPasswordChannel(
+      @Param('id') id: string,
+    ) {
+      const channel = await this.prisma.channel.findUnique({
+        where: {
+          id: id,
+        },
+      });
+      return [ channel?.password ?? '', channel?.type ];
     }
 }

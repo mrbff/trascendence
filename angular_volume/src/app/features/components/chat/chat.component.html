@@ -40,6 +40,7 @@
       <section #userList>
         <app-user-list [user]="whoami"></app-user-list>
       </section>
+
       <section #modSection>
         <app-mod-section *ngIf="isGroup && this.isOwner"></app-mod-section>
       </section>

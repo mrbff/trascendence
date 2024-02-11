@@ -1,7 +1,6 @@
-import { UseGuards } from '@nestjs/common';
-import { AfterViewChecked, Component, ElementRef, HostListener, Input, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
-import { Subscription, skip, take } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FriendsService } from 'src/app/core/services/friends.service';
 import { UserInfo } from 'src/app/models/userInfo.model';
@@ -23,8 +22,8 @@ export class UserListComponent implements OnInit, OnDestroy{
 	public channelId: string = '';
 	public channelName: string = '';
 
-	players: any[] = [];
 	attr: any;
+	players: any[] = [];
 
 	constructor(
 		private readonly chatGateway: ChatGateway,
@@ -109,7 +108,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 							banOrKick: ''
 						});
 					}
-				},	
+				},
 			})
 		);
 	}
