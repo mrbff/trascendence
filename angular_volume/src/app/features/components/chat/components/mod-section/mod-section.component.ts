@@ -18,7 +18,6 @@ export class ModSectionComponent implements OnInit {
   private $subs = new Subscription();
 
   isOpen: boolean;
-  userList: string[];
   queryParams: {[key:string]:string} = {}
   users: string[];
   id: string;
@@ -29,7 +28,6 @@ export class ModSectionComponent implements OnInit {
     private readonly chatGateway: ChatGateway,
   ) {
     this.id = '';
-    this.userList = [];
     this.users = [];
     this.isOpen = false;
   }
@@ -39,9 +37,6 @@ export class ModSectionComponent implements OnInit {
       this.route.queryParams.pipe(take(1)).subscribe((params) => {
         if (params['id'] !== undefined) {
           this.id = params['id'];
-          this.chatGateway.getUserList(params['id']).pipe(take(1)).subscribe((list) => {
-            this.userList = list.usernames;
-          });
           this.chatGateway.getFullUsersListName(params['id']).pipe(take(1)).subscribe((list) => {
            this.users = list;
           });
@@ -67,9 +62,8 @@ export class ModSectionComponent implements OnInit {
   }
 
   addUser() {
-    console.log( "users", this.users, "channelUsers", this.userList, "id", this.id);
     const dialogRef = this.dialog.open(AddUserComponent, {
-      data: { users: this.users, channelUsers: this.userList, id: this.id},
+      data: { users: this.users, id: this.id},
     });
     dialogRef.afterClosed().subscribe(() => {
     });
