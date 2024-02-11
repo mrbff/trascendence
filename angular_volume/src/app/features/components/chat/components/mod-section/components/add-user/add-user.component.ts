@@ -56,7 +56,6 @@ export class AddUserComponent {
   }
 
   addUser() {
-    console.log( "users", this.data.users, "channelUsers", this.channelUsers, "id", this.data.id);
     if (this.search !== '') {
       if (this.search === this.userService.getUser()) {
         this.placeholder = 'You cant add yourself';
@@ -78,7 +77,6 @@ export class AddUserComponent {
       this.search = '';
       this.resetPlaceholder();
     }
-    this.dialogRef.close();
   }
 
   resetPlaceholder() {
