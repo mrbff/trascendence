@@ -379,6 +379,6 @@ export class ChannelsController {
           id: id,
         },
       });
-      return [ channel?.password ?? '', channel?.type ];
+      return { password: channel?.password ?? '', type: channel?.type ?? 'PRIVATE' };
     }
 }

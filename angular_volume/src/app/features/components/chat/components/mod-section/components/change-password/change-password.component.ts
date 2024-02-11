@@ -32,9 +32,28 @@ export class ChangePasswordComponent {
   onSubmitClick()  {
     this.$subs.add(
       this.chatGateway.getPasswordChannel(this.data.id).pipe(take(1)).subscribe((channel) => {
-        console.log(channel);
-        this.chatGateway.changePassword(this.data.id, this.data.password, this.data.channelType);
-        this.chatGateway.sendModChannelMsg(`${this.username} change password channel`, this.data.id, this.username, 'ACTIVE');
+        if (channel.type !== this.data.channelType) {
+          this.chatGateway.changePassword(this.data.id, this.data.password, this.data.channelType);
+          if (this.data.channelType === 'PRIVATE') {
+            this.chatGateway.sendModChannelMsg(`${this.username} set channel as PRIVATE`, this.data.id, this.username, 'ACTIVE');
+          }
+          if (this.data.channelType === 'PUBLIC') {
+            if (this.data.password !== '') {
+              this.chatGateway.sendModChannelMsg(`${this.username} set channel as PUBLIC WHIT password`, this.data.id, this.username, 'ACTIVE');
+            } else {
+              this.chatGateway.sendModChannelMsg(`${this.username} set channel as PUBLIC WHITOUT password`, this.data.id, this.username, 'ACTIVE');
+            }
+          }
+          return ;
+        }
+        if (channel.password !== this.data.password) {
+          this.chatGateway.changePassword(this.data.id, this.data.password, this.data.channelType);
+          if (this.data.password === '') {
+            this.chatGateway.sendModChannelMsg(`${this.username} REMOVE password from the channel`, this.data.id, this.username, 'ACTIVE');
+          } else {
+            this.chatGateway.sendModChannelMsg(`${this.username} SET NEW password channel`, this.data.id, this.username, 'ACTIVE');
+          }
+        }
       })
     );
     this.dialogRef.close();

@@ -221,8 +221,8 @@ export class ChatGateway {
     });
   }
 
-  getPasswordChannel(id: string): Observable<string[]> {
-    return this.httpClient.get<string[]>(`/nest/channels/getPasswordChannel/${id}`);
+  getPasswordChannel(id: string): Observable< { password: string, type: string } > {
+    return this.httpClient.get<{ password: string, type: string }>(`/nest/channels/getPasswordChannel/${id}`);
   }
   
 
