@@ -39,9 +39,9 @@ export class ChangePasswordComponent {
           }
           if (this.data.channelType === 'PUBLIC') {
             if (this.data.password !== '') {
-              this.chatGateway.sendModChannelMsg(`${this.username} set channel as PUBLIC WHIT password`, this.data.id, this.username, 'ACTIVE');
+              this.chatGateway.sendModChannelMsg(`${this.username} set channel as PUBLIC WIHT password`, this.data.id, this.username, 'ACTIVE');
             } else {
-              this.chatGateway.sendModChannelMsg(`${this.username} set channel as PUBLIC WHITOUT password`, this.data.id, this.username, 'ACTIVE');
+              this.chatGateway.sendModChannelMsg(`${this.username} set channel as PUBLIC WIHTOUT password`, this.data.id, this.username, 'ACTIVE');
             }
           }
           return ;

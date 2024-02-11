@@ -141,7 +141,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
             }
           })
         } else if (id !== undefined) {
-          this.$subs.add(this.chatGateway.getInChannelByIdHttp(id, this.userService.getUser()).subscribe({
+          this.$subs.add(this.chatGateway.getInChannelById(id, this.userService.getUser()).subscribe({
             next:(data)=>{
               const {result} = data;
               if (result === true) {
@@ -328,6 +328,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     }
     this.isGroup = conversation.isGroup;
     window.localStorage.setItem('isGroup', JSON.stringify(conversation.isGroup));
+    window.localStorage.setItem('isOwner', JSON.stringify(this.isGroup));
     conversation = conversation;
     this.messages = [];
     this.router.navigate(

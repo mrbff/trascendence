@@ -215,7 +215,7 @@ export class ChatGateway {
     return this.httpClient.get<any>(`/nest/channels/getUserList/${id}`);
   }
 
-  getInChannelByIdHttp(id: string, username:string) {
+  getInChannelById(id: string, username:string) {
     return this.httpClient.get<any>(`/nest/channels/getInChannelById/${id}`, {
       params: { username: username },
     });
