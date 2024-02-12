@@ -81,6 +81,7 @@ model Message {
   channel   Channel  @relation(fields: [channelId], references: [id])
   sender    User     @relation("Message_Sender", fields: [senderId], references: [id])
   isModer   Boolean  @default(false)
+  isInvite  Boolean  @default(false)
 }
 
 model Friendship {
