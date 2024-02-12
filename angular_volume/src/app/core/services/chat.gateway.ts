@@ -61,6 +61,10 @@ export class ChatGateway {
     this.socket.emit('ChannelModMsg', { sender:this.userService.getUser(), channel:channel, message:message, username:username, status:status });
   }
 
+  sendInviteMsg(username: string, inviteId: string) {
+    this.socket.emit('InviteMsg', { sender:this.userService.getUser(), username:username, invId: inviteId });
+  }
+
   createNewChannel(channelName:string, users:string[], creator:string, groupType:string, password:string) {
     this.socket.emit('CreateNewChannel', { channelName:channelName, users:users, creator:creator, groupType:groupType, password:password});
   }
@@ -82,7 +86,6 @@ export class ChatGateway {
   sendPrivMsg(message:string, receiver:string) {
     this.socket.emit('PrivMsg', { sender:this.userService.getUser(), receiver:receiver, message:message });
   }
-
 
   onChannelId() {
     return new Observable((observer) => {

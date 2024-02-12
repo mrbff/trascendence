@@ -268,6 +268,46 @@ export class ChannelsService {
       }};
   }  
 
+  async findDirChannel(sender : string, username : string) {
+    const ch = await this.prisma.channel.findFirst({
+      where: {
+        type: "DIRECT",
+        AND:[
+          {
+            members:{
+              some:{
+                user:{
+                  username: sender
+                }
+              }
+            }
+          },
+          {
+            members:{
+              some:{
+                user:{
+                  username: username
+                }
+              }
+            }
+          }
+        ]
+      },
+      include:{
+        members: {
+          include:{
+            user: {
+              select:{
+                username: true
+              }
+            }
+          }
+        }
+      }
+    });
+  return ch;
+  }
+
   async getChannelById(id: string){
     return await this.prisma.channel.findUnique({
       where:{

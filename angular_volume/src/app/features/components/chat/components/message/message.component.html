@@ -1,15 +1,41 @@
 <ng-container *ngIf="currentUser; else otherUser">
-  <section *ngIf="message.msg !== ''" class="message mine">
-    <span class="message-content">{{ message.msg }}</span>
-  </section>
+
+  <ng-container *ngIf="message.isInvite; else normal">
+    <section class="message mine">
+        <h2>Private game</h2>
+        <div>
+          <button (click)="redirectToGame()">Accept</button>
+        </div>
+    </section>
+  </ng-container>
+
+  <ng-template #normal>
+    <section *ngIf="message.msg !== ''" class="message mine">
+      <span class="message-content">{{ message.msg }}</span>
+    </section>
+  </ng-template>
+
 </ng-container>
 <ng-template #otherUser>
   <ng-container *ngIf="!message.isModer; else isModer">
-  <section *ngIf="message.msg !== ''" class="message other">
-    <span *ngIf="!currentUser" class="username">{{ message.user }}</span>
-    <span class="message-content">{{ message.msg }}</span>
-    <span *ngFor="let mebmer of message.mebmers"> {{mebmer}}</span>
-  </section>
+
+    <ng-container *ngIf="message.isInvite; else normal">
+      <section  class="message other">
+          <h2>Private game</h2>
+          <div>
+            <button (click)="redirectToGame()">Accept</button>
+          </div>
+      </section>
+    </ng-container>
+
+    <ng-template  #normal >
+        <section *ngIf="message.msg !== ''" class="message other">
+          <span *ngIf="!currentUser" class="username">{{ message.user }}</span>
+          <span class="message-content">{{ message.msg }}</span>
+          <span *ngFor="let mebmer of message.mebmers"> {{mebmer}}</span>
+        </section>
+    </ng-template>
+
 </ng-container>
 <ng-template #isModer>
   <section *ngIf="message.msg !== ''" class="message mod">

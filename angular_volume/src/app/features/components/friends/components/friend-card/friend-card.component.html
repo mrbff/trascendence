@@ -10,8 +10,8 @@
   <div class="username">{{ username }}</div>
   <section class="user-buttons">
     <ng-container *ngIf="user.isOnline; else noPlay">
-      <div class="play">
-        <i class="fa-sharp fa-regular fa-circle-play"></i><br />
+      <div class="play" >
+        <i class="fa-sharp fa-regular fa-circle-play" (click)="inviteToGame()"></i><br />
         <span>PLAY</span>
       </div></ng-container
     >

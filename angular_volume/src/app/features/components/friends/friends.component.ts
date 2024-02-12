@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, HostListener, OnInit } from '@angular/core';
 import { FriendsService } from 'src/app/core/services/friends.service';
+import {InvitesService} from 'src/app/core/services/game-invite.service'
 import { Router } from '@angular/router';
 
 @Component({
@@ -16,6 +17,7 @@ export class FriendsComponent implements OnInit, AfterViewInit {
   friend: boolean;
   noFriends: boolean;
   friendRequests: any;
+  invites: any;
 
   @HostListener('document:keydown.enter', ['$event'])
   enterKeyPressed(event: KeyboardEvent) {
@@ -25,6 +27,7 @@ export class FriendsComponent implements OnInit, AfterViewInit {
 
   constructor(
     private readonly friendsService: FriendsService,
+    private readonly inviteService: InvitesService,
     private readonly router: Router
   ) {
     this.search = '';
@@ -35,6 +38,7 @@ export class FriendsComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.loadFriend();
+    this.loadInvites();
   }
 
   ngAfterViewInit(): void {
@@ -58,6 +62,14 @@ export class FriendsComponent implements OnInit, AfterViewInit {
         this.users = resp;
       })
       .catch((err) => console.error(err));
+  }
+
+  async loadInvites(){
+    await this.inviteService
+      .getInvitesRecv()
+      .then((resp) => {
+        this.invites = resp;
+      })
   }
 
   async searchPlayer() {

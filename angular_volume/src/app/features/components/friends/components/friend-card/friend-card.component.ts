@@ -2,6 +2,8 @@ import { Component, Input, OnInit, AfterViewInit } from '@angular/core';
 import { FriendsService } from 'src/app/core/services/friends.service';
 import { Router } from '@angular/router';
 import { UserInfo } from 'src/app/models/userInfo.model';
+import { InvitesService } from 'src/app/core/services/game-invite.service';
+
 
 @Component({
   selector: 'app-friend-card',
@@ -18,7 +20,8 @@ export class FriendCardComponent implements OnInit, AfterViewInit {
 
   constructor(
     private readonly friendsService: FriendsService,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly invites: InvitesService
   ) {
     this.username = '';
     this.topVh = true;
@@ -41,6 +44,10 @@ export class FriendCardComponent implements OnInit, AfterViewInit {
     } else {
       height.style.top = '20vh';
     }
+  }
+
+  inviteToGame(){
+    this.invites.invite(this.username);
   }
 
   openFriendProfile() {

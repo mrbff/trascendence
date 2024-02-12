@@ -8,6 +8,7 @@ import { ChangeImageDirective } from './components/profile/components/profile-im
 import { FriendsComponent } from './components/friends/friends.component';
 import { FormsModule } from '@angular/forms';
 import { FriendCardComponent } from './components/friends/components/friend-card/friend-card.component';
+import { InviteCardComponent} from './components/friends/components/invite-card/invite-card.component';
 import { RequestCardComponent } from './components/friends/components/request-card/request-card.component';
 import { LeaderboardComponent } from './components/leaderboard/leaderboard.component';
 import { TwoFactorAuthComponent } from './components/profile/components/two-factor-auth/two-factor-auth.component';
@@ -41,6 +42,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     FriendsComponent,
     FriendCardComponent,
     RequestCardComponent,
+    InviteCardComponent,
     LeaderboardComponent,
     TwoFactorAuthComponent,
     UserButtonsComponent,

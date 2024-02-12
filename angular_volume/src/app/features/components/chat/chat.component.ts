@@ -168,6 +168,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.$subs.add(
       this.chatGateway.onMsgFromChannel().subscribe({
         next: (messages: any) => {
+          console.log(messages);
           this.messages = [...this.messages, ...messages.filter((message:any)=>{
             if (!this.selectedChannel){
               return message.members?.every((mem:string)=>mem === this.queryParams['username'] || mem === this.userService.getUser());
@@ -260,6 +261,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           }
           this.chatGateway.getTypesOfRealation(id, this.whoami.username).pipe(take(1)).subscribe({
             next:(data)=>{
+              console.log(data);
               if (data.type === 'BLOCKED'){
                 this.msgToShow = "You are blocked by this user you can't send a message to him";
                 setTimeout(()=> this.msgToShow = null, 2500);

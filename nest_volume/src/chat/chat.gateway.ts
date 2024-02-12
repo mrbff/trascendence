@@ -228,6 +228,23 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       });
   }
 
+  @SubscribeMessage('InviteMsg')
+  async handleInviteMsg(client: Socket, payload: { sender: string, username: string, invId: string }) {
+    const { sender, username } = payload;
+    const ch = await this.channelsService.findDirChannel(sender, username);
+    console.log({ch});
+    ch?.members?.map((member: any) => {
+      if (member.status === 'ACTIVE' || (member.user.username === username)) {
+        try {
+          userSocketMap[member.user.username].emit('MsgFromChannel', [{ user: sender,  msg: payload.invId, channelId: ch.id, from: sender, isInvite: true}]);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+    );
+  }
+
   @SubscribeMessage('ChannelModMsg')
   async handleModChannelMsg(client: Socket, payload: { sender: string, channel: string, message: string, username: string, status: string | null}) {
     const { sender, channel, message, username, status } = payload;

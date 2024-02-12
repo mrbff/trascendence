@@ -155,20 +155,20 @@ export class UserListComponent implements OnInit, OnDestroy{
 		dialogRef.afterClosed().subscribe(async (choise: string) => {
 			if (choise)
 			{
-				let invite = await this.invites.invite(player.name);
-				let socket = io('/pong', {
-					path: '/socket.io/',
-					query: {
-						gameMode : choise,
-						name: this.user.username,
-						id: this.user.id,
-						setup: true,
-						friendId: player.id,
-						invitedId: invite.id
-					},
-				});
-				socket.disconnect();
-				this.chatGateway.sendPrivMsg("invited", player.name)
+				// let invite = await this.invites.invite(player.name);
+				// let socket = io('/pong', {
+				// 	path: '/socket.io/',
+				// 	query: {
+				// 		gameMode : choise,
+				// 		name: this.user.username,
+				// 		id: this.user.id,
+				// 		setup: true,
+				// 		friendId: player.id,
+				// 		invitedId: invite.id
+				// 	},
+				// });
+				// socket.disconnect();
+				this.chatGateway.sendInviteMsg(player.name, "3");
 			}
 			else
 				console.error("Error creating invite");

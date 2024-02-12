@@ -72,7 +72,7 @@ export class AuthService {
     formData.append('client_id', environment.ft_client_id);
     formData.append('client_secret', environment.ft_client_secret);
     formData.append('code', code);
-    formData.append('redirect_uri', 'http://localhost:8080/login');
+    formData.append('redirect_uri', 'http://10.11.6.1:8080/login');
 
     const response = await firstValueFrom(
       this.httpService.post('https://api.intra.42.fr/oauth/token', formData),

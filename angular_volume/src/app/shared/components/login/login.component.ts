@@ -58,6 +58,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.route.queryParams.subscribe((params) => {
         const code = params['code'];
         if (code) {
+          console.log({code});
           //SEND CODE TO BACKEND FOR 42 API WORKFLOW
           this.Oauth2.codeForAccessToken(code)
             .then((response) => {

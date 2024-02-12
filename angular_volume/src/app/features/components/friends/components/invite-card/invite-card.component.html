@@ -1,0 +1,9 @@
+<div class="card-box">
+  <div class="profile-img">
+    <img [src]="profileImage" />
+  </div>
+  <div class="username" (click)="openProfile()">{{ username }}</div>
+  <div class="buttons">
+    <i class="fa-solid fa-check accept" (click)="onAccept()"></i>
+  </div>
+</div>

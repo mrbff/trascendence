@@ -41,6 +41,12 @@
           [username]="request.username"
           (reload)="loadFriend()"
         ></app-request-card>
+        <app-invite-card
+          class="request-card"
+          *ngFor="let invite of invites"
+          [username]="invite.username"
+          (reload)="loadInvites()">
+        </app-invite-card>
       </div>
     </div>
   </div>

@@ -257,8 +257,8 @@ export class ChannelsController {
           });
           const isBlockedByOther = blockOtherInfos?.blockedBy.find((block) => block.blocked.username === username);
           const isBlockingOther = blockOtherInfos?.blockedBy.find((block) => block.blocker.username === username);
-          const isBlockedByMe = blockMyInfos?.blockedBy.find((block) => block.blocked.username === username);
-          const isBlockingMe = blockMyInfos?.blockedBy.find((block) => block.blocker.username === username);
+          const isBlockedByMe = blockMyInfos?.blockedBy.find((block) => block.blocked.username === other?.user.username);
+          const isBlockingMe = blockMyInfos?.blockedBy.find((block) => block.blocker.username === other?.user.username);
 
           if (isBlockedByOther || isBlockedByMe) {
             return { type: 'BLOCKED' };

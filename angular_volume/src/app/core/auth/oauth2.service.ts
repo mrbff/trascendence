@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { lastValueFrom } from 'rxjs';
+import { catchError, lastValueFrom } from 'rxjs';
 import * as dotenv from 'dotenv';
 
 @Injectable({
@@ -14,6 +14,21 @@ export class OAuth2Service {
   }
 
   async codeForAccessToken(code: string): Promise<any> {
-    return lastValueFrom(this.http.post('/nest/auth/42', { code }));
+    console.log('codeForAccessToken:', code);
+    try {
+      const response = await lastValueFrom(this.http.post('/nest/auth/42', { code }).pipe(
+        catchError((error) => {
+          // Handle the error here or rethrow it
+          console.error('HTTP request error:', error);
+          throw error;
+        })
+      ));
+  
+      return response;
+    } catch (error) {
+      // Handle any errors that occurred during the try block
+      console.error('Error in codeForAccessToken:', error);
+      throw error;
+    }
   }
 }
