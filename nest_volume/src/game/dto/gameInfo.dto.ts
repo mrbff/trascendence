@@ -12,6 +12,7 @@ export interface GameInfo{
 	scene?: Scene;
 	mode?: string;
 	timer?: NodeJS.Timeout;
+	inviteGame: string | null;
 	winner: number;
 	renderFunction?: any;
 	playersReady: Set<string>;

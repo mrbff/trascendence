@@ -9,9 +9,10 @@ import { RedirectionGateway } from './oauthRedirection/redirection.gateway';
 import { FriendsModule } from './friends/friends.module';
 import { ChatModule } from './chat/chat.module';
 import { PongModule } from './game/game.module';
+import { InvitesModule } from './game/game-invite/game-invite.module';
 
 @Module({
-  imports: [PrismaModule, UsersModule, AuthModule, HttpModule, FriendsModule, ChatModule, PongModule],
+  imports: [PrismaModule, UsersModule, AuthModule, HttpModule, FriendsModule, ChatModule, PongModule, InvitesModule],
   controllers: [AppController],
   providers: [AppService, RedirectionGateway],
 })

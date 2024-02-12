@@ -43,26 +43,31 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   
 	async handleConnection(client: Socket) {
 		console.log(`\n\nClient connected(pong): ${client.id}`);
-		let element = {username: client.handshake.query.name as string, id:client.handshake.query.id as string, client: client}
+		let query = client.handshake.query
+		let element = {username: query.name as string, id:query.id as string, client: client}
 		for (var room of this.rooms)
 		{
 			if (room.data.id1.toString() === element.id){
+				if (room.data.inviteGame && query.invited != room.data.inviteGame)
+						continue ;
 				room.data.player1 = client;
 				client.join(room.name);
 				client.emit('opponent-found', {username: (await this.userData.findOne(room.data.id2)).username, seat: 1});
 				return
 			} else if (room.data.id2.toString() === element.id){
+				if (room.data.inviteGame && query.invited != room.data.inviteGame)
+						continue ;
 				room.data.player2 = client;
 				client.join(room.name);
 				client.emit('opponent-found', {username: (await this.userData.findOne(room.data.id1)).username, seat: 2});
 				return
 			}
 		}
-		if (client.handshake.query.setup){
+		if (query.setup){
 			this.inviteSetup(element);
 		}
 		else {
-			if (client.handshake.query.gameMode === "normal"){
+			if (query.gameMode === "normal"){
 				this.normalQueue.push(element);
 				this.matchmake(this.normalQueue, "normal");
 			}
@@ -117,7 +122,8 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				score2: 0,
 				winner: -1,
 				mode: user.client.handshake.query.gamemode as string,
-				playersReady: new Set()
+				playersReady: new Set(),
+				inviteGame: user.client.handshake.query.inviteId as string,
 			}});
 	}
 
@@ -151,7 +157,8 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 					score2: 0,
 					winner: -1,
 					mode: mode,
-					playersReady: new Set()
+					playersReady: new Set(),
+					inviteGame: null
 				}});
 			console.log(`\n\nMatch found! Players ${player1?.client.id} and ${player2?.client.id} are in room ${roomName}`);
 			player1?.client.emit('opponent-found', {username: player2.username, seat: 1});
@@ -397,10 +404,10 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		const speed = racket.metadata?.speed || 1;
 		switch (direction) {
 			case 'up':
-				racket.position.x -= 0.2 * speed;
+				racket.position.x -= 0.3 * speed;
 				break;
 			case 'down':
-				racket.position.x += 0.2 * speed;
+				racket.position.x += 0.3 * speed;
 				break;
 		}
 		racket.getChildMeshes().forEach((value)=> {value.refreshBoundingInfo()});

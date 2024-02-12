@@ -20,6 +20,7 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 	starting = false;
 	scene!: BABYLON.Scene;
 	gameMode: string = "";
+	invited!: string;
 
 	
 	constructor(
@@ -31,13 +32,13 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 	public async  ngOnInit() {
 		this.user = await this.userData.getUserInfo();
 
-	this.route.queryParams.subscribe((params) => {
-		//console.log(params);
-		if (params['invited']) {
-			this.gameMode = params['gameMode'];
-			this.start(); 
-		}
-		});
+		this.route.queryParams.subscribe((params) => {
+			console.log(params);
+			if (params['invited']) {
+				this.invited = this.invited;
+				this.start(); 
+			}
+			});
 	}
 
 	
@@ -58,8 +59,8 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 	
 	start() {
 		this.starting = true;
-		this.gate.connect(this.gameMode, this.user);
-		this.gate.onOpponentFound().subscribe((found) =>{ //look
+		this.gate.connect(this.gameMode, this.user, this.invited);
+		this.gate.onOpponentFound().subscribe((found) =>{
 			console.log('opponent found starting game');
 			this.opponentConnected = true;
 			});

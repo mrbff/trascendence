@@ -28,7 +28,7 @@ export class PongGateway {
 	constructor(private ngZone: NgZone,) {
 	}
 	
-	connect(gameMode: string, user: UserInfo) {
+	connect(gameMode: string, user: UserInfo, inviteId: string) {
 		this.gameMode = gameMode;
 		this.user = user;
 		
@@ -37,7 +37,7 @@ export class PongGateway {
 			reconnection: true,
 			reconnectionDelay: 60000,
 			timeout: 180000,
-			query: {gameMode, name: user.username, id: user.id},
+			query: {gameMode, name: user.username, id: user.id, invited: inviteId},
 			/*transports: ['websocket']*/
 			});
 		this.socket.on('disconnect', function (reason) {
@@ -476,13 +476,13 @@ export class PongGateway {
 			switch (direction) {
 				case 'up':
 					if (racket.position.x > -maxPos){
-						racket.position.x -= 0.2 * speed;
+						racket.position.x -= 0.3 * speed;
 						this.socket.emit('moveRacket', direction);
 					}
 					break;
 				case 'down':
 					if (racket.position.x < maxPos){
-						racket.position.x += 0.2 * speed;
+						racket.position.x += 0.3 * speed;
 						this.socket.emit('moveRacket', direction);
 					}
 					break;
