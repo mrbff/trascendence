@@ -5,6 +5,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FriendsService } from 'src/app/core/services/friends.service';
 import { UserInfo } from 'src/app/models/userInfo.model';
 import { io } from 'socket.io-client';
+import { MatDialog } from '@angular/material/dialog';
+import { GameInviteComponent } from '../game-invite/game-invite.component';
+import { InvitesService } from 'src/app/core/services/game-invite.service';
+
 
 
 @Component({
@@ -30,6 +34,8 @@ export class UserListComponent implements OnInit, OnDestroy{
 		private readonly router: Router,
 		private readonly friendsService: FriendsService,
 		private activatedRoute: ActivatedRoute,
+		private dialog: MatDialog,
+		private invites: InvitesService,
 	  ) {
 			this.players.push({ 
 				id: '',
@@ -145,18 +151,29 @@ export class UserListComponent implements OnInit, OnDestroy{
 	}
 
 	inviteToGame(player: any): void {
-		
+		const dialogRef = this.dialog.open(GameInviteComponent);
+		dialogRef.afterClosed().subscribe(async (choise: string) => {
+			if (choise)
+			{
+				let invite = await this.invites.invite(player.name);
+				let socket = io('/pong', {
+					path: '/socket.io/',
+					query: {
+						gameMode : choise,
+						name: this.user.username,
+						id: this.user.id,
+						setup: true,
+						friendId: player.id,
+						invitedId: invite.id
+					},
+				});
+				socket.disconnect();
+				this.chatGateway.sendPrivMsg("invited", player.name)
+			}
+			else
+				console.error("Error creating invite");
+		})
 		console.log('inviteToGame:', player.name);
-		let socket = io('/pong', {
-			path: '/socket.io/',
-			query: {
-				/*gameMode,*/
-				name: this.user.username,
-				id: this.user.id,
-				setup: true,
-				friendId: player.id
-			},
-		});
 	}
 
 	async block(player: any): Promise<void>{

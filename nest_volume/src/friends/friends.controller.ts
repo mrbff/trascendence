@@ -17,7 +17,7 @@ export class FriendsController {
   @Post('invite')
   @UseGuards(JwtAuthGuard)
   @ApiOkResponse()
-  async inviteFriend(
+  async invite(
     @GetUser() user: User,
     @Body('friend') friendName: string,
   ) {
