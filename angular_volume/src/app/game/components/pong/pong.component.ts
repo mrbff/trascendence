@@ -32,7 +32,7 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 		this.user = await this.userData.getUserInfo();
 
 	this.route.queryParams.subscribe((params) => {
-		console.log(params);
+		//console.log(params);
 		if (params['invited']) {
 			this.gameMode = params['gameMode'];
 			this.start(); 
