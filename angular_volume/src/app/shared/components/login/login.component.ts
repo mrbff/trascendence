@@ -131,12 +131,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.userService.setUser(response.username);
     this.status.setStatus(this.userService.getUserId(), true);
     this.userService.getUserInfo().then(async (resp) => {
-      // IF NO PROFILE IMAGE SET DEFAULT
-      if (resp.img === '') {
-        const img =
-          'https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif';
-        await this.userService.setUserAvatar(resp.id, img);
-      }
     });
     this.router.navigate(['/transcendence/home/']);
   }

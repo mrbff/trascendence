@@ -357,7 +357,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				room.data.winner = room.data.score1 >= 10 ? 1 : 2;
 				let tempSock = room.data.player2;
 				let matchId = await this.createMatchHistory(room, undefined);
-				this.server.to(room.name).emit('finished', {winned: room.data.winner, matchId: matchId});
+				this.server.to(room.name).emit('finished', {winner: room.data.winner, matchId: matchId});
 				room.data.player1.disconnect();
 				tempSock.disconnect();
 			}

@@ -37,6 +37,7 @@ export class MatchHistoryComponent implements OnInit{
 				this.matchHistory[i].User2 = (await this.userService.getOther(match.User2Id)).username;
 			} else {
 				this.matchHistory[i].User2 = this.user.username;
+				console.log(match.User1Id)
 				this.matchHistory[i].User1 = (await this.userService.getOther(match.User1Id)).username;
 			}
 		});

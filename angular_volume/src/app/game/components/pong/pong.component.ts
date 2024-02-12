@@ -59,7 +59,7 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 	start() {
 		this.starting = true;
 		this.gate.connect(this.gameMode, this.user);
-		this.gate.onOpponentFound().subscribe((found) =>{
+		this.gate.onOpponentFound().subscribe((found) =>{ //look
 			console.log('opponent found starting game');
 			this.opponentConnected = true;
 			});

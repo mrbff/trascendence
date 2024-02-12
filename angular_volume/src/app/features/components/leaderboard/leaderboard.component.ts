@@ -25,8 +25,7 @@ export class LeaderboardComponent implements OnInit {
       const bWinRatio = getWinRatio(b);
       
       return bWinRatio - aWinRatio;
-  });
-  
+    });
   }
 
   openProfile(player: string) {
