@@ -203,7 +203,7 @@ export class PongGateway {
 		exitBtn.fontSize = "20px";
 		exitBtn.isVisible = false;
 		exitBtn.onPointerUpObservable.add( () =>{
-			window.location.href = '/trascendence/home';
+			window.location.href = '/transcendence/home';
 		});
 		victoryScreen.addControl(exitBtn);
 

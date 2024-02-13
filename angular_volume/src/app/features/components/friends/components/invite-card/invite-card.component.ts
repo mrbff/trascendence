@@ -35,7 +35,7 @@ export class InviteCardComponent implements OnInit {
       .acceptInvite(this.username)
       .then(() => {
 		this.reload.emit();
-		this.router.navigate(['/trascendence/pong'], {queryParams: {invited: this.inviteId}});
+		this.router.navigate(['/transcendence/pong'], {queryParams: {invited: this.inviteId}});
 	 	});
   }
 
