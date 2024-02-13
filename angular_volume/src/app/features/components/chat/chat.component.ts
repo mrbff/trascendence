@@ -115,8 +115,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         if (username !== undefined) {
           this.userService.getUserByUsername(username).pipe(take(1)).subscribe({
             next:async (user)=>{
-              this.chatGateway.sendPrivMsg("", this.search);
-              const ch = await this.chatGateway.getChatByNames(this.userService.getUser(), username, "DIRECT");
+              const ch = await this.chatGateway.getChatOrCreate(this.userService.getUser(), username, "DIRECT");
               this.selectedChannel = ch;
               const id = ch.id;
               this.chatGateway.receiveChannelMsg(id);
@@ -413,8 +412,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       const user = await this.userService.getUserByUsernamePromise(this.search);
       if (user !== null) {
         this.isGroup = false;
-        this.chatGateway.sendPrivMsg("", this.search);
-        const newChannel = await this.chatGateway.getChatByNames(username, this.search, "DIRECT");
+        const newChannel = await this.chatGateway.getChatOrCreate(username, this.search, "DIRECT");
         this.router.navigate(
           [], 
           {

@@ -1,6 +1,5 @@
-import { channel } from 'diagnostics_channel';
 import { Channel, User, UserRole } from '@prisma/client';
-import { ConsoleLogger, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UsersService } from "src/users/users.service";
 import { UserStatus } from '@prisma/client';

@@ -55,6 +55,7 @@ export class FriendCardComponent implements OnInit, AfterViewInit {
   }
 
   openFriendChat() {
+    //converto to id
     this.router.navigate(['/transcendence/chat/'], {
       queryParams: { username: this.username },
     });

@@ -188,6 +188,12 @@ export class ChatGateway {
     });
   }
 
+  getChatOrCreate(user: string, otherusername: string, type: string): Promise<any> {
+    return lastValueFrom(this.httpClient.get(`/nest/channels/getChatOrCreate/${user}`, {
+      params: { user: user, otherusername: otherusername, type: type },
+    }));
+  }
+
   getChatByNames(user: string, otherusername: string, type: string): Promise<any> {
     return lastValueFrom(this.httpClient.get(`/nest/channels/getChat/${user}`, {
       params: { user: user, otherusername: otherusername, type: type },

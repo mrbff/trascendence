@@ -136,8 +136,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 		if (this.isGroupChat) {
 			let channel = await this.chatGateway.getChatByNames(this.user.username, player.name, "DIRECT");
 			if (channel === null) {
-				this.chatGateway.sendPrivMsg("", player.name);
-				channel = await this.chatGateway.getChatByNames(this.user.username, player.name, "DIRECT");
+				channel = await this.chatGateway.getChatOrCreate(this.user.username, player.name, "DIRECT");
 			}
 			this.chatGateway.getChannelById(channel.id);
 			this.router.navigate(

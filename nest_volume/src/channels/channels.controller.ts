@@ -17,6 +17,7 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GetUser } from 'src/users/users.decorator';
 import { UsersService } from 'src/users/users.service';
+import { use } from 'passport';
 
 @Controller('channels')
 @ApiTags('channels')
@@ -97,6 +98,81 @@ export class ChannelsController {
         });
         
         return channelMembers;
+    }
+
+    @Get('getChatOrCreate/:username')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOkResponse()
+    async getChatOrCreate(
+      @Param('username') username: string,
+      @Query('otherusername') otherusername: string,
+      @Query('type') type: string,
+    ) {
+      if (type === 'DIRECT') {
+        try {
+          const channel = await this.prisma.channel.findFirstOrThrow({
+            where: {
+              type: type as 'DIRECT' | 'PUBLIC' | 'PRIVATE',
+              AND: [
+                {
+                  members: {
+                    some: {
+                      user: {
+                        username: username,
+                      },
+                    },
+                  },
+                },
+                {
+                  members: {
+                    some: {
+                      user: {
+                        username: otherusername,
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          });
+          return channel;
+        } catch (error: any) {
+          const user = await this.prisma.user.findUnique({
+            where: {
+              username: username,
+            },
+          });
+          const otherUser = await this.prisma.user.findUnique({
+            where: {
+              username: otherusername,
+            },
+          });
+          const newChannel = await this.prisma.channel.create({
+            data: {
+              type: type as any,
+            },
+          });
+          console.log(newChannel.id, user!.id, otherUser!.id)
+          await this.prisma.channelMembership.create({
+            data: {
+              user: { connect: { id: user!.id } },
+              channel: { connect: { id: newChannel.id } },
+              status: 'ACTIVE',
+              role: 'MEMBER',
+            }
+          });
+          await this.prisma.channelMembership.create({
+            data: {
+              user: { connect: { id: otherUser!.id } },
+              channel: { connect: { id: newChannel.id } },
+              status: 'ACTIVE',
+              role: 'MEMBER',
+            }
+          });
+          return newChannel;
+        }
+      }
     }
 
     @Get('getChat/:username')
