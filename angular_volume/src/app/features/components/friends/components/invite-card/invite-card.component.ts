@@ -9,8 +9,10 @@ import {InvitesService} from 'src/app/core/services/game-invite.service'
 })
 export class InviteCardComponent implements OnInit {
   @Input() username: string;
+  @Input() profileImage!: string;
+  @Input() inviteId!: string;
   @Output() reload = new EventEmitter<void>();
-  profileImage!: string;
+
 
   constructor(
     private readonly inviteService: InvitesService,
@@ -20,18 +22,21 @@ export class InviteCardComponent implements OnInit {
   }
 
   async ngOnInit() {
-    await this.inviteService
-      .getInvitesRecv()
-      .then((resp) => {
-        this.profileImage = resp.img;
-      })
-      .catch((err) => console.error(err));
+    // await this.inviteService
+    //   .getInvitesRecv()
+    //   .then((resp) => {
+    //     this.profileImage = resp.img;
+    //   })
+    //   .catch((err) => console.error(err));
   }
 
   async onAccept() {
     await this.inviteService
       .acceptInvite(this.username)
-      .then(() => this.reload.emit());
+      .then(() => {
+		this.reload.emit();
+		this.router.navigate(['/trascendence/pong'], {queryParams: {invited: this.inviteId}});
+	 	});
   }
 
   // async onRefuse() {

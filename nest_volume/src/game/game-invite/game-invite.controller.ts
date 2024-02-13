@@ -58,14 +58,14 @@ export class InvitesController {
   @Get('requests/received')
   @UseGuards(JwtAuthGuard)
   @ApiOkResponse()
-  async getReceivedFriendRequests(@GetUser() user: User) {
+  async getReceivedInvite(@GetUser() user: User) {
     return await this.invitesService.getReceivedInvite(user.id);
   }
 
   @Get('requests/sent')
   @UseGuards(JwtAuthGuard)
   @ApiOkResponse()
-  async getSentFriendRequests(@GetUser() user: User) {
+  async getSentInvite(@GetUser() user: User) {
     return await this.invitesService.getSentInvite(user.id);
   }
 

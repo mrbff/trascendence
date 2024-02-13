@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { UserService } from '../../../../../core/services/user.service';
 import { Router } from '@angular/router';
+import { InvitesService } from 'src/app/core/services/game-invite.service';
 
 @Component({
   selector: 'app-message',
@@ -15,7 +16,10 @@ export class MessageComponent implements OnInit {
   isModerator!: boolean;
   isInvite = false;
 
-  constructor(private readonly userService: UserService, private readonly router: Router) {
+  constructor(
+		private readonly userService: UserService,
+		private readonly router: Router,
+		private readonly inviteService: InvitesService) {
     this.currentUser = false;
     this.otherUser = false;
     this.isModerator = false;
@@ -40,6 +44,8 @@ export class MessageComponent implements OnInit {
   }
 
   redirectToGame() {
-    this.router.navigate(['/trascendence/pong'], {queryParams: {invited: this.message.msg}} )
+    this.router.navigate(['/trascendence/pong'], {queryParams: {invited: this.message.msg}})
+	if (!this.currentUser)
+		this.inviteService.acceptInvite(this.username);
   }
 }

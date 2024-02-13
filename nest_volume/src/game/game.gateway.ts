@@ -93,12 +93,30 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 						if (room.data.player1 === client){
 							let other = room.data.player2;
 							other.emit('opp-disconnect');
+							if (room.data.inviteGame)
+							this.prisma.gameinvite.deleteMany({
+								where: {
+								OR: [
+									{ senderId: room.data.id1, receiverId: room.data.id2 },
+									{ senderId: room.data.id2, receiverId: room.data.id1 },
+								],
+								},
+							});
 							this.userData.updateWinLoss(room.data.id1, {res: "Lost", matchId: matchID})
 							this.userData.updateWinLoss(room.data.id2, {res: "Won", matchId: matchID})
 						} 
 						else {
 							let other = room.data.player1;
 							other.emit('opp-disconnect');
+							if (room.data.inviteGame)
+							this.prisma.gameinvite.deleteMany({
+								where: {
+								OR: [
+									{ senderId: room.data.id1, receiverId: room.data.id2 },
+									{ senderId: room.data.id2, receiverId: room.data.id1 },
+								],
+								},
+							});
 							this.userData.updateWinLoss(room.data.id2, {res: "Lost", matchId: matchID})
 							this.userData.updateWinLoss(room.data.id1, {res: "Won", matchId: matchID})
 						}
@@ -364,6 +382,15 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				room.data.winner = room.data.score1 >= 10 ? 1 : 2;
 				let tempSock = room.data.player2;
 				let matchId = await this.createMatchHistory(room, undefined);
+				if (room.data.inviteGame)
+					this.prisma.gameinvite.deleteMany({
+						where: {
+						OR: [
+							{ senderId: room.data.id1, receiverId: room.data.id2 },
+							{ senderId: room.data.id2, receiverId: room.data.id1 },
+						],
+						},
+					});
 				this.server.to(room.name).emit('finished', {winner: room.data.winner, matchId: matchId});
 				room.data.player1.disconnect();
 				tempSock.disconnect();

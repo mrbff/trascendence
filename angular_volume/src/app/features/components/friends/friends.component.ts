@@ -15,6 +15,7 @@ export class FriendsComponent implements OnInit, AfterViewInit {
   cardContainer!: any;
   requestContainer!: any;
   friend: boolean;
+  inv: boolean;
   noFriends: boolean;
   friendRequests: any;
   invites: any;
@@ -33,6 +34,7 @@ export class FriendsComponent implements OnInit, AfterViewInit {
     this.search = '';
     this.placeholder = 'Search player';
     this.friend = false;
+	this.inv = false;
     this.noFriends = true;
   }
 
@@ -68,6 +70,7 @@ export class FriendsComponent implements OnInit, AfterViewInit {
     await this.inviteService
       .getInvitesRecv()
       .then((resp) => {
+        this.inv = resp.length !== 0 ? true : false;
         this.invites = resp;
       })
   }

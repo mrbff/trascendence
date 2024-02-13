@@ -120,7 +120,7 @@ import {
 		  },
 		},
 	  });
-  
+	  console.log(gameinvites);
 	  const friendRequests = gameinvites.map((gameinvite) => gameinvite.sender);
 	  return friendRequests;
 	}
