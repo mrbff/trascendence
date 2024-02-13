@@ -31,7 +31,7 @@ export class PongGateway {
 	connect(gameMode: string, user: UserInfo, inviteId: string) {
 		this.gameMode = gameMode;
 		this.user = user;
-		
+		console.log(user);
 		this.socket = io('/pong', {
 			path: '/socket.io/',
 			reconnection: true,

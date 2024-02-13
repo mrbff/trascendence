@@ -9,6 +9,8 @@ services:
           - post
     env_file:
       - .env
+    environment:
+      - IP=${IP}
     restart: unless-stopped
     ports:
       - "5432:5432"
@@ -25,6 +27,8 @@ services:
           - nest
     env_file:
       - .env
+    environment:
+      - IP=${IP}
     volumes:
       - nest_volume:/usr/src/app/
     restart: unless-stopped
@@ -44,6 +48,8 @@ services:
       transcendence_network:
         aliases:
           - angular
+    environment:
+      - IP=${IP}
     volumes:
       - angular_volume:/usr/src/app/
     restart: unless-stopped
@@ -64,6 +70,8 @@ services:
           - ngx
     env_file:
       - .env
+    environment:
+      - IP=${IP}
     restart: unless-stopped
 
 networks:

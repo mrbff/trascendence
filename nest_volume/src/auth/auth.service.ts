@@ -67,12 +67,17 @@ export class AuthService {
   }
 
   async exchangeCodeForAccessToken(code: string): Promise<any> {
+    interface ProcessEnv {
+      [key: string]: string | undefined;
+    }
+    const IP = process.env.IP;
     const formData = new FormData();
     formData.append('grant_type', 'authorization_code');
     formData.append('client_id', environment.ft_client_id);
     formData.append('client_secret', environment.ft_client_secret);
     formData.append('code', code);
-    formData.append('redirect_uri', 'http://10.11.6.1:8080/login');
+    console.log(`http://${IP}:8080/login`);
+    formData.append('redirect_uri', `http://${IP}:8080/login`);
 
     const response = await firstValueFrom(
       this.httpService.post('https://api.intra.42.fr/oauth/token', formData),

@@ -289,27 +289,6 @@ export class ChannelsController {
               return member.user.username;
             }
           });
-          const blockOtherInfos = await this.prisma.user.findUnique({
-            where: {
-              username: other?.user.username,
-            },
-            include: {
-              blockedBy: {
-                include: {
-                  blocked: {
-                    select: {
-                      username: true,
-                    },
-                  },
-                  blocker: {
-                    select: {
-                      username: true,
-                    },
-                  },
-                }
-              },
-            },
-          });
           const blockMyInfos = await this.prisma.user.findUnique({
             where: {
               username: username,
@@ -329,17 +308,29 @@ export class ChannelsController {
                   },
                 }
               },
+              blockedUsers: {
+                include: {
+                  blocker: {
+                    select: {
+                      username: true,
+                    },
+                  },
+                  blocked: {
+                    select: {
+                      username: true,
+                    },
+                  },
+                }
+              },
             },
           });
-          const isBlockedByOther = blockOtherInfos?.blockedBy.find((block) => block.blocked.username === username);
-          const isBlockingOther = blockOtherInfos?.blockedBy.find((block) => block.blocker.username === username);
-          const isBlockedByMe = blockMyInfos?.blockedBy.find((block) => block.blocked.username === other?.user.username);
-          const isBlockingMe = blockMyInfos?.blockedBy.find((block) => block.blocker.username === other?.user.username);
+          const isBlockedByOther = blockMyInfos?.blockedBy.find((block) => block.blocked.username === other?.user.username);
+          const isBlockingMe = blockMyInfos?.blockedUsers.find((block) => block.blocker.username === other?.user.username);
 
-          if (isBlockedByOther || isBlockedByMe) {
+          if (isBlockedByOther) {
             return { type: 'BLOCKED' };
           }
-          if (isBlockingOther || isBlockingMe) {
+          if (isBlockingMe) {
             return { type: 'BLOCKING' };
           }
         }

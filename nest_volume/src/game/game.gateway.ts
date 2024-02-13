@@ -44,6 +44,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	async handleConnection(client: Socket) {
 		console.log(`\n\nClient connected(pong): ${client.id}`);
 		let query = client.handshake.query
+		console.log("QUERY => ", query);
 		let element = {username: query.name as string, id:query.id as string, client: client}
 		for (var room of this.rooms)
 		{
@@ -155,7 +156,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
 
  	private matchmake(queue: {username: string, id: string, client: Socket}[], mode: string) {
-		console.log(queue);
+		console.log("QUEUE => ", queue);
 		if (queue.length >= 2) {
 			const player1 = queue[0];
 			const player2 = queue[1];
