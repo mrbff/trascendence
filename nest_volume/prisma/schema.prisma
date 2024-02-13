@@ -16,7 +16,7 @@ model User {
   email                  String              @unique
   hash                   String
   hashedRt               String?
-  img                    String              @default("")
+  img                    String              @default("https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif")
   isOnline               Boolean             @default(false)
   isPlaying              Boolean             @default(false)
   Wins                   Int                 @default(0)
