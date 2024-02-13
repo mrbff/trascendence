@@ -3,6 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UsersService } from "src/users/users.service";
 import { UserStatus } from '@prisma/client';
+import { userInfo } from 'os';
 
 
 @Injectable()
@@ -32,6 +33,30 @@ export class ChannelsService {
       data:{
         muteEndTime: new Date(Date.now() + 1000 * 60 * 15)
       }
+    });
+  }
+
+  async updateInviteStatus(channelId: string, id: number, sender: string, username: string) {
+    console.log("updateInviteStatus");
+    console.log(channelId, id, sender, username);
+    await this.prisma.message.update({
+      where:{
+        id: id
+      },
+      data:{
+        isInvite: 'OUTDATED',
+      }
+    });
+    const other = await this.prisma.user.findUnique({ where:{ username: username }});
+    const user = await this.prisma.user.findUnique({ where:{ username: sender }});
+    console.log(user?.id, other?.id);
+    await this.prisma.gameinvite.delete({
+      where: {
+        senderId_receiverId: {
+        senderId: other!.id,
+        receiverId: user!.id,
+        },
+      },
     });
   }
 
@@ -71,7 +96,6 @@ export class ChannelsService {
   }
 
   async changePassword(id: string, password: string, channelType: string) {
-    console.log(id, password, channelType);
     return this.prisma.channel.update({
       where: {
         id: id,
@@ -193,11 +217,51 @@ export class ChannelsService {
         senderId: sender.id,
         channelId: channel.id,
         content: content,
-        isModer: true
+        isModer: true,
+        isInvite: "FALSE"
+      },
+    });
+  }
+
+  async createInviteChannelMessage(channelId:string, content:string, username:string) {
+    const channel = await this.prisma.channel.findUniqueOrThrow({
+      where: {
+        id: channelId
+      }
+    });
+    
+    const sender = await this.usersService.findUserByName(username);
+    await this.prisma.channel.update({
+      data:{
+        lastSeen: []
+      },
+      where:{
+        id: channelId
+      }
+    });
+
+    return this.prisma.message.create({
+      data: {
+        senderId: sender.id,
+        channelId: channel.id,
+        content: content,
+        isInvite: "PENDING"
       },
     });
   }
   
+  async createGameInvite(username: string, sender: string) {
+    const user = await this.usersService.findUserByName(username);
+    const receiver = await this.usersService.findUserByName(sender);
+      await this.prisma.gameinvite.create({
+      data: {
+        senderId: user.id,
+        receiverId: receiver.id,
+        status: 'PENDING',
+      },
+    });
+}
+
   async createChannelMessage(channelId:string, content:string, username:string) {
     const channel = await this.prisma.channel.findUniqueOrThrow({
       where: {
@@ -218,9 +282,11 @@ export class ChannelsService {
       data: {
         senderId: sender.id,
         channelId: channel.id,
-        content: content
+        content: content,
+        isInvite: "FALSE"
       },
     });
+    
   }
 
   async createDirectMessage(receiverName: string, content: string, username: string) {
@@ -258,6 +324,7 @@ export class ChannelsService {
         channelId: channel.id,
         senderId: sender.id,
         content: content,
+        isInvite: "FALSE"
       },
     });
     return {newChannel, 
@@ -377,7 +444,7 @@ export class ChannelsService {
     if (!user){
       return null;
     }
-    return await this.prisma.channel.findMany({
+    const channel = await this.prisma.channel.findMany({
       where:{
         members:{
           some:{
@@ -396,8 +463,12 @@ export class ChannelsService {
             }
           }
         },
+        messages: {
+          take: 1,
+        }
       }
-    })
+    });
+    return channel;
   }
 
   async getLastSeen(id: string){
@@ -431,7 +502,7 @@ export class ChannelsService {
       });
       return updatedChannel;
     } catch (error) {
-      console.log('Failed to update channel last seen.');
+        console.log('Failed to update channel last seen.');
       return null;
     }
   }

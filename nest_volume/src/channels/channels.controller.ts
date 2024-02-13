@@ -58,6 +58,35 @@ export class ChannelsController {
         return channel;
   }
 
+  @Get('getChannelByIds/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOkResponse()
+  async getChannelByIds(
+    @Param('id') id: string,
+  ) {
+    const channel = await this.prisma.channel.findUnique({
+      where: {
+        id: id,
+      },
+      include:{
+        members: {
+          include:{
+            user: {
+              select:{
+                username: true
+              }
+            }
+          }
+        },
+        messages: {
+          take: 1,
+        }
+      }
+    });
+    return channel;
+  }
+
   @Get(':channelsId')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
@@ -153,7 +182,6 @@ export class ChannelsController {
               type: type as any,
             },
           });
-          console.log(newChannel.id, user!.id, otherUser!.id)
           await this.prisma.channelMembership.create({
             data: {
               user: { connect: { id: user!.id } },
@@ -324,13 +352,13 @@ export class ChannelsController {
               },
             },
           });
-          const isBlockedByOther = blockMyInfos?.blockedBy.find((block) => block.blocked.username === other?.user.username);
-          const isBlockingMe = blockMyInfos?.blockedUsers.find((block) => block.blocker.username === other?.user.username);
+          const isBlocked = blockMyInfos?.blockedBy.find((block) => block.blocked.username === username && block.blocker.username === other?.user.username);
+          const isBlocking = blockMyInfos?.blockedUsers.find((block) => block.blocker.username === username && block.blocked.username === other?.user.username);
 
-          if (isBlockedByOther) {
+          if (isBlocked) {
             return { type: 'BLOCKED' };
           }
-          if (isBlockingMe) {
+          if (isBlocking) {
             return { type: 'BLOCKING' };
           }
         }

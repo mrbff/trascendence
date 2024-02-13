@@ -1,45 +1,67 @@
 <ng-container *ngIf="currentUser; else otherUser">
-
-  <ng-container *ngIf="message.isInvite; else normal">
-    <section class="message mine">
-        <h2>Private game</h2>
+  <ng-container [ngSwitch]="message.isInvite">
+    <section *ngSwitchCase="'PENDING'" class="message mine invite">
+      <section *ngIf="currentTime$ < (message.time + 10000)">
+        <h2>Private game </h2>
         <div>
           <button (click)="redirectToGame()">Go to game</button>
         </div>
-    </section>
+      </section>
+      </section>
+      <section *ngSwitchCase="'ACCEPTED'" class="message mine invite">
+        <h2>Private game</h2>
+        <div>
+          <button>Invite already accepted</button>
+        </div>
+      </section>
+      <section *ngSwitchCase="'OUTDATED'" class="message mine invite">
+        <h2>Private game</h2>
+        <div>
+          <button>Invite Outdated</button>
+        </div>
+      </section>
+      <ng-container  *ngSwitchDefault>
+        <section class="message mine">
+          <span class="message-content">{{ message.msg }}</span>
+        </section>
+      </ng-container>
   </ng-container>
-
-  <ng-template #normal>
-    <section *ngIf="message.msg !== ''" class="message mine">
-      <span class="message-content">{{ message.msg }}</span>
-    </section>
-  </ng-template>
-
 </ng-container>
 <ng-template #otherUser>
   <ng-container *ngIf="!message.isModer; else isModer">
 
-    <ng-container *ngIf="message.isInvite; else normal">
-      <section  class="message other">
+    <ng-container [ngSwitch]="message.isInvite">
+      <section *ngSwitchCase="'PENDING'" class="message other invite">
           <h2>Private game</h2>
           <div>
-            <button (click)="redirectToGame()">Accept</button>
+            <button (click)="redirectToGame()">Go to game</button>
           </div>
-      </section>
-    </ng-container>
-
-    <ng-template  #normal >
-        <section *ngIf="message.msg !== ''" class="message other">
-          <span *ngIf="!currentUser" class="username">{{ message.user }}</span>
-          <span class="message-content">{{ message.msg }}</span>
-          <span *ngFor="let mebmer of message.mebmers"> {{mebmer}}</span>
         </section>
-    </ng-template>
-
+        <section *ngSwitchCase="'ACCEPTED'" class="message other invite">
+          <h2>Private game</h2>
+          <div>
+            <button>Invite already accepted</button>
+          </div>
+        </section>
+        <section *ngSwitchCase="'OUTDATED'" class="message other invite">
+          <h2>Private game</h2>
+          <div>
+            <button>Invite Outdated</button>
+          </div>
+        </section>
+        <ng-container  *ngSwitchDefault>
+          <section class="message other">
+            <span *ngIf="!currentUser" class="username">{{ message.user }}</span>
+            <span class="message-content">{{ message.msg }}</span>
+            <span *ngFor="let mebmer of message.mebmers"> {{mebmer}}</span>
+          </section>
+        </ng-container>
+    </ng-container>
 </ng-container>
 <ng-template #isModer>
-  <section *ngIf="message.msg !== ''" class="message mod">
+  <section class="message mod">
     <span class="message-content">{{ message.msg }}</span>
     <span *ngFor="let mebmer of message.mebmers"> {{mebmer}}</span>
   </section>
+  </ng-template>
 </ng-template>

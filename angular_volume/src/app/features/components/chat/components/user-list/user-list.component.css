@@ -208,3 +208,219 @@
 	margin-bottom: 10px;
 	width: 100%;
 }
+
+/*---------------------MEDIA-------------------------*/
+
+
+@media (max-width: 650px) {
+	.player-column {
+		display: grid;
+		grid-template-columns: 1fr;
+		grid-template-rows: 5fr;
+		border-radius: 20px;
+		background-color: rgba(24, 25, 26, 0.9);
+		border: 2px solid black;
+	
+	}
+	  
+	.player-title {
+		grid-column: 1 / 2;
+		grid-row: 1 / 1;
+		text-align: center;
+		border-bottom: 2px solid black;
+		border-top-right-radius: 20px;
+		background-size: cover;
+		background-repeat: no-repeat;
+		background-position: center center;
+		background-image: url("/assets/giphy2.gif");
+		backdrop-filter: blur(50px);
+		-webkit-text-stroke: 1px black;
+	}
+	
+	.player-title p {
+		position: relative;
+		top: 5px;
+		font-size: 25px;
+		color: darkslateblue;
+		text-shadow: 0 0 10px #fff, 0 0 20px #00c4ff, 0 0 30px #00c4ff,
+		  0 0 40px #00c4ff, 0 0 70px #00c4ff, 0 0 80px #00c4ff, 0 0 100px #00c4ff;
+	}
+	
+	.player-list {
+		cursor: pointer;
+		grid-row: 4 / 5;
+		overflow-y: auto !important;
+		overflow-x: hidden;
+		display: grid;
+		flex-direction: column;
+	}
+	  
+	.player-items {
+		box-sizing: border-box;
+		margin: 20px;
+		border-bottom: 2px solid black;
+		padding-bottom: 28px;
+		width: 100%; 
+	}
+	
+	.player-items:last-child {
+		border-bottom: none;
+		padding-bottom: 0;
+	}
+	
+	.player-menu {
+		cursor: pointer;
+		display: none;
+		position: absolute;
+		background-color: #333;
+		padding: 10px;
+		border-radius: 5px;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+		z-index: 1;
+	}
+	  
+	.player-list div:hover .player-menu {
+		display: block;
+		margin-left: 10px;
+	}
+	
+	.invateToGame {
+		background-color: darkslateblue; 
+		color: orange; 
+		padding: 15px 30px;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		margin-bottom: 10px;
+		width: 100%;
+	}
+	
+	.profile {
+		background-color: darkslateblue;
+		color: orange;
+		padding: 10px 20px;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		margin-bottom: 10px;
+		margin-right: 10px;
+		width: 50%;
+	}
+	
+	.DM {
+		background-color: darkslateblue;
+		color: orange;
+		padding: 10px 20px;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		margin-bottom: 10px;
+		width: 44%;
+	}
+	
+	.block {
+		background-color: rgb(131, 12, 12); 
+		color: orange; 
+		padding: 15px 30px;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		margin-right: 5px;
+		margin-bottom: 10px;
+		width: 100%;
+	}
+	
+	.unblock {
+		background-color: rgb(42, 100, 25); 
+		color: orange; 
+		padding: 15px 30px;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		margin-right: 5px;
+		margin-bottom: 10px;
+		width: 100%;
+	}
+	
+	.mute {
+		flex-grow: 1;
+		background-color: rgb(179, 79, 32);
+		color: orange;
+		padding: 10px 20px;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		margin-bottom: 10px;
+		margin-right: 10px;
+		width: 50%;
+	}
+	
+	.unmute {
+		flex-grow: 1;
+		background-color: rgb(87, 138, 57);
+		color: orange;
+		padding: 10px 20px;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		margin-bottom: 10px;
+		margin-right: 10px;
+		width: 50%;
+	}
+	
+	.kick {
+		flex-grow: 1;
+		background-color: darkslateblue;
+		color: orange;
+		padding: 10px 20px;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		margin-bottom: 10px;
+		width: 44%;
+	}
+	
+	.ban {
+		background-color: darkslateblue; 
+		color: orange; 
+		padding: 15px 30px;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		margin-bottom: 10px;
+		width: 100%;
+	}
+	
+	.unban {
+		background-color: rgb(8, 88, 82); 
+		color: orange; 
+		padding: 15px 30px;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		margin-bottom: 10px;
+		width: 100%;
+	}
+	
+	.set_admin {
+		background-color: darkslateblue; 
+		color: orange; 
+		padding: 15px 30px;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		margin-bottom: 10px;
+		width: 100%;
+	}
+	
+	.rm_admin {
+		background-color: rgb(128, 28, 45); 
+		color: orange; 
+		padding: 15px 30px;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		margin-bottom: 10px;
+		width: 100%;
+	}
+}

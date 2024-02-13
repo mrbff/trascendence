@@ -61,8 +61,8 @@ export class ChatGateway {
     this.socket.emit('ChannelModMsg', { sender:this.userService.getUser(), channel:channel, message:message, username:username, status:status });
   }
 
-  sendInviteMsg(username: string, inviteId: string) {
-    this.socket.emit('InviteMsg', { sender:this.userService.getUser(), username:username, invId: inviteId });
+  sendInviteMsg(channelId : string, username: string, inviteId: string) {
+    this.socket.emit('InviteMsg', { channelId: channelId, sender:this.userService.getUser(), username:username, invId: inviteId });
   }
 
   createNewChannel(channelName:string, users:string[], creator:string, groupType:string, password:string) {
@@ -83,9 +83,9 @@ export class ChatGateway {
     });
   }
 
-  sendPrivMsg(message:string, receiver:string) {
-    this.socket.emit('PrivMsg', { sender:this.userService.getUser(), receiver:receiver, message:message });
-  }
+  // sendPrivMsg(message:string, receiver:string) {
+  //   this.socket.emit('PrivMsg', { sender:this.userService.getUser(), receiver:receiver, message:message });
+  // }
 
   onChannelId() {
     return new Observable((observer) => {
@@ -202,6 +202,10 @@ export class ChatGateway {
 
   getChannelByNameHttp(name: string): Promise<any> {
     return lastValueFrom(this.httpClient.get(`/nest/channels/getChannel/${name}`));
+  }
+
+  getChannelByIds(id: string): Observable<any> {
+    return this.httpClient.get<any>(`/nest/channels/getChannelByIds/${id}`);
   }
 
   getTypesOfRealation (channelId : string, username: string) : Observable<any> {

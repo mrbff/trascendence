@@ -1,3 +1,5 @@
+import { NavbarComponent } from './../../../shared/components/navbar/navbar.component';
+import { channel } from 'diagnostics_channel';
 import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, take } from 'rxjs';
@@ -8,7 +10,6 @@ import { UserInfo } from 'src/app/models/userInfo.model';
 import { PasswordComponent } from './components/password/password.component';
 import { LeaveChannelComponent } from './components/leave-channel/leave-channel.component';
 import { MatDialog } from '@angular/material/dialog';
-
 
 @Component({
   templateUrl: './chat.component.html',
@@ -167,7 +168,17 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.$subs.add(
       this.chatGateway.onMsgFromChannel().subscribe({
         next: (messages: any) => {
-          console.log(messages);
+          const isListed = this.channels.find((channel: any) => channel.id === messages[0].channelId) !== undefined;
+          if (!isListed) {
+            this.chatGateway.getChannelByIds(messages[0].channelId).pipe(take(1)).subscribe({
+              next:(data)=>{
+                console.log(data);
+                data.name = data.name ?? data.members.find((m: any)=> m.user.username != this.userService.getUser()).user.username;
+                data = {...data, isGroup: false, allRead: false};
+                this.channels.push(data);
+              }
+            });
+          }
           this.messages = [...this.messages, ...messages.filter((message:any)=>{
             if (!this.selectedChannel){
               return message.members?.every((mem:string)=>mem === this.queryParams['username'] || mem === this.userService.getUser());
@@ -209,6 +220,13 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
                   isGroup,
                   allRead};
           })?.sort((c1: any, c2: any)=>c1.name?.localeCompare(c2?.name ?? "") ?? 0);
+          this.channels.forEach((channel: any) => {
+            if (!channel.isGroup) {
+              if((channel.messages.length as number) === 0) {
+                this.channels = this.channels.filter((c: any) => c.id !== channel.id);
+              }
+            }
+          });
           if (this.selectedChannel !== undefined){
             this.chatGateway.getChannelById(this.selectedChannel.id);
           }
@@ -260,7 +278,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           }
           this.chatGateway.getTypesOfRealation(id, this.whoami.username).pipe(take(1)).subscribe({
             next:(data)=>{
-              console.log(data);
               if (data.type === 'BLOCKED'){
                 this.msgToShow = "You are blocked by this user you can't send a message to him";
                 setTimeout(()=> this.msgToShow = null, 2500);
@@ -309,9 +326,9 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   sendMessageToUser() {
     if (this.newMessage.trim()) {
-      if (this.queryParams['username'])
-        this.chatGateway.sendPrivMsg(this.newMessage, this.queryParams['username']);
-      else if(this.queryParams['id']) {
+      // if (this.queryParams['username'])
+      //   this.chatGateway.sendPrivMsg(this.newMessage, this.queryParams['username']);
+      if(this.queryParams['id']) {
         this.sendMessageToChannel();
         this.chatGateway.sendLastSeen(this.queryParams['id'], this.userService.getUser());
       }

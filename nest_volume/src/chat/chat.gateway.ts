@@ -1,3 +1,4 @@
+import { channel } from 'diagnostics_channel';
 import {
   OnGatewayConnection,
   OnGatewayDisconnect,
@@ -14,6 +15,8 @@ import {JwtPayload} from 'jsonwebtoken'
 import { ChannelsService } from 'src/channels/channels.service';
 import { rm } from 'fs';
 import { Prisma } from '@prisma/client';
+import { isIn } from 'class-validator';
+import { time } from 'console';
 type MyJwtPayload = {
   userId: number,
 } & JwtPayload;
@@ -95,20 +98,19 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.server.emit('Authenticate', { token });
   }
 
-  @SubscribeMessage('PrivMsg')
-  async handlePriv(client: Socket, payload: { sender: string, receiver: string, message: string }) {
-    const { sender, receiver, message } = payload;
-    //console.log({payload})
-    const {newChannel, channel} = await this.channelsService.createDirectMessage(receiver, message, sender);
-    if(newChannel){
-      client.emit('CreatedNewPublicChannel', {channel:{...channel, isGroup:false, name: receiver}});
-      userSocketMap[receiver].emit('CreatedNewPublicChannel', {channel:{...channel, isGroup:false, name: sender},});
-    }
-    else {
-      client.emit('MsgFromChannel', [{ user: sender, msg: message, channelId: channel.id , from: sender}]);
-      userSocketMap[receiver].emit('MsgFromChannel', [{ user: sender, msg: message, channelId: channel.id , from: sender, allRead: false }]);
-    }
-  }
+  // @SubscribeMessage('PrivMsg')
+  // async handlePriv(client: Socket, payload: { sender: string, receiver: string, message: string }) {
+  //   const { sender, receiver, message } = payload;
+  //   const {newChannel, channel} = await this.channelsService.createDirectMessage(receiver, message, sender);
+  //   if(newChannel){
+  //     client.emit('CreatedNewPublicChannel', {channel:{...channel, isGroup:false, name: receiver}});
+  //     userSocketMap[receiver].emit('CreatedNewPublicChannel', {channel:{...channel, isGroup:false, name: sender},});
+  //   }
+  //   else {
+  //     client.emit('MsgFromChannel', [{ user: sender, msg: message, channelId: channel.id , from: sender}]);
+  //     userSocketMap[receiver].emit('MsgFromChannel', [{ user: sender, msg: message, channelId: channel.id , from: sender, allRead: false, channelName: channel.name}]);
+  //   }
+  // }
   
 
   @SubscribeMessage("GetChannelId")
@@ -132,20 +134,20 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.receiveUserChannels(client, {username});
   }
 
-  @SubscribeMessage("ReceivePrivMsg")
-  async receivePrivChannelMsg(client: Socket, payload: { sender: string, receiver: string}) {
-    const { sender, receiver } = payload;
-    const messages = await this.channelsService.getChannelMsg(sender, receiver);
-    client.emit('ReceiveMsgForChannel', messages.map(message=>{
-        return {
-          msg:message.content,
-          user:message.sender.username,
-          channelId: message.channelId,
-          members:[sender, receiver]
-        }
-      })
-    );
-  }
+  // @SubscribeMessage("ReceivePrivMsg")
+  // async receivePrivChannelMsg(client: Socket, payload: { sender: string, receiver: string}) {
+  //   const { sender, receiver } = payload;
+  //   const messages = await this.channelsService.getChannelMsg(sender, receiver);
+  //   client.emit('ReceiveMsgForChannel', messages.map(message=>{
+  //       return {
+  //         msg:message.content,
+  //         user:message.sender.username,
+  //         channelId: message.channelId,
+  //         members:[sender, receiver]
+  //       }
+  //     })
+  //   );
+  // }
   
   @SubscribeMessage("ReceiveUserList")
   async reciveUserList(client: Socket, payload: { id: string }) {
@@ -217,32 +219,38 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const { sender, channel, message } = payload;
     const { channelId } = await this.channelsService.createChannelMessage(channel, message, sender);
     const ch = await this.channelsService.getChannelById(channelId);
-      ch?.members?.map((member: any) => {
-        if (member.status === 'ACTIVE') {
-          try {
-            userSocketMap[member.user.username].emit('MsgFromChannel', [{ user: sender,  msg: message, channelId }]);
-          } catch (error) {
-            ;
-          }
+    ch?.members?.map((member: any) => {
+      if (member.status === 'ACTIVE') {
+        try {
+          userSocketMap[member.user.username].emit('MsgFromChannel', [{ user: sender,  msg: message, channelId }]);
+        } catch (error) {
+          console.log(`cant invite: ${member.user.username} is offline`);
         }
-      });
+      }
+    });
   }
 
   @SubscribeMessage('InviteMsg')
-  async handleInviteMsg(client: Socket, payload: { sender: string, username: string, invId: string }) {
-    const { sender, username } = payload;
-    const ch = await this.channelsService.findDirChannel(sender, username);
-    console.log({ch});
-    ch?.members?.map((member: any) => {
-      if (member.status === 'ACTIVE' || (member.user.username === username)) {
-        try {
-          userSocketMap[member.user.username].emit('MsgFromChannel', [{ user: sender,  msg: payload.invId, channelId: ch.id, from: sender, isInvite: true}]);
-        } catch (error) {
-          console.log(error);
+  async handleInviteMsg(client: Socket, payload: { channelId: string, sender: string, username: string, invId: string }) {
+    const { channelId, sender, username } = payload;
+    try {
+      await this.channelsService.createGameInvite(username, sender)
+      const {id} = await this.channelsService.createInviteChannelMessage(channelId, payload.invId, sender);
+      setTimeout(() => {this.channelsService.updateInviteStatus(channelId, id, sender, username)}, 1000 * 10);
+      const ch = await this.channelsService.getChannelById(channelId);
+      ch?.members?.map((member: any) => {
+        if (member.status === 'ACTIVE' || (member.user.username === username)) {
+          try {
+            userSocketMap[member.user.username].emit('MsgFromChannel', [{ user: sender,  msg: payload.invId, channelId: ch.id, from: sender, isInvite: "PENDING", channelName: ch.name, time: new Date().toISOString()}]);
+          } catch (error) {
+            console.log(`cant invite: ${member.user.username} is offline`);
+          }
         }
-      }
+        }
+      );
+    } catch (error) {
+      console.log(`invite allready sent to ${username}`);
     }
-    );
   }
 
   @SubscribeMessage('ChannelModMsg')
@@ -256,7 +264,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         try {
           userSocketMap[member.user.username].emit('MsgFromChannel', [{ user: sender,  msg: message, channelId, isModer: true}]);
         } catch (error) {
-          ;
+          console.log(`cant invite: ${member.user.username} is offline`);
         }
       }
     });
@@ -297,7 +305,9 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         return {
           msg:message.content,
           user:message.sender.username,
+          time:message.time,
           isModer:message.isModer,
+          isInvite: message.isInvite
         }
       })
     );

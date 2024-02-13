@@ -37,7 +37,7 @@
       <section class="message-area" #messageArea>
         <app-message style="display: contents;" *ngFor="let message of messages" [message]="message"></app-message>
       </section>
-      <section #userList>
+      <section id="userlist" #userList>
         <app-user-list [user]="whoami"></app-user-list>
       </section>
 

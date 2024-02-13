@@ -31,10 +31,6 @@ import {
 		);
 	  }
   
-	//   if (await this.isUserBlocked(userId, receiver.id)) {
-	// 	throw new BadRequestException('This user is blocked');
-	//   }
-  
 	  await this.prisma.gameinvite.create({
 		data: {
 		  senderId: userId,
@@ -73,10 +69,6 @@ import {
 		throw new BadRequestException(
 		  `You and ${friendName} are already invites`,
 		);
-  
-	//   if (await this.isUserBlocked(userId, sender.id)) {
-	// 	throw new BadRequestException('This user is blocked');
-	//   }
   
 	  return await this.prisma.gameinvite.update({
 		where: {

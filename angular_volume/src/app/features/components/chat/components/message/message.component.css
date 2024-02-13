@@ -47,3 +47,33 @@ span {
   color: rgb(106, 99, 154);
   margin-bottom: 10px;
 }
+
+
+.invite{
+  background-color: black;
+  border: 2px solid orange;
+}
+
+.invite h2{
+  font-family: Azonix;
+}
+
+.invite div{
+  text-align: center;
+}
+
+.invite button{
+  border: 2px solid rebeccapurple;
+  border-radius: 20px;
+  color: aqua;
+  background-color: darkblue;
+}
+
+.inviteDone {
+
+}
+
+.inviteOld {
+  background-color: grey;
+  border: 2px solid rgb(0, 0, 0);
+}

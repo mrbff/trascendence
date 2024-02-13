@@ -1,7 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { UserService } from '../../../../../core/services/user.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { InvitesService } from 'src/app/core/services/game-invite.service';
+import { Observable, interval, Subscription, map } from 'rxjs';
 
 @Component({
   selector: 'app-message',
@@ -14,25 +15,27 @@ export class MessageComponent implements OnInit {
   currentUser!: boolean;
   otherUser!: boolean;
   isModerator!: boolean;
-  isInvite = false;
+  currentTime$: Observable<string>;
+  private subscription: Subscription | undefined;
 
   constructor(
-    private readonly activatedRoute: ActivatedRoute,
-		private readonly userService: UserService,
-		private readonly router: Router,
-		private readonly inviteService: InvitesService) {
+    private readonly userService: UserService,
+    private readonly router: Router,
+    private readonly inviteService: InvitesService) {
     this.currentUser = false;
     this.otherUser = false;
     this.isModerator = false;
+    this.currentTime$ = new Observable<string>();
   }
 
   ngOnInit() {
+    this.currentTime$ = interval(1000).pipe(
+      map(() => new Date().toISOString())
+    );
+    this.subscription = this.currentTime$.subscribe();
     if (this.message.isModer == true) {
       this.isModerator = true;
       return;
-    }
-    if (this.message.isInvite == true){
-      this.isInvite = true;
     }
     this.username = this.message.user;
     if (this.username !== this.userService.getUser()) {
@@ -41,6 +44,13 @@ export class MessageComponent implements OnInit {
     } else {
       this.currentUser = true;
       this.otherUser = false;
+    }
+    console.log(this.message.time);
+  }
+
+  ngOnDestroy() {
+    if (this.subscription) {
+      this.subscription.unsubscribe();
     }
   }
 

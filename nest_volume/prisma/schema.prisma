@@ -72,16 +72,16 @@ model ChannelMembership {
 }
 
 model Message {
-  id        Int      @id @default(autoincrement())
+  id        Int               @id @default(autoincrement())
   channelId String
   senderId  Int
-  time      DateTime @default(now())
+  time      DateTime          @default(now())
   content   String
-  read      Boolean  @default(false)
-  channel   Channel  @relation(fields: [channelId], references: [id])
-  sender    User     @relation("Message_Sender", fields: [senderId], references: [id])
-  isModer   Boolean  @default(false)
-  isInvite  Boolean  @default(false)
+  read      Boolean           @default(false)
+  channel   Channel           @relation(fields: [channelId], references: [id])
+  sender    User              @relation("Message_Sender", fields: [senderId], references: [id])
+  isModer   Boolean           @default(false)
+  isInvite  MessaInviteStatus @default(FALSE)
 }
 
 model Friendship {
@@ -150,3 +150,11 @@ enum GameinviteStatus {
   ACCEPTED
   OUTDATED
 }
+
+enum MessaInviteStatus {
+  FALSE
+  PENDING
+  ACCEPTED
+  OUTDATED
+}
+
