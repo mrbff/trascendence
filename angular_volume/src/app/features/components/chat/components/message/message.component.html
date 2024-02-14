@@ -1,12 +1,11 @@
 <ng-container *ngIf="currentUser; else otherUser">
   <ng-container [ngSwitch]="message.isInvite">
-    <section *ngSwitchCase="'PENDING'" class="message mine invite">
-      <section *ngIf="currentTime$ < (message.time + 10000)">
+    <section *ngSwitchCase="'PENDING'" [ngIf]="OutdatedStatus()" class="message mine invite">
+      
         <h2>Private game </h2>
         <div>
           <button (click)="redirectToGame()">Go to game</button>
         </div>
-      </section>
       </section>
       <section *ngSwitchCase="'ACCEPTED'" class="message mine invite">
         <h2>Private game</h2>
