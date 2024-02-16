@@ -1,6 +1,6 @@
 <ng-container *ngIf="currentUser; else otherUser">
   <ng-container [ngSwitch]="message.isInvite">
-    <section *ngSwitchCase="'PENDING'" [ngIf]="OutdatedStatus()" class="message mine invite">
+    <section *ngSwitchCase="'PENDING'" class="message mine invite">
       
         <h2>Private game </h2>
         <div>
