@@ -2,8 +2,9 @@ import { Component, Input, OnInit, OnDestroy, NgModule, ɵɵgetCurrentView } fro
 import { UserService } from '../../../../../core/services/user.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { InvitesService } from 'src/app/core/services/game-invite.service';
-import { Observable, interval, Subscription, map } from 'rxjs';
+import { Observable, interval, Subscription, map, take } from 'rxjs';
 import { CodeService } from 'src/app/shared/services/code.service';
+import { nextTick } from 'process';
 
 @Component({
   selector: 'app-message',
@@ -16,7 +17,7 @@ export class MessageComponent implements OnInit {
   currentUser!: boolean;
   otherUser!: boolean;
   isModerator!: boolean;
-  currentTime$: Observable<Date>;
+  currentTime$: Observable<number>;
   private subscription: Subscription;
   ms: number;
 
@@ -29,20 +30,20 @@ export class MessageComponent implements OnInit {
     this.otherUser = false;
     this.isModerator = false;
     this.subscription = new Subscription();
-    this.currentTime$ = new Observable<Date>();
+    this.currentTime$ = new Observable<number>();
   }
 
   ngOnInit() {
     this.currentTime$ = interval(1000).pipe(
       map(() => {
-        const currentDate = new Date();
-        currentDate.setTime(currentDate.getTime() - 10000);
-        return currentDate;
+        const currentDate = Date.now();
+        return currentDate - 10000;
       })
     );
+
     this.subscription = this.currentTime$.subscribe(value => {
-      this.ms = value.getMilliseconds();
     });
+
     if (this.message.isModer == true) {
       this.isModerator = true;
       return;
@@ -56,13 +57,15 @@ export class MessageComponent implements OnInit {
       this.otherUser = false;
     }
     if (this.message.isInvite == 'PENDING') {
-      console.log('Current Time:', this.ms);
-      const msgToms = Date.parse(this.message.time);
-      console.log('Message Time:', msgToms);
-      const changeTime  = this.ms - msgToms;
-      console.log('Time:', changeTime);
-      setTimeout(() => {this.message.isInvite = 'OUTDATED'}, changeTime);
-  }
+      this.currentTime$.pipe(take(1)).subscribe(value => {
+        this.ms = value;
+        const msgToms = Date.parse(this.message.time);
+        console.log('Message Time:', msgToms);
+        const changeTime  = msgToms - this.ms;
+        console.log('Time:', changeTime);
+        setTimeout(() => {this.message.isInvite = 'OUTDATED'}, changeTime);
+      });
+    }
   }
 
   ngOnDestroy() {
