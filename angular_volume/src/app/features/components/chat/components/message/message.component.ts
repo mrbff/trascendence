@@ -1,8 +1,9 @@
-import { Component, Input, OnInit, OnDestroy, NgModule } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, NgModule, ɵɵgetCurrentView } from '@angular/core';
 import { UserService } from '../../../../../core/services/user.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { InvitesService } from 'src/app/core/services/game-invite.service';
 import { Observable, interval, Subscription, map } from 'rxjs';
+import { CodeService } from 'src/app/shared/services/code.service';
 
 @Component({
   selector: 'app-message',
@@ -17,12 +18,14 @@ export class MessageComponent implements OnInit {
   isModerator!: boolean;
   currentTime$: Observable<Date>;
   private subscription: Subscription;
+  ms: number;
 
   constructor(
     private readonly userService: UserService,
     private readonly router: Router,
     private readonly inviteService: InvitesService) {
     this.currentUser = false;
+    this.ms = 0;
     this.otherUser = false;
     this.isModerator = false;
     this.subscription = new Subscription();
@@ -38,7 +41,7 @@ export class MessageComponent implements OnInit {
       })
     );
     this.subscription = this.currentTime$.subscribe(value => {
-      console.log('Current Time:', value);
+      this.ms = value.getMilliseconds();
     });
     if (this.message.isModer == true) {
       this.isModerator = true;
@@ -53,12 +56,13 @@ export class MessageComponent implements OnInit {
       this.otherUser = false;
     }
     if (this.message.isInvite == 'PENDING') {
-      while(this.message.isInvite == 'PENDING') {
-        const msgToms = Date.parse(this.message.time);
-        const changeTime  = (Number(this.currentTime$) - msgToms)
-        setTimeout(() => {this.message.isInvite = 'OUTDATED'}, changeTime);
-      }
-    }
+      console.log('Current Time:', this.ms);
+      const msgToms = Date.parse(this.message.time);
+      console.log('Message Time:', msgToms);
+      const changeTime  = this.ms - msgToms;
+      console.log('Time:', changeTime);
+      setTimeout(() => {this.message.isInvite = 'OUTDATED'}, changeTime);
+  }
   }
 
   ngOnDestroy() {
