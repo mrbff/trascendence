@@ -12,7 +12,7 @@
     class="profile-image"
     [src]="conversation.img"
     [ngStyle]="{
-      color: (conversation.allRead ? 'red' : '')
+      color: (!conversation.allRead ? 'purple' : 'gray')
     }"
   />
 </main>

@@ -1,8 +1,9 @@
+import { ChangeImageDirective } from './../profile/components/profile-image/change-image.directive';
 import { NavbarComponent } from './../../../shared/components/navbar/navbar.component';
 import { channel } from 'diagnostics_channel';
 import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription, take } from 'rxjs';
+import { ConnectableObservable, Subscription, take } from 'rxjs';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { UserService } from 'src/app/core/services/user.service';
 import { Router } from '@angular/router';
@@ -169,10 +170,19 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.chatGateway.onMsgFromChannel().subscribe({
         next: (messages: any) => {
           const isListed = this.channels.find((channel: any) => channel.id === messages[0].channelId) !== undefined;
+          if (isListed) {
+            this.channels = this.channels.map((channel: any) => {
+              if (channel.id === messages[0].channelId && channel.id !== this.queryParams['id']) {
+                channel.allRead = false;
+              } else {
+                channel.allRead = true;
+              }
+              return channel;
+            });
+          }
           if (!isListed) {
             this.chatGateway.getChannelByIds(messages[0].channelId).pipe(take(1)).subscribe({
               next:(data)=>{
-                console.log(data);
                 data.name = data.name ?? data.members.find((m: any)=> m.user.username != this.userService.getUser()).user.username;
                 data = {...data, isGroup: false, allRead: false};
                 this.channels.push(data);
@@ -216,6 +226,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
                 allRead = true;
               }
             }
+            console.log(allRead, channel.id)
           return {...channel,
                   isGroup,
                   allRead};
@@ -227,6 +238,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
               }
             }
           });
+
           if (this.selectedChannel !== undefined){
             this.chatGateway.getChannelById(this.selectedChannel.id);
           }
@@ -326,13 +338,11 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   sendMessageToUser() {
     if (this.newMessage.trim()) {
-      // if (this.queryParams['username'])
-      //   this.chatGateway.sendPrivMsg(this.newMessage, this.queryParams['username']);
       if(this.queryParams['id']) {
         this.sendMessageToChannel();
         this.chatGateway.sendLastSeen(this.queryParams['id'], this.userService.getUser());
       }
-      this.newMessage = ''; // Reset the input after sending
+      this.newMessage = ''; 
     }
   }
 
