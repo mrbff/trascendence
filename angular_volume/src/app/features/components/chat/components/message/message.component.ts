@@ -1,10 +1,8 @@
-import { Component, Input, OnInit, OnDestroy, NgModule, ɵɵgetCurrentView } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { UserService } from '../../../../../core/services/user.service';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { InvitesService } from 'src/app/core/services/game-invite.service';
 import { Observable, interval, Subscription, map, take } from 'rxjs';
-import { CodeService } from 'src/app/shared/services/code.service';
-import { nextTick } from 'process';
 
 @Component({
   selector: 'app-message',
