@@ -49,18 +49,28 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		for (var room of this.rooms)
 		{
 			if (room.data.id1.toString() === element.id){
-				if (room.data.inviteGame && query.invited != room.data.inviteGame)
+				if (room.data.inviteGame){
+					if (query.invited != room.data.inviteGame)
 						continue ;
+					else{
+						clearTimeout(room.data.deleteTimer);
+						client.emit('opponent-found', {username: (await this.userData.findOne(room.data.id2)).username, seat: 1});
+					}
+				}
 				room.data.player1 = client;
 				client.join(room.name);
-				client.emit('opponent-found', {username: (await this.userData.findOne(room.data.id2)).username, seat: 1});
 				return
 			} else if (room.data.id2.toString() === element.id){
-				if (room.data.inviteGame && query.invited != room.data.inviteGame)
+				if (room.data.inviteGame){
+					if (query.invited != room.data.inviteGame)
 						continue ;
+					else{
+						clearTimeout(room.data.deleteTimer);
+						client.emit('opponent-found', {username: (await this.userData.findOne(room.data.id1)).username, seat: 2});
+					}
+				}
 				room.data.player2 = client;
 				client.join(room.name);
-				client.emit('opponent-found', {username: (await this.userData.findOne(room.data.id1)).username, seat: 2});
 				return
 			}
 		}
@@ -130,7 +140,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 	inviteSetup(user: {username: string, id: string, client: Socket}){
 		let roomName = `room_${Math.random().toString(36).substring(2, 8)}`;
-		this.rooms.push({
+		let room = {
 			name: roomName,
 			data: {
 				player1: user.client,
@@ -143,7 +153,11 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				mode: user.client.handshake.query.gamemode as string,
 				playersReady: new Set(),
 				inviteGame: user.client.handshake.query.inviteId as string,
-			}});
+			} as GameInfo};
+		this.rooms.push(room);
+		room.data.deleteTimer = setTimeout(() => {
+			this.rooms.splice(this.rooms.indexOf(room), 1);
+		}, 120000);
 	}
 
 

@@ -12,6 +12,7 @@ export interface GameInfo{
 	scene?: Scene;
 	mode?: string;
 	timer?: NodeJS.Timeout;
+	deleteTimer?: NodeJS.Timeout;
 	inviteGame: string | null;
 	winner: number;
 	renderFunction?: any;

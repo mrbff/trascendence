@@ -1,14 +1,11 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { EventEmitter, Component, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription, elementAt, interval, map, take } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FriendsService } from 'src/app/core/services/friends.service';
 import { UserInfo } from 'src/app/models/userInfo.model';
-import { io } from 'socket.io-client';
 import { MatDialog } from '@angular/material/dialog';
 import { GameInviteComponent } from '../game-invite/game-invite.component';
-import { InvitesService } from 'src/app/core/services/game-invite.service';
-
 
 
 @Component({
@@ -18,24 +15,25 @@ import { InvitesService } from 'src/app/core/services/game-invite.service';
 })
 export class UserListComponent implements OnInit, OnDestroy{
 	@Input() user!: any;
-
+	@Input() pending!: any;
+	
 	private $subs = new Subscription();
 	public otherUsers!: UserInfo[];
 	public isGroupChat: boolean = true;
 	public myRole : string = 'MEMBER';
 	public channelId: string = '';
 	public channelName: string = '';
-
+	
 	attr: any;
 	players: any[] = [];
 
 	constructor(
+
 		private readonly chatGateway: ChatGateway,
 		private readonly router: Router,
 		private readonly friendsService: FriendsService,
 		private activatedRoute: ActivatedRoute,
 		private dialog: MatDialog,
-		private invites: InvitesService,
 	  ) {
 			this.players.push({ 
 				id: '',
@@ -47,7 +45,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 			});
 	  }
 
-	ngOnInit(): void {
+	ngOnInit() {
 		this.userList();
 	}
 
@@ -94,7 +92,8 @@ export class UserListComponent implements OnInit, OnDestroy{
 									isBlock: isBlock,
 									banOrKick: banOrKick,
 									listable: listable,
-									isMuted: isMuted
+									isMuted: isMuted,
+									pending: false
 								});
 						}
 						else if (username === this.user.username) {
@@ -123,9 +122,16 @@ export class UserListComponent implements OnInit, OnDestroy{
 		this.$subs.unsubscribe();
 	}
 
+
 	togglePlayerMenu(player: any): void {
 		this.players.forEach((p) => (p.showMenu = false));
 		player.showMenu = !player.showMenu;
+		this.user = {...this.user, pending: false};
+		this.pending.forEach((p: any) => {
+			if (p.sender == this.user.username && p.reciver == player.name) {
+				this.user.pending = true;
+			}
+		});
 	}
 
 	profile(player: any): void {
@@ -134,11 +140,10 @@ export class UserListComponent implements OnInit, OnDestroy{
 
 	async DM(player: any): Promise<void> {
 		if (this.isGroupChat) {
-			let channel = await this.chatGateway.getChatByNames(this.user.username, player.name, "DIRECT");
-			if (channel === null) {
-				channel = await this.chatGateway.getChatOrCreate(this.user.username, player.name, "DIRECT");
+			const channel = await this.chatGateway.getChatOrCreate(this.user.username, player.name, "DIRECT");
+			if(channel.allRead === false) {
+				this.chatGateway.sendLastSeen(channel.id, this.user.username);
 			}
-			this.chatGateway.getChannelById(channel.id);
 			this.router.navigate(
 				[], 
 				{
@@ -154,13 +159,18 @@ export class UserListComponent implements OnInit, OnDestroy{
 		dialogRef.afterClosed().subscribe(async (choise: string) => {
 			if (choise)
 			{
-				
-				this.chatGateway.sendInviteMsg(this.channelId, player.name, "3");
+				let id = this.channelId;
+				if(this.isGroupChat === true) {
+					const ch = await this.chatGateway.getChatOrCreate(this.user.username, player.name, "DIRECT");
+					id = ch.id;
+				}
+				this.chatGateway.sendInviteMsg(id, player.name, player.name);
+				this.user.pending = true;
 			}
 			else
 				console.error("Error creating invite");
 		})
-		console.log('inviteToGame:', player.name);
+
 	}
 
 	async block(player: any): Promise<void>{

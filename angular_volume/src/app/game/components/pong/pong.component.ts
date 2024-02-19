@@ -35,7 +35,7 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 		this.route.queryParams.subscribe((params) => {
 			console.log(params);
 			if (params['invited']) {
-				this.invited = this.invited;
+				this.invited = params['invited'];
 				this.start(); 
 			}
 			});

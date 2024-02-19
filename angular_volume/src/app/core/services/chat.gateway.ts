@@ -83,10 +83,6 @@ export class ChatGateway {
     });
   }
 
-  // sendPrivMsg(message:string, receiver:string) {
-  //   this.socket.emit('PrivMsg', { sender:this.userService.getUser(), receiver:receiver, message:message });
-  // }
-
   onChannelId() {
     return new Observable((observer) => {
       this.socket.on('Channel', (data) => {
@@ -238,5 +234,8 @@ export class ChatGateway {
     return this.httpClient.get<{ password: string, type: string }>(`/nest/channels/getPasswordChannel/${id}`);
   }
   
+  getMessagesPenidng(empty: null): Observable<any> {
+    return this.httpClient.get<any>(`/nest/channels/getMessagesPenidng/${empty}`);
+  }
 
 }

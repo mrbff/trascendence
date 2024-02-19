@@ -3,12 +3,16 @@
     <p>{{channelName | slice:0:7}}</p>
   </div>
   <section class="player-list">
-    <div class="player-items" *ngFor="let player of players" (click)="togglePlayerMenu(player)">
+    <div class="player-items" *ngFor="let player of players"
+      (click)="togglePlayerMenu(player)"
+      (mouseenter)="togglePlayerMenu(player)" >
       {{ player.name }}
       <div *ngIf="player.showMenu && player.role !== 'EMPTY'" class="player-menu">
-          <section *ngIf="player.banOrKick !== 'BANNED'">
-
-            <button class="invateToGame" (click)="inviteToGame(player)">Invate to game</button>
+        <section *ngIf="player.banOrKick !== 'BANNED'">
+          
+            <button *ngIf="!this.user.pending" class="invateToGame" (click)="inviteToGame(player)">Invate to game</button>
+            <button *ngIf="this.user.pending" class="noInvateToGame" (click)="inviteToGame(player)">Invate to game</button>
+        
             <button class="profile" (click)="profile(player)">Profile</button>
             <button class="DM" (click)="DM(player)" [ngStyle]="{'background-color': isGroupChat ? '' : 'grey'}">DM</button>
 

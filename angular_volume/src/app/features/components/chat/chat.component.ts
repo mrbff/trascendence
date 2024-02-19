@@ -1,9 +1,6 @@
-import { ChangeImageDirective } from './../profile/components/profile-image/change-image.directive';
-import { NavbarComponent } from './../../../shared/components/navbar/navbar.component';
-import { channel } from 'diagnostics_channel';
-import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild, Input } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ConnectableObservable, Subscription, take } from 'rxjs';
+import { Subscription, interval, take } from 'rxjs';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { UserService } from 'src/app/core/services/user.service';
 import { Router } from '@angular/router';
@@ -12,11 +9,19 @@ import { PasswordComponent } from './components/password/password.component';
 import { LeaveChannelComponent } from './components/leave-channel/leave-channel.component';
 import { MatDialog } from '@angular/material/dialog';
 
+class Pendign {
+  status: boolean = false;
+  sender: string = '';
+  reciver: string = '';
+  time: number = 0;
+}
+
 @Component({
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.css'],
 })
 export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
+  allMembers: any;
   @ViewChild('messageArea') messageArea!: ElementRef;
   private $subs = new Subscription();
   public messages: any[] = []; // You might want to create a Message interface or class
@@ -39,12 +44,13 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   selectedOption: string | undefined;
   isGroup: boolean;
   isOwner: boolean;
+  isPending: Pendign [] = [];
 
 
   queryParams: {[key:string]:string} = {}
   chat: any[];
 
-  selectedChannel: any
+  selectedChannel: any;
 
   @HostListener('window:resize', ['$event'])
   onWindowResize() {
@@ -52,6 +58,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   
   }
   constructor(
+    private cdr: ChangeDetectorRef,
     readonly userService: UserService,
     private readonly chatGateway: ChatGateway,
     private readonly route: ActivatedRoute, 
@@ -75,6 +82,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (this.isOpen) {
       this.scrollToBottom();
     }
+    this.cdr.detectChanges();
   }
 
   private scrollToBottom(): void {
@@ -96,6 +104,17 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     });
   }
 
+  createPending() {
+    this.isPending = [];
+    this.chatGateway.getMessagesPenidng(null).pipe(take(1)).subscribe({
+      next:(data)=>{
+        data.forEach((p: any) => {
+          this.isPending.push({status: true, sender: p.sender.username, reciver: p.content.split(":")[0] , time: p.time});
+        });
+      }
+    });
+  }
+
   onDropdownChange(event: any): void {
     this.selectedOption = event.target.value;
   }
@@ -104,6 +123,12 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   initializeChat() : void {
+    this.$subs.add(
+      interval(1000).subscribe(() => {
+        this.createPending();
+      })
+    );
+
     this.$subs.add(
       this.route.queryParams.subscribe((params) => {
         
@@ -122,6 +147,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
               const id = ch.id;
               this.chatGateway.receiveChannelMsg(id);
               this.isOpen = true;
+              if (ch.allRead == false) {
+                this.chatGateway.sendLastSeen(id, this.userService.getUser());
+              }
+              this.allRead = true;
               this.router.navigate(
                 [], 
                 {
@@ -196,8 +225,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
             return (this.selectedChannel.id === message.channelId);
           })];
           if (this.selectedChannel !== undefined){
-            this.chatGateway.sendLastSeen(this.selectedChannel.id, this.userService.getUser());
-            this.chatGateway.getChannelById(this.selectedChannel.id);
+            if(this.selectedChannel.id === messages[0].channelId){
+              this.chatGateway.sendLastSeen(this.selectedChannel.id, this.userService.getUser());
+              this.chatGateway.getChannelById(this.selectedChannel.id);
+            }
           }
         },
         error: (error) => {
@@ -226,7 +257,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
                 allRead = true;
               }
             }
-            console.log(allRead, channel.id)
           return {...channel,
                   isGroup,
                   allRead};
@@ -248,6 +278,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
               next: (messages: any) => {
                 this.messages = messages;
                 this.chatGateway.getChannelById(this.selectedChannel.id);
+                
               },
               error: (error) => {
                 this.errorMsg = `Error receiving message from channel: ${error.message}`;
@@ -369,7 +400,11 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.selectedChannel = conversation;
     this.selectedChannel.members.find((m: any)=> m.user.username === this.userService.getUser()).role === 'OWNER' ? this.isOwner = true : this.isOwner = false;
     this.msgToShow = null;
-    this.chatGateway.sendLastSeen(conversation.id, this.userService.getUser());
+    this.allRead = conversation.allRead;
+    this.allMembers = conversation.members;
+    if (this.allRead === false) {
+      this.chatGateway.sendLastSeen(conversation.id, this.userService.getUser());
+    }
     conversation.allRead = true;
   }
 

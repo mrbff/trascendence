@@ -253,13 +253,14 @@ export class ChannelsService {
   async createGameInvite(username: string, sender: string) {
     const user = await this.usersService.findUserByName(username);
     const receiver = await this.usersService.findUserByName(sender);
-      await this.prisma.gameinvite.create({
+    const msg = await this.prisma.gameinvite.create({
       data: {
         senderId: user.id,
         receiverId: receiver.id,
         status: 'PENDING',
       },
     });
+    return msg.id;
 }
 
   async createChannelMessage(channelId:string, content:string, username:string) {

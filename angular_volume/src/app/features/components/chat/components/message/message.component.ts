@@ -1,8 +1,15 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UserService } from '../../../../../core/services/user.service';
 import { Router } from '@angular/router';
 import { InvitesService } from 'src/app/core/services/game-invite.service';
 import { Observable, interval, Subscription, map, take } from 'rxjs';
+
+class Pendign {
+  status: boolean = false;
+  sender: string = '';
+  reciver: string = '';
+  time: number = 0;
+}
 
 @Component({
   selector: 'app-message',
@@ -11,6 +18,8 @@ import { Observable, interval, Subscription, map, take } from 'rxjs';
 })
 export class MessageComponent implements OnInit {
   @Input() message: any;
+  @Input() members: any;
+  @Output() pendingEvent: EventEmitter<Pendign> = new EventEmitter<Pendign>();
   username!: string;
   currentUser!: boolean;
   otherUser!: boolean;
@@ -55,13 +64,20 @@ export class MessageComponent implements OnInit {
       this.otherUser = false;
     }
     if (this.message.isInvite == 'PENDING') {
+      if (this.message.user === this.userService.getUser()) {
+        var sender = this.message.user;
+        var reciver = this.message.msg.split(":")[0];
+      } else {
+        var sender = this.message.msg.split(":")[0];
+        var reciver = this.message.user;
+      }
       this.currentTime$.pipe(take(1)).subscribe(value => {
         this.ms = value;
         const msgToms = Date.parse(this.message.time);
-        console.log('Message Time:', msgToms);
         const changeTime  = msgToms - this.ms;
-        console.log('Time:', changeTime);
-        setTimeout(() => {this.message.isInvite = 'OUTDATED'}, changeTime);
+        this.pendingEvent.emit({status: true, sender : sender, reciver: reciver, time: changeTime});
+        setTimeout(() => {this.message.isInvite = 'OUTDATED';
+          this.pendingEvent.emit({status: false, sender : sender, reciver: reciver, time: 0})}, changeTime);
       });
     }
   }
@@ -73,7 +89,7 @@ export class MessageComponent implements OnInit {
   }
 
   redirectToGame() {
-  this.router.navigate(['/transcendence/pong'], {queryParams: {invited: this.message.msg}})
+  this.router.navigate(['/transcendence/pong'], {queryParams: {invited: this.message.msg.split(":")[1]}})
 	if (!this.currentUser)
 		this.inviteService.acceptInvite(this.username);
   }

@@ -80,6 +80,17 @@
 	width: 100%;
 }
 
+.noInvateToGame {
+	background-color: rgb(64, 63, 68); 
+	color: orange; 
+	padding: 15px 30px;
+	border: none;
+	border-radius: 5px;
+	cursor: initial;
+	margin-bottom: 10px;
+	width: 100%;
+}
+
 .profile {
 	background-color: darkslateblue;
 	color: orange;

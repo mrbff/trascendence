@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 #COPY package*.json ./
 
-RUN npm install -g npm@10.4.0 babylonjs babylonjs-loaders 
+RUN npm install  babylonjs ba babylonjs babylonjs-loaders 
 
 #COPY . .
 

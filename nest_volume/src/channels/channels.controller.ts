@@ -18,6 +18,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { GetUser } from 'src/users/users.decorator';
 import { UsersService } from 'src/users/users.service';
 import { use } from 'passport';
+import { all } from 'axios';
 
 @Controller('channels')
 @ApiTags('channels')
@@ -165,7 +166,11 @@ export class ChannelsController {
               ],
             },
           });
-          return channel;
+          if (channel.lastSeen.find((seen) => seen === username)) {
+            return {...channel, allRead : true};
+          } else {
+            return {...channel, allRead : false};
+          }
         } catch (error: any) {
           const user = await this.prisma.user.findUnique({
             where: {
@@ -475,5 +480,27 @@ export class ChannelsController {
         },
       });
       return { password: channel?.password ?? '', type: channel?.type ?? 'PRIVATE' };
+    }
+
+    @Get('getMessagesPenidng/:empty')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOkResponse()
+    async getMessagesPenidng(
+      @Param('empty') empty: null,
+    ) {
+      const messages = await this.prisma.message.findMany({
+        where: {
+          isInvite: 'PENDING',
+        },
+        include: {
+          sender: {
+            select: {
+              username: true,
+            },
+          },
+        }
+      });
+      return messages;
     }
 }

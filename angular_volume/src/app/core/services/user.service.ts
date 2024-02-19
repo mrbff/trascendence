@@ -93,4 +93,5 @@ export class UserService {
   async getMatchHistory(id: string): Promise<any> {
 	return lastValueFrom(this.http.get(`/nest/users/matchHistory/${id}`));
   }
+
 }

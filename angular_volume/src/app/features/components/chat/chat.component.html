@@ -38,7 +38,7 @@
         <app-message style="display: contents;" *ngFor="let message of messages" [message]="message"></app-message>
       </section>
       <section id="userlist" #userList>
-        <app-user-list [user]="whoami"></app-user-list>
+        <app-user-list [user]="whoami" [pending]="this.isPending"></app-user-list>
       </section>
 
       <section #modSection>
