@@ -223,9 +223,11 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           }
           console.log(messages[0]);
           const mess = messages[0].user + ":" + messages[0].msg;
-          this.snackBar.open(mess, 'Close', {
-            duration: 3000,
-          });
+            if (messages[0].user !== this.userService.getUser()) {
+            this.snackBar.open(mess, 'Close', {
+              duration: 3000,
+            });
+          }
           this.messages = [...this.messages, ...messages.filter((message:any)=>{
             if (!this.selectedChannel){
               return message.members?.every((mem:string)=>mem === this.queryParams['username'] || mem === this.userService.getUser());
