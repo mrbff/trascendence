@@ -130,21 +130,21 @@ export class UserListComponent implements OnInit, OnDestroy{
 		this.$subs.unsubscribe();
 	}
 
-
-
-		ngOnChanges(changes: SimpleChanges): void {
-			if (JSON.stringify(changes['pending'].currentValue) != JSON.stringify(changes['pending'].previousValue)) {
-			this.pending = changes['pending'].currentValue;
-			this.pendingInvite();
-			}
+	ngOnChanges(changes: SimpleChanges): void {
+		if (JSON.stringify(changes['pending'].currentValue) != JSON.stringify(changes['pending'].previousValue)) {
+		this.pending = changes['pending'].currentValue;
+		this.pendingInvite();
 		}
-
-
+	}
+	
 	pendingInvite(): void {
 		let isFind = false;
 			if (this.pending !== undefined) {
 			isFind = this.pending.some((p: any) => {
-				return p.sender === this.user.username && p.reciver === this.nowSelected.name;
+				if (this.nowSelected) {
+					return p.sender === this.user.username && p.reciver === this.nowSelected.name;
+				}
+				return false;
 			});
 		}
 		this.user.pending = isFind;

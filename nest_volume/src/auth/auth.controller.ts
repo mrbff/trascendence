@@ -2,18 +2,12 @@ import {
   Body,
   Controller,
   Post,
-  Get,
-  UseGuards,
-  Req,
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { AuthEntity } from './entity/auth.entity';
 import { LoginDto } from './dto/login.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
-import { User } from '@prisma/client';
 import { UsersService } from '../users/users.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 

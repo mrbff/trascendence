@@ -1,13 +1,10 @@
-import { ChangePasswordComponent } from './../../features/components/chat/components/mod-section/components/change-password/change-password.component';
 import { HttpClient } from '@angular/common/http';
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { io } from 'socket.io-client';
 import { AuthService } from '../auth/auth.service';
 import { UserService } from './user.service';
-import { Server, Socket } from 'socket.io';
 import { Observable } from 'rxjs';
 import { lastValueFrom } from 'rxjs';
-import { channel } from 'diagnostics_channel';
 
 @Injectable({
   providedIn: 'root',
@@ -238,4 +235,17 @@ export class ChatGateway {
     return this.httpClient.get<any>(`/nest/channels/getMessagesPenidng/${empty}`);
   }
 
+  postChangeGameStatus(gameId: number, status: string, msgId: number) {
+    console.log('Before HTTP PATCH request');
+    return this.httpClient.patch(`/nest/channels/changeGameStatus/${gameId}`, {status :{status: status, msgId: msgId}})
+      .subscribe(
+        (response) => {
+          console.log('HTTP PATCH successful:', response);
+        },
+        (error) => {
+          console.error('HTTP PATCH error:', error);
+        }
+      );
+    console.log('After HTTP PATCH request');
+  }
 }

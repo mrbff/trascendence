@@ -37,19 +37,24 @@ export class ChannelsService {
   }
 
   async updateInviteStatus(channelId: string, id: number, sender: string, username: string) {
-    console.log("updateInviteStatus");
-    console.log(channelId, id, sender, username);
-    await this.prisma.message.update({
+    console.log(`updateInviteStatus`, channelId, id, sender, username);
+    const find = await this.prisma.message.findUnique({
       where:{
         id: id
-      },
-      data:{
-        isInvite: 'OUTDATED',
       }
     });
+    if (find?.isInvite === 'PENDING'){
+      await this.prisma.message.update({
+        where:{
+          id: id
+        },
+        data:{
+          isInvite: 'OUTDATED',
+        }
+      });
+    }
     const other = await this.prisma.user.findUnique({ where:{ username: username }});
     const user = await this.prisma.user.findUnique({ where:{ username: sender }});
-    console.log(user?.id, other?.id);
     await this.prisma.gameinvite.delete({
       where: {
         senderId_receiverId: {

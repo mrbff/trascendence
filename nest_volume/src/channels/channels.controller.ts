@@ -1,9 +1,12 @@
 import { PassportModule } from '@nestjs/passport';
 import {
+  Body,
   ConsoleLogger,
   Controller,
   Get,
   Param,
+  Patch,
+  Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -502,5 +505,41 @@ export class ChannelsController {
         }
       });
       return messages;
+    }
+
+    @Patch('changeGameStatus/:gameId')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOkResponse()
+    async postChangeGameStatus(
+      @Param('gameId') gameId: number,
+      @Body ('status') inf: { status : string, msgId: number},
+    ) {
+      console.log('changeGameStatus', gameId, inf.status, inf.msgId);
+      // const game = await this.prisma.gameinvite.findUnique({
+      //   where: {
+      //     id: gameId as number,
+      //   },
+      // });
+      // if (game) {
+      //   await this.prisma.gameinvite.update({
+      //     where: {
+      //       id: gameId,
+      //     },
+      //     data: {
+      //       status: 'ACCEPTED',
+      //     },
+      //   });
+        await this.prisma.message.update({
+          where: {
+            id: inf.msgId,
+          },
+          data: {
+            isInvite: 'ACCEPTED',
+          },
+        });
+      //   return { status: 'OK' };
+      // }
+      return { status: 'ERROR' };
     }
 }

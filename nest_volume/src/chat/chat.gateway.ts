@@ -207,7 +207,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       ch?.members?.map((member: any) => {
         if (member.status === 'ACTIVE' || (member.user.username === username)) {
           try {
-            userSocketMap[member.user.username].emit('MsgFromChannel', [{ user: sender,  msg: payload.invId, channelId: ch.id, from: sender, isInvite: "PENDING", channelName: ch.name, time: new Date().toISOString()}]);
+            userSocketMap[member.user.username].emit('MsgFromChannel', [{ id: id, user: sender,  msg: payload.invId, channelId: ch.id, from: sender, isInvite: "PENDING", channelName: ch.name, time: new Date().toISOString()}]);
           } catch (error) {
             console.log(`cant invite: ${member.user.username} is offline`);
           }
@@ -269,6 +269,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     const messages = await this.channelsService.getChannelMsgById(id);
     client.emit('ReceiveMsgForChannel', messages.map(message=>{
         return {
+          id: message.id,
           msg:message.content,
           user:message.sender.username,
           time:message.time,
