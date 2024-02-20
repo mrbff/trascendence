@@ -2,6 +2,7 @@ import { Enlarge, Power, Shield, Speed } from './../../game/components/pong/dto/
 import { Injectable, NgZone } from '@angular/core';
 import { Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
+import { Router } from '@angular/router';
 import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import * as GUI from '@babylonjs/gui';
@@ -25,7 +26,7 @@ export class PongGateway {
 	private started = false;
 	private readyPing!: NodeJS.Timeout;
 
-	constructor(private ngZone: NgZone,) {
+	constructor(private ngZone: NgZone, private router: Router) {
 	}
 	
 	connect(gameMode: string, user: UserInfo, inviteId: string) {
@@ -41,6 +42,9 @@ export class PongGateway {
 			query: {gameMode, name: user.username, id: user.id, invited: inviteId},
 			/*transports: ['websocket']*/
 			});
+		this.socket.on('connection_error', () => {
+			console.log("BIG ERROR");
+		});
 		this.socket.on('disconnect', function (reason) {
 		console.log('Socket disconnected because of ' + reason);
 		});
@@ -50,6 +54,7 @@ export class PongGateway {
 		this.socket.on('reconnect_error', (error) => {
 			console.error('Reconnection error:', error);
 		});
+
 	}
 
 	onOpponentFound(): Observable<{username: string}> {

@@ -1,4 +1,4 @@
-import { EventEmitter, Component, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { EventEmitter, Component, Input, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { Observable, Subscription, elementAt, interval, map, take } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -26,6 +26,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 	
 	attr: any;
 	players: any[] = [];
+	nowSelected: any;
 
 	constructor(
 
@@ -43,6 +44,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 				isBlock: false,
 				banOrKick: ''
 			});
+			this.nowSelected = null
 	  }
 
 	ngOnInit() {
@@ -122,13 +124,24 @@ export class UserListComponent implements OnInit, OnDestroy{
 		this.$subs.unsubscribe();
 	}
 
+	ngOnChanges(changes: SimpleChanges) {
+
+		console.log(changes);
+		//
+
+}
 
 	togglePlayerMenu(player: any): void {
+		this.nowSelected = player;
 		this.players.forEach((p) => (p.showMenu = false));
 		player.showMenu = !player.showMenu;
+		this.pendigInvite();
+	}
+
+	pendigInvite(): void {
 		this.user = {...this.user, pending: false};
 		this.pending.forEach((p: any) => {
-			if (p.sender == this.user.username && p.reciver == player.name) {
+			if (p.sender == this.user.username && p.reciver == this.nowSelected.name) {
 				this.user.pending = true;
 			}
 		});

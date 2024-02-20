@@ -71,6 +71,8 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 			else	
 				this.userData.updateWinnLoss(this.user.id, {res: 'Lost', matchId: data.matchId});
 		})
+		// alert("Error connecting to server");
+		// this.router.navigate(['/transcendence']);
 	}
 
 	@HostListener('window:keydown', ['$event'])
