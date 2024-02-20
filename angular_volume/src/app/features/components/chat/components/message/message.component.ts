@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { InvitesService } from 'src/app/core/services/game-invite.service';
 import { Observable, interval, Subscription, map, take } from 'rxjs';
 
-class Pendign {
+class Pending {
   status: boolean = false;
   sender: string = '';
   reciver: string = '';
@@ -19,7 +19,7 @@ class Pendign {
 export class MessageComponent implements OnInit {
   @Input() message: any;
   @Input() members: any;
-  @Output() pendingEvent: EventEmitter<Pendign> = new EventEmitter<Pendign>();
+  @Output() pendingEvent: EventEmitter<Pending> = new EventEmitter<Pending>();
   username!: string;
   currentUser!: boolean;
   otherUser!: boolean;

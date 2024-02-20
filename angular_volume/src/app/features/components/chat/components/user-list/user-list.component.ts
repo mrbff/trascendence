@@ -7,6 +7,12 @@ import { UserInfo } from 'src/app/models/userInfo.model';
 import { MatDialog } from '@angular/material/dialog';
 import { GameInviteComponent } from '../game-invite/game-invite.component';
 
+class Pending {
+  status: boolean = false;
+  sender: string = '';
+  reciver: string = '';
+  time: number = 0;
+}
 
 @Component({
 	selector: 'app-user-list',
@@ -15,14 +21,14 @@ import { GameInviteComponent } from '../game-invite/game-invite.component';
 })
 export class UserListComponent implements OnInit, OnDestroy{
 	@Input() user!: any;
-	@Input() pending!: any;
-	
+	@Input() pending!: Pending[];
 	private $subs = new Subscription();
 	public otherUsers!: UserInfo[];
 	public isGroupChat: boolean = true;
 	public myRole : string = 'MEMBER';
 	public channelId: string = '';
 	public channelName: string = '';
+	public backPending: any
 	
 	attr: any;
 	players: any[] = [];
@@ -124,27 +130,36 @@ export class UserListComponent implements OnInit, OnDestroy{
 		this.$subs.unsubscribe();
 	}
 
-	ngOnChanges(changes: SimpleChanges) {
 
-		console.log(changes);
-		//
 
-}
+		ngOnChanges(changes: Pending[] | any): void {
+			// if (changes['pending'].currentValue != changes['pending'].previousValue) {
+			console.log(`-------------Pending changed---------------`);
+			console.log('curr',changes['pending'].currentValue);
+			console.log('prev', changes['pending'].previousValue);
+			console.log(`---------------------------------`);
+			// }
+			this.pending = changes['pending'].previousValue;
+			this.pendingInvite();
+		}
+
+
+	pendingInvite(): void {
+		let isFind = false;
+			if (this.pending !== undefined) {
+			isFind = this.pending.some((p: any) => {
+				return p.sender === this.user.username && p.reciver === this.nowSelected.name;
+			});
+		}
+		this.user.pending = isFind;
+	}
 
 	togglePlayerMenu(player: any): void {
 		this.nowSelected = player;
 		this.players.forEach((p) => (p.showMenu = false));
 		player.showMenu = !player.showMenu;
-		this.pendigInvite();
-	}
-
-	pendigInvite(): void {
 		this.user = {...this.user, pending: false};
-		this.pending.forEach((p: any) => {
-			if (p.sender == this.user.username && p.reciver == this.nowSelected.name) {
-				this.user.pending = true;
-			}
-		});
+		this.pendingInvite();
 	}
 
 	profile(player: any): void {

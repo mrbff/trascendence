@@ -9,7 +9,7 @@ import { PasswordComponent } from './components/password/password.component';
 import { LeaveChannelComponent } from './components/leave-channel/leave-channel.component';
 import { MatDialog } from '@angular/material/dialog';
 
-class Pendign {
+class Pending {
   status: boolean = false;
   sender: string = '';
   reciver: string = '';
@@ -44,7 +44,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   selectedOption: string | undefined;
   isGroup: boolean;
   isOwner: boolean;
-  isPending: Pendign [] = [];
+  isPending: Pending [] = [];
 
 
   queryParams: {[key:string]:string} = {}
