@@ -30,7 +30,7 @@ import { MatchHistoryComponent } from './components/profile/components/match-his
 import { ChatProfileImageComponent } from './components/chat/components/chat-profile/profile-image.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ReactiveFormsModule } from '@angular/forms';
-import {MatFormFieldModule} from '@angular/material/form-field';
+import { MatFormFieldModule} from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
