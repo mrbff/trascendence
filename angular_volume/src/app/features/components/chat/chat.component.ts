@@ -105,9 +105,9 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   createPending() {
-    this.isPending = [];
     this.chatGateway.getMessagesPenidng(null).pipe(take(1)).subscribe({
       next:(data)=>{
+        this.isPending = [];
         data.forEach((p: any) => {
           this.isPending.push({status: true, sender: p.sender.username, reciver: p.content.split(":")[0] , time: p.time});
         });
