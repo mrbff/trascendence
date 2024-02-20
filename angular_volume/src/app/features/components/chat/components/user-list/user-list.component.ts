@@ -134,10 +134,6 @@ export class UserListComponent implements OnInit, OnDestroy{
 
 		ngOnChanges(changes: SimpleChanges): void {
 			if (JSON.stringify(changes['pending'].currentValue) != JSON.stringify(changes['pending'].previousValue)) {
-			console.log(`-------------Pending changed---------------`);
-			console.log('curr',changes['pending'].currentValue);
-			console.log('prev', changes['pending'].previousValue);
-			console.log(`---------------------------------`);
 			this.pending = changes['pending'].currentValue;
 			this.pendingInvite();
 			}
