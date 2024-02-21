@@ -213,6 +213,25 @@
   border: #000000 1px solid;
 }
 
+.snackbar{
+  display: flex;
+  transform: scale(1);
+  opacity: 1;
+  pointer-events: auto;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  pointer-events: none;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  white-space: pre-line !important;
+  text-align: center;
+}
+
+.snackTitle{
+  font-size: medium;
+  color: orange;
+  font-weight: bold;
+}
 
 @media (max-width: 650px) {
   .box {

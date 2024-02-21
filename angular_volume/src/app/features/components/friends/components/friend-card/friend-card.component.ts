@@ -1,3 +1,5 @@
+import { UserService } from 'src/app/core/services/user.service';
+import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { Component, Input, OnInit, AfterViewInit } from '@angular/core';
 import { FriendsService } from 'src/app/core/services/friends.service';
 import { Router } from '@angular/router';
@@ -21,7 +23,9 @@ export class FriendCardComponent implements OnInit, AfterViewInit {
   constructor(
     private readonly friendsService: FriendsService,
     private readonly router: Router,
-    private readonly invites: InvitesService
+    private readonly invites: InvitesService,
+    private readonly chatGateway: ChatGateway,
+    private readonly userService: UserService,
   ) {
     this.username = '';
     this.topVh = true;
@@ -46,8 +50,11 @@ export class FriendCardComponent implements OnInit, AfterViewInit {
     }
   }
 
-  inviteToGame(){
+  async inviteToGame(){
+    const user = this.userService.getUser();
     this.invites.invite(this.username);
+    const ch = await this.chatGateway.getChatOrCreate(user, this.username, "DIRECT");
+    this.chatGateway.sendInviteMsg(ch.id, user, this.username);
   }
 
   openFriendProfile() {

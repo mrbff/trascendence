@@ -32,7 +32,6 @@ export class PongGateway {
 	connect(gameMode: string, user: UserInfo, inviteId: string) {
 		this.gameMode = gameMode;
 		this.user = user;
-		console.log(user);
 		console.log("QUERY => ", {gameMode, name: user.username, id: user.id, invited: inviteId},)
 		this.socket = io('/pong', {
 			path: '/socket.io/',
@@ -40,8 +39,7 @@ export class PongGateway {
 			reconnectionDelay: 60000,
 			timeout: 180000,
 			query: {gameMode, name: user.username, id: user.id, invited: inviteId},
-			/*transports: ['websocket']*/
-			});
+		});
 		this.socket.on('connection_error', () => {
 			console.log("BIG ERROR");
 			alert("Error connecting to server");

@@ -14,6 +14,7 @@ import 'babylonjs-loaders'
 import * as fs from 'fs';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UsersService } from 'src/users/users.service';
+import { ConsoleLogger } from '@nestjs/common';
 
 @WebSocketGateway({
 	namespace: '/pong',
@@ -44,12 +45,13 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	async handleConnection(client: Socket) {
 		console.log(`\n\nClient connected(pong): ${client.id}`);
 		let query = client.handshake.query
+		console.log("QUERY => ", query);
 		if (!query.name || !query.id){
 			this.server.emit("connection_error");
 			client.disconnect();
 			return;
 		}
-		//console.log("QUERY => ", query);
+		console.log("QUERY => ", query);
 		let element = {username: query.name as string, id:query.id as string, client: client}
 		for (var room of this.rooms)
 		{

@@ -10,8 +10,8 @@
       <div *ngIf="player.showMenu && player.role !== 'EMPTY'" class="player-menu">
         <section *ngIf="player.banOrKick !== 'BANNED'">
           
-            <button *ngIf="!this.user.pending" class="invateToGame" (click)="inviteToGame(player)">Invate to game</button>
-            <button *ngIf="this.user.pending" class="noInvateToGame" (click)="inviteToGame(player)">Invate to game</button>
+            <button *ngIf="!this.user.pending" class="invateToGame" (click)="inviteToGame(player)">Invite to game</button>
+            <button *ngIf="this.user.pending" class="noInvateToGame">Invite alreay sent</button>
         
             <button class="profile" (click)="profile(player)">Profile</button>
             <button class="DM" (click)="DM(player)" [ngStyle]="{'background-color': isGroupChat ? '' : 'grey'}">DM</button>

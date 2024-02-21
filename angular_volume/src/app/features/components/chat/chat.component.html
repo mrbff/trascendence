@@ -66,3 +66,19 @@
   <div class="backdroppe" *ngIf="newChannel.isOpen" (click)="newChannel.changeDialogStatus()"></div>
   
 </main>
+
+<ng-template #snackBarTemplate>
+  <div class="snackbar">
+    <div>
+      <p class="snackTitle">New message from {{messages[0].user}}</p>
+      <span>{{messages[messages.length - 1].msg.slice(0,60)}}</span>
+    </div>
+    <button class="close-button" style="min-width: 64px;
+      border: none;
+      outline: none;
+      background: rgba(0,0,0,0);
+      color: var(--mat-snack-bar-button-color);">
+      close
+    </button>
+  </div>
+</ng-template>
