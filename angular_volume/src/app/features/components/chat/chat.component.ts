@@ -53,6 +53,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   verticalPosition: MatSnackBarVerticalPosition = 'top';
   queryParams: {[key:string]:string} = {}
   chat: any[];
+  stickBottom = true;
   
   selectedChannel: any;
   
@@ -84,7 +85,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngAfterViewChecked(): void {
-    if (this.isOpen) {
+    if (this.isOpen && this.stickBottom) {
       this.scrollToBottom();
     }
     this.cdr.detectChanges();
@@ -124,8 +125,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.selectedOption = event.target.value;
   }
 
-  private onUserNotFound(){
-  }
+  private onUserNotFound() {}
 
   initializeChat() : void {
     this.$subs.add(
@@ -136,7 +136,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
     this.$subs.add(
       this.route.queryParams.subscribe((params) => {
-        
         this.queryParams = params;
         const id = params['id'];
         const username = params['username'];
@@ -176,86 +175,100 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
             }
           })
         } else if (id !== undefined) {
-          this.$subs.add(this.chatGateway.getInChannelById(id, this.userService.getUser()).subscribe({
-            next:(data)=>{
-              const {result} = data;
-              if (result === true) {
-                this.chatGateway.receiveChannelMsg(id);
-                this.isOpen = true;
-              }
-              else {
-                this.router.navigate(
-                  [], 
-                  {
-                    relativeTo: this.activatedRoute,
-                    queryParams: {},
-                  }
-                );
-                this.onUserNotFound();
-              }
+          this.$subs.add(
+            this.chatGateway.getInChannelById(id, this.userService.getUser()).subscribe({
+              next:(data)=>{
+                const {result} = data;
+                if (result === true) {
+                  this.chatGateway.receiveChannelMsg(id);
+                  this.isOpen = true;
+                } else {
+                  this.router.navigate(
+                    [], 
+                    {
+                      relativeTo: this.activatedRoute,
+                      queryParams: {},
+                    }
+                  );
+                  this.onUserNotFound();
+                }
               },
-          }));
+            })
+          );
         }
         this.chatGateway.receiveUserChannels(this.userService.getUser());
       })
     );
-    
+
     if (this.$msgSub) {
-    this.$msgSub = (
-      this.chatGateway.onMsgFromChannel().subscribe({
-        next: (messages: any) => {
-          const isListed = this.channels.find((channel: any) => channel.id === messages[0].channelId) !== undefined;
-          if (isListed) {
-            this.channels = this.channels.map((channel: any) => {
-              if (channel.id === messages[0].channelId && channel.id !== this.queryParams['id']) {
-                channel.allRead = false;
-              } else {
-                channel.allRead = true;
+      this.$msgSub = (
+        this.chatGateway.onMsgFromChannel().subscribe({
+          next: (messages: any) => {
+            const isListed = this.channels.find((channel: any) => channel.id === messages[0].channelId) !== undefined;
+            if (isListed) {
+              this.channels = this.channels.map((channel: any) => {
+                if (channel.id === messages[0].channelId && channel.id !== this.queryParams['id']) {
+                  channel.allRead = false;
+                } else {
+                  channel.allRead = true;
+                }
+                return channel;
+              });
+            }
+            if (!isListed) {
+              this.chatGateway.getChannelByIds(messages[0].channelId).pipe(take(1)).subscribe({
+                next:(data)=>{
+                  data.name = data.name ?? data.members.find((m: any)=> m.user.username != this.userService.getUser()).user.username;
+                  data = {...data, isGroup: false, allRead: messages[0].channelId !== this.queryParams['id'] ? false : true};
+                  this.channels.push(data);
+                }
+              });
+            }
+
+            this.chatGateway.getUserList(messages[0].channelId).pipe(take(1)).subscribe({
+              next:(data) => {
+                console.log(data);
+                data.usernames.forEach((username: string, i: number) => {
+                  if (username === this.userService.getUser() && data.status[i] !== 'BANNED' && username !== messages[0].user) {
+                    if (this.selectedChannel.id !== messages[0].channelId) {
+                      let mess; 
+                      if (messages[0].isInvite === 'PENDING') {
+                        mess = `${messages[0].user} invite you to play a game`;
+                      } else {
+                        mess = `new message from ${messages[0].user} \n ${messages[0].msg.slice(0,60)}`;
+                      }
+                      this.snackBar.open(mess, 'Close', {
+                        duration: 3100,
+                        panelClass: ['multiline-snackbar'],
+                        verticalPosition: "top",
+                        horizontalPosition: "right",
+                      });
+                    }
+                  }
+                });
               }
-              return channel;
             });
-          }
-          if (!isListed) {
-            this.chatGateway.getChannelByIds(messages[0].channelId).pipe(take(1)).subscribe({
-              next:(data)=>{
-                data.name = data.name ?? data.members.find((m: any)=> m.user.username != this.userService.getUser()).user.username;
-                data = {...data, isGroup: false, allRead: messages[0].channelId !== this.queryParams['id'] ? false : true};
-                this.channels.push(data);
+
+            this.messages = [...this.messages, ...messages.filter((message:any)=> {
+              if (!this.selectedChannel) {
+                return message.members?.every((mem:string)=>mem === this.queryParams['username'] || mem === this.userService.getUser());
               }
-            });
-          }
-          console.log(messages[0]);
-          //if (messages[0].user !== this.userService.getUser()) {
-            let mess; 
-            if (messages[0].isInvite === 'PENDING') {
-              mess = `${messages[0].user} invite you to play a game`;
-            } else {
-              mess = `new message from ${messages[0].user} \n ${messages[0].msg.slice(0,60)}`;
+              return (this.selectedChannel.id === message.channelId);
+            })];
+            
+            if (this.selectedChannel !== undefined) {
+              if(this.selectedChannel.id === messages[0].channelId) {
+                this.chatGateway.sendLastSeen(this.selectedChannel.id, this.userService.getUser());
+                this.chatGateway.getChannelById(this.selectedChannel.id);
+                this.stickBottom = true;
+              }
             }
-            this.snackBar.open(mess, 'Close', {
-              duration: 31000000,
-              panelClass: ['multiline-snackbar'],
-              verticalPosition: "top",
-              horizontalPosition: "right",
-            });
-          this.messages = [...this.messages, ...messages.filter((message:any)=>{
-            if (!this.selectedChannel){
-              return message.members?.every((mem:string)=>mem === this.queryParams['username'] || mem === this.userService.getUser());
-            }
-            return (this.selectedChannel.id === message.channelId);
-          })];
-          if (this.selectedChannel !== undefined){
-            if(this.selectedChannel.id === messages[0].channelId){
-              this.chatGateway.sendLastSeen(this.selectedChannel.id, this.userService.getUser());
-              this.chatGateway.getChannelById(this.selectedChannel.id);
-            }
-          }
-        },
-        error: (error) => {
-          this.errorMsg = `Error receiving message from channel: ${error.message}`;
-        },
-      })
-    );
+          },
+          error: (error) => {
+            this.errorMsg = `Error receiving message from channel: ${error.message}`;
+          },
+        })
+      );
     }
 
     this.$subs.add(
@@ -265,10 +278,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           this.channels = data.channels.map((channel:any)=> {
             let isGroup = true;
             let allRead = false;
-            if (channel.id == this.queryParams['id']){
+            if (channel.id == this.queryParams['id']) {
               this.selectedChannel = channel;
             }
-            if (!channel.name){
+            if (!channel.name) {
               isGroup = false;
               const otherUser = channel.members.find((m: any)=> m.user.username != myUsername);
               channel.name = otherUser.user.username;
@@ -281,10 +294,10 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
             if ((channel.messages.length as number) === 0) {
               allRead = true;
             }
-          return {...channel,
-                  isGroup,
-                  allRead};
-          })?.sort((c1: any, c2: any)=>c1.name?.localeCompare(c2?.name ?? "") ?? 0);
+            return {...channel,
+                    isGroup,
+                    allRead};
+            })?.sort((c1: any, c2: any)=>c1.name?.localeCompare(c2?.name ?? "") ?? 0);
           this.channels.forEach((channel: any) => {
             if (!channel.isGroup) {
               if((channel.messages.length as number) === 0) {
@@ -302,7 +315,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
               next: (messages: any) => {
                 this.messages = messages;
                 this.chatGateway.getChannelById(this.selectedChannel.id);
-                
               },
               error: (error) => {
                 this.errorMsg = `Error receiving message from channel: ${error.message}`;
@@ -320,13 +332,13 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.chatGateway.onCreatedNewPublicChannel().subscribe({
         next: (data: any) => {
           if (data.members.some((member: any) => member.user.username === this.userService.getUser())) {
-          data.allRead = true;
-          this.channels.push(data);
-          if (data.user === this.userService.getUser()){
-            this.selectedChannel = data;
+            data.allRead = true;
+            this.channels.push(data);
+            if (data.user === this.userService.getUser()) {
+              this.selectedChannel = data;
+            }
           }
         }
-      }
       })
     );
   }
@@ -422,7 +434,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       }
     );
     this.selectedChannel = conversation;
-    //mancano users :()
     this.selectedChannel.members.find((m: any)=> m.user.username === this.userService.getUser()).role === 'OWNER' ? this.isOwner = true : this.isOwner = false;
     window.localStorage.setItem('isOwner', JSON.stringify(this.isOwner));
     this.msgToShow = null;
@@ -432,6 +443,9 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.chatGateway.sendLastSeen(conversation.id, this.userService.getUser());
     }
     conversation.allRead = true;
+    this.renderer.listen(this.messageArea.nativeElement, 'scroll', (event) => {
+      this.stickBottom = this.messageArea.nativeElement.scrollHeight - this.messageArea.nativeElement.scrollTop == this.messageArea.nativeElement.clientHeight
+    });
   }
 
 

@@ -7,6 +7,7 @@ import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import * as GUI from '@babylonjs/gui';
 import { UserInfo } from 'src/app/models/userInfo.model';
+import { SolidParser } from '@babylonjs/loaders';
 
 @Injectable()
 export class PongGateway {
@@ -32,18 +33,19 @@ export class PongGateway {
 	connect(gameMode: string, user: UserInfo, inviteId: string) {
 		this.gameMode = gameMode;
 		this.user = user;
-		console.log("QUERY => ", {gameMode, name: user.username, id: user.id, invited: inviteId},)
+		//console.log(user);
+		//console.log("QUERY => ", {gameMode, name: user.username, id: user.id, invited: inviteId},)
 		this.socket = io('/pong', {
 			path: '/socket.io/',
 			reconnection: true,
 			reconnectionDelay: 60000,
 			timeout: 180000,
 			query: {gameMode, name: user.username, id: user.id, invited: inviteId},
-		});
+			//transports: ['websocket'],
+			});
 		this.socket.on('connection_error', () => {
-			console.log("BIG ERROR");
 			alert("Error connecting to server");
-			this.router.navigate(['/transcendence/home']);
+			this.connect(gameMode, user, inviteId);
 		});
 		this.socket.on('disconnect', function (reason) {
 		console.log('Socket disconnected because of ' + reason);
