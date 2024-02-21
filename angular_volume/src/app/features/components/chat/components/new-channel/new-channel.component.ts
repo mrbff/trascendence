@@ -109,13 +109,15 @@ export class NewChannelComponent implements OnInit, AfterViewInit {
         this.changeDialogStatus();
       } else {
         this.errorMsg = 'Insert channel users';
-        this.channelName = '';
       }
     } else {
       this.errorMsg = 'Insert channel name';
       this.channelUsers = [];
     }
     this.channelUsers = [];
+    setTimeout(() => {
+      this.errorMsg = '';
+    }, 2000);
   }
 
 }
