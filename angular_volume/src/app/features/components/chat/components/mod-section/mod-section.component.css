@@ -21,6 +21,18 @@
   background-color: rgba(160, 160, 0, 0);
 }
 
+.mod-channel-section-no-border {
+  cursor: pointer;
+  position: absolute;
+  right: 3%;
+  top: 82%;
+  display: flex;
+  padding: 10px;
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 0);
+  background-color: rgba(0, 0, 0, 0);
+}
+
 .pass {
   background: rgb(171, 137, 182);
   right: 2%;
