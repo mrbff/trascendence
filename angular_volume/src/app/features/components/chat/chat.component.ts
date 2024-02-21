@@ -443,9 +443,11 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.chatGateway.sendLastSeen(conversation.id, this.userService.getUser());
     }
     conversation.allRead = true;
-    this.renderer.listen(this.messageArea.nativeElement, 'scroll', (event) => {
-      this.stickBottom = this.messageArea.nativeElement.scrollHeight - this.messageArea.nativeElement.scrollTop == this.messageArea.nativeElement.clientHeight
-    });
+    setTimeout(()=> { 
+      this.renderer.listen(this.messageArea.nativeElement, 'scroll', (event) => {
+        this.stickBottom = this.messageArea.nativeElement.scrollHeight - this.messageArea.nativeElement.scrollTop == this.messageArea.nativeElement.clientHeight
+      });
+    }, 1000);
   }
 
 
