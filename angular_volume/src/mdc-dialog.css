@@ -170,3 +170,8 @@
   display: flex;
   justify-content: center;
 }
+
+.multiline-snackbar{
+  white-space: pre-line !important;
+  text-align: center;
+}

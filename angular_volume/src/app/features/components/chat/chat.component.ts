@@ -1,3 +1,4 @@
+import { MessageComponent } from './components/message/message.component';
 import { CodeService } from './../../../shared/services/code.service';
 import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -9,7 +10,8 @@ import { UserInfo } from 'src/app/models/userInfo.model';
 import { PasswordComponent } from './components/password/password.component';
 import { LeaveChannelComponent } from './components/leave-channel/leave-channel.component';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { Any } from 'typeorm';
 
 class Pending {
   status: boolean = false;
@@ -47,6 +49,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   isGroup: boolean;
   isOwner: boolean;
   isPending: Pending [] = [];
+  verticalPosition: MatSnackBarVerticalPosition = 'top';
 
 
   queryParams: {[key:string]:string} = {}
@@ -221,13 +224,13 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
               }
             });
           }
-          console.log(messages[0]);
-          const mess = messages[0].user + ":" + messages[0].msg;
-            if (messages[0].user !== this.userService.getUser()) {
-            this.snackBar.open(mess, 'Close', {
-              duration: 3000,
-            });
-          }
+          const mess = `new message from ${messages[0].user} \n ${messages[0].msg}`;
+          this.snackBar.open(mess, 'Close', {
+            duration: 3000,
+            panelClass: ['multiline-snackbar'],
+            verticalPosition: "top",
+          });
+          
           this.messages = [...this.messages, ...messages.filter((message:any)=>{
             if (!this.selectedChannel){
               return message.members?.every((mem:string)=>mem === this.queryParams['username'] || mem === this.userService.getUser());
@@ -308,7 +311,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.$subs.add(
       this.chatGateway.onCreatedNewPublicChannel().subscribe({
         next: (data: any) => {
-          if (data.members.some((member: any) => member.username === this.userService.getUser())) {
+          if (data.members.some((member: any) => member.user.username === this.userService.getUser())) {
           data.allRead = true;
           this.channels.push(data);
           if (data.user === this.userService.getUser()){
@@ -401,7 +404,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     }
     this.isGroup = conversation.isGroup;
     window.localStorage.setItem('isGroup', JSON.stringify(conversation.isGroup));
-    window.localStorage.setItem('isOwner', JSON.stringify(this.isGroup));
     conversation = conversation;
     this.messages = [];
     this.router.navigate(
@@ -412,7 +414,13 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       }
     );
     this.selectedChannel = conversation;
+    console.log('open chat', this.selectedChannel);
+    this.selectedChannel.members.forEach((element: any) => {
+      console.log('element', element);
+    });
+    //mancano users :()
     this.selectedChannel.members.find((m: any)=> m.user.username === this.userService.getUser()).role === 'OWNER' ? this.isOwner = true : this.isOwner = false;
+    window.localStorage.setItem('isOwner', JSON.stringify(this.isOwner));
     this.msgToShow = null;
     this.allRead = conversation.allRead;
     this.allMembers = conversation.members;

@@ -188,10 +188,10 @@ export class ChannelsService {
     for (const user of objUsers) {
       await this.createMembership(user, obJChannel, "MEMBER");
     }
-
+    
     const members = [
-      ...objUsers.map(user => ({ username: user.username })),
-      { username: objOwn.username }
+      ...objUsers.map((user) => ({ user: { username: user.username }, role: 'MEMBER' })),
+      { user: { username: objOwn.username }, role: 'OWNER'}
     ];
   
     return {
