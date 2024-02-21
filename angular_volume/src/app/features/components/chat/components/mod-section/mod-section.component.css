@@ -1,7 +1,7 @@
 .mod-channel {
   cursor: pointer;
   position: absolute;
-  right: 2%;
+  right: 5%;
   bottom: 2%;
   padding: 13px;
   border: 2px solid rgb(0, 0, 0);
@@ -13,20 +13,20 @@
   cursor: pointer;
   position: absolute;
   right: 2%;
-  top: 80%;
+  top: 82%;
   display: flex;
   padding: 10px;
   border-radius: 10px;
   border: 2px solid;
-  background-color: rgb(160, 160, 0);
+  background-color: rgba(160, 160, 0, 0.11);
 }
 
 .pass {
   background: rgb(171, 137, 182);
   right: 2%;
-  padding: 13px;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding: 15px;
+  padding-left: 25px;
+  padding-right: 25px;
   border: 2px solid rgb(0, 0, 0);
   border-radius: 100px;
   bottom: 10%;
@@ -35,10 +35,11 @@
 .add {
   background: rgb(141, 182, 137);
   right: 7%;
-  padding: 13px;
-  padding-left: 20px;
+  padding: 15px;
+  padding-left: 25px;
   padding-right: 20px;
   border: 2px solid rgb(0, 0, 0);
   border-radius: 100px;
   bottom: 10%;
+  margin-left: 10px;
 }

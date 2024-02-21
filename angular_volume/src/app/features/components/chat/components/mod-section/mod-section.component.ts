@@ -1,12 +1,10 @@
-import { UserService } from 'src/app/core/services/user.service';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, ElementRef } from '@angular/core';
 import { ChangePasswordComponent } from './components/change-password/change-password.component';
 import { AddUserComponent } from './components/add-user/add-user.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription, skip, take, map } from 'rxjs';
-import { channel } from 'diagnostics_channel';
+import { Subscription, take } from 'rxjs';
 
 @Component({
   selector: 'app-mod-section',
@@ -26,12 +24,20 @@ export class ModSectionComponent implements OnInit {
     private dialog: MatDialog,
     private readonly route: ActivatedRoute,
     private readonly chatGateway: ChatGateway,
+    private elRef: ElementRef,
   ) {
     this.id = '';
     this.users = [];
     this.isOpen = false;
   }
 
+  @HostListener('document:click', ['$event'])
+  handleClick(event: Event): void {
+    if (!this.elRef.nativeElement.contains(event.target)) {
+      // Chiudi isOpen se l'elemento cliccato non è all'interno del componente
+      this.isOpen = false;
+    }
+  }
   ngOnInit() {
     this.$subs.add(
       this.route.queryParams.pipe(take(1)).subscribe((params) => {
