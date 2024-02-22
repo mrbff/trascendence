@@ -5,9 +5,30 @@ import { AddUserComponent } from './components/add-user/add-user.component';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, take } from 'rxjs';
+import { animate, state, style, transition, trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-mod-section',
+  animations: [
+    trigger('openClose', [
+      state('open', style({
+		right: '3%',
+		top: '82%',
+		scale: 1,
+      })),
+      state('closed', style({
+		right: '3%',
+		top: '90%',
+		scale: 0.1,
+      })),
+      transition('open => closed', [
+        animate('0.3s')
+      ]),
+      transition('closed => open', [
+        animate('0.3s')
+      ]),
+    ]),
+  ],
   templateUrl: './mod-section.component.html',
   styleUrls: ['./mod-section.component.css'],
 })
@@ -57,6 +78,7 @@ export class ModSectionComponent implements OnInit {
 
   changeDialogStatus() {
     this.isOpen = !this.isOpen;
+	console.log('click')
   }
 
   changePassword( ) {

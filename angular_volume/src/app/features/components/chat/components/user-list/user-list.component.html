@@ -5,9 +5,10 @@
   <section class="player-list">
     <div class="player-items" *ngFor="let player of players"
       (click)="togglePlayerMenu(player)"
-      (mouseenter)="togglePlayerMenu(player)" >
+      (mouseenter)="togglePlayerMenu(player)" 
+	  (mouseleave)="togglePlayerMenu(player)">
       {{ player.name }}
-      <div *ngIf="player.showMenu && player.role !== 'EMPTY'" class="player-menu">
+      <div @accordion *ngIf="player.showMenu && player.role !== 'EMPTY'" class="player-menu">
         <section *ngIf="player.banOrKick !== 'BANNED'">
           
             <button *ngIf="!this.user.pending" class="invateToGame" (click)="inviteToGame(player)">Invite to game</button>

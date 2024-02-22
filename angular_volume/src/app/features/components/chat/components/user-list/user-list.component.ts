@@ -6,6 +6,7 @@ import { FriendsService } from 'src/app/core/services/friends.service';
 import { UserInfo } from 'src/app/models/userInfo.model';
 import { MatDialog } from '@angular/material/dialog';
 import { GameInviteComponent } from '../game-invite/game-invite.component';
+import { trigger, state, style, transition, animate } from '@angular/animations';
 
 class Pending {
   status: boolean = false;
@@ -16,6 +17,17 @@ class Pending {
 
 @Component({
 	selector: 'app-user-list',
+	animations: [
+		trigger('accordion', [
+			transition(':enter', [
+			  style({ height: 0 }),
+			  animate('300ms ease-in-out', style({ "height": '*'})),
+			]),
+			transition(':leave', [
+			  animate('100ms', style({ "height": 0 }))
+			])
+		  ]),
+	  ],
 	templateUrl: './user-list.component.html',
 	styleUrls: ['./user-list.component.css'],
 })
@@ -152,11 +164,11 @@ export class UserListComponent implements OnInit, OnDestroy{
 
 	togglePlayerMenu(player: any): void {
 		this.nowSelected = player;
-		this.players.forEach((p) => (p.showMenu = false));
+		// this.players.forEach((p) => (p.showMenu = false));
 		player.showMenu = !player.showMenu;
 		this.user = {...this.user, pending: false};
 		this.pendingInvite();
-	}
+		}
 
 	profile(player: any): void {
 		this.router.navigate(['/transcendence/profile', player.name]);

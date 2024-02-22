@@ -1,7 +1,7 @@
 <div class="mod-channel" (click)="changeDialogStatus()">
   <i class="fa-solid fa-screwdriver-wrench"> mod </i>
 </div>
-<div class="mod-channel-section-no-border" *ngIf="isOpen">
+<div class="mod-channel-section-no-border" [@openClose]="isOpen ? 'open' : 'closed'">
   <i class="fa-solid fa-lock  pass" (click)="changePassword( )"></i>
   <i class="fa-solid fa-user-plus add" (click)="addUser()"></i>
 </div>
