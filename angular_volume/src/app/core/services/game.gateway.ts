@@ -32,8 +32,8 @@ export class PongGateway {
 	connect(gameMode: string, user: UserInfo, inviteId: string) {
 		this.gameMode = gameMode;
 		this.user = user;
-		console.log(user);
-		console.log("QUERY => ", {gameMode, name: user.username, id: user.id, invited: inviteId},)
+		//console.log(user);
+		//console.log("QUERY => ", {gameMode, name: user.username, id: user.id, invited: inviteId},)
 		this.socket = io('/pong', {
 			path: '/socket.io/',
 			reconnection: true,
@@ -65,7 +65,7 @@ export class PongGateway {
 		});
 	}
 
-	onOpponentFound(): Observable<{username: string}> {
+onOpponentFound(): Observable<{username: string}> {
 		return new Observable((observer) => {
 			this.socket.on('opponent-found', (response: {username: string; seat: number}) => {
 				this.player = response.seat;
@@ -74,6 +74,16 @@ export class PongGateway {
 			});
 		});
 	}
+
+	onUnsubOpponent(): Observable<void> {
+		return new Observable((observer) => {
+			this.socket.on('unsub-opponent', () => {
+				console.log('unsubOpponent');
+				observer.next();
+			});
+		});
+	}
+
 	
 	disconnect(): void{
 		if (this.scene)

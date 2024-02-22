@@ -1,5 +1,3 @@
-import { MessageComponent } from './components/message/message.component';
-import { CodeService } from './../../../shared/services/code.service';
 import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, interval, take } from 'rxjs';

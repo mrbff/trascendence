@@ -45,6 +45,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		console.log(`\n\nClient connected(pong): ${client.id}`);
 		let query = client.handshake.query
 		if (!query.name || !query.id){
+			this.server.emit("unsub-opponent");
 			this.server.emit("connection_error");
 			client.disconnect();
 			return;
