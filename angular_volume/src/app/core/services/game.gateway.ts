@@ -44,8 +44,15 @@ export class PongGateway {
 			});
 		this.socket.on('connection_error', () => {
 			console.log("BIG ERROR");
-			alert("Error connecting to server");
-			this.router.navigate(['/transcendence/home']);
+			this.socket = io('/pong', {
+				path: '/socket.io/',
+				reconnection: true,
+				reconnectionDelay: 60000,
+				timeout: 180000,
+				query: {gameMode, name: user.username, id: user.id, invited: inviteId},
+				});
+			// alert("Error connecting to server");
+			// this.router.navigate(['/transcendence/home']);
 		});
 		this.socket.on('disconnect', function (reason) {
 		console.log('Socket disconnected because of ' + reason);
@@ -56,7 +63,6 @@ export class PongGateway {
 		this.socket.on('reconnect_error', (error) => {
 			console.error('Reconnection error:', error);
 		});
-
 	}
 
 	onOpponentFound(): Observable<{username: string}> {

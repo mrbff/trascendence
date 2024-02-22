@@ -10,6 +10,9 @@
   src: url("assets/fonts/Newake-Font-Demo.otf") format("opentype");
 }
 
+#babylonjsLoadingDiv{
+	top: 0px !important;
+}
 
 body {
   font-family: Azonix !important;

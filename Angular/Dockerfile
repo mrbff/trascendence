@@ -5,10 +5,4 @@ RUN npm install -g @angular/cli @angular/material @angular/cdk @angular/animatio
 
 WORKDIR /usr/src/app
 
-#COPY package*.json ./
-
-#RUN npm install
-
-#COPY . .
-
 CMD ["./start.sh"]
