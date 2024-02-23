@@ -2,6 +2,8 @@ import { AfterViewInit, Component, HostListener, OnInit } from '@angular/core';
 import { FriendsService } from 'src/app/core/services/friends.service';
 import {InvitesService} from 'src/app/core/services/game-invite.service'
 import { Router } from '@angular/router';
+import { Subscription, interval } from 'rxjs';
+import { startWith, switchMap } from 'rxjs/operators';
 
 @Component({
   templateUrl: './friends.component.html',
@@ -26,10 +28,12 @@ export class FriendsComponent implements OnInit, AfterViewInit {
     this.searchPlayer();
   }
 
+  private loadInvitesSubscription!: Subscription;
+
   constructor(
     private readonly friendsService: FriendsService,
     private readonly inviteService: InvitesService,
-    private readonly router: Router
+    private readonly router: Router,
   ) {
     this.search = '';
     this.placeholder = 'Search player';
@@ -40,7 +44,16 @@ export class FriendsComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.loadFriend();
-    this.loadInvites();
+    this.loadInvitesSubscription = interval(1000).pipe(
+      startWith(0), // So that it runs immediately as well
+      switchMap(() => this.loadInvites())
+    ).subscribe();
+  }
+
+  ngOnDestroy() {
+    if (this.loadInvitesSubscription) {
+        this.loadInvitesSubscription.unsubscribe();
+    }
   }
 
   ngAfterViewInit(): void {

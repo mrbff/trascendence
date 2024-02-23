@@ -234,7 +234,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         }
       }
     });
-    if (status !== null && status !== 'ACTIVE' && status !== 'MUTED' && status !== 'BANNED') {
+    if (status !== null && (status === 'KICKED' || status === 'LEAVED')) {
       this.channelsService.rmUserFromChannel(channelId, username);
     }
   }

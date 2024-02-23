@@ -58,8 +58,8 @@ export class ChannelsService {
     await this.prisma.gameinvite.delete({
       where: {
         senderId_receiverId: {
-        senderId: other!.id,
-        receiverId: user!.id,
+        senderId: user!.id,
+        receiverId: other!.id,
         },
       },
     });
@@ -256,8 +256,8 @@ export class ChannelsService {
   }
   
   async createGameInvite(username: string, sender: string) {
-    const user = await this.usersService.findUserByName(username);
-    const receiver = await this.usersService.findUserByName(sender);
+    const user = await this.usersService.findUserByName(sender);
+    const receiver = await this.usersService.findUserByName(username);
     const msg = await this.prisma.gameinvite.create({
       data: {
         senderId: user.id,

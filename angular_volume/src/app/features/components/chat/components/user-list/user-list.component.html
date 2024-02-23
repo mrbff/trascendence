@@ -4,7 +4,6 @@
   </div>
   <section class="player-list">
     <div class="player-items" *ngFor="let player of players"
-      (click)="togglePlayerMenu(player)"
       (mouseenter)="togglePlayerMenu(player)" 
 	  (mouseleave)="togglePlayerMenu(player)">
       {{ player.name }}

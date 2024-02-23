@@ -90,7 +90,7 @@ export class NewChannelComponent implements OnInit, AfterViewInit {
 
   async createNewChannel() {
     if (this.channelName !== '') {
-      const ch = await this.chatGateway.getChannelByNameHttp(this.channelName)
+      let ch = await this.chatGateway.getChannelByNameHttp(this.channelName)
       const user = await this.userService.getUserByUsernamePromise(this.channelName)
       if (user !== null) {
         this.errorMsg = 'Channel name cant be a user name';
@@ -105,7 +105,11 @@ export class NewChannelComponent implements OnInit, AfterViewInit {
       if (this.channelUsers.length !== 0) {
         this.errorMsg = '';
         this.chatGateway.createNewChannel(this.channelName, this.channelUsers, this.userService.getUser(), this.selectedGroupType, this.password);
-        this.chatGateway.receiveUserChannels(this.userService.getUser())
+        ch = await this.chatGateway.getChannelByNameHttp(this.channelName)
+        console.log(ch)
+        this.channelUsers.forEach((user) => {
+          this.chatGateway.sendModChannelMsg('You have been added to ' + this.channelName, ch, user, 'ACTIVE');
+        });
         this.changeDialogStatus();
       } else {
         this.errorMsg = 'Insert channel users';
