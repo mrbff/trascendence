@@ -94,7 +94,6 @@ export class MessageComponent implements OnInit {
 
   redirectToGame() {
     this.router.navigate(['/transcendence/pong'], {queryParams: {invited: this.message.msg.split(":")[1]}})
-    console.log(this.message);
     this.chatGateway.postChangeGameStatus(parseInt(this.message.msg.split(":")[1]) as number, 'ACCEPTED', this.message.id);
   }
 }

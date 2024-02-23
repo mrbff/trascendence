@@ -225,10 +225,9 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
             this.chatGateway.getUserList(messages[0].channelId).pipe(take(1)).subscribe({
               next:(data) => {
-                console.log(data);
                 data.usernames.forEach((username: string, i: number) => {
                   if (username === this.userService.getUser() && data.status[i] !== 'BANNED' && username !== messages[0].user) {
-                    if (this.selectedChannel.id !== messages[0].channelId) {
+                    if (this.selectedChannel === undefined || this.selectedChannel.id !== messages[0].channelId) {
                       let mess; 
                       if (messages[0].isInvite === 'PENDING') {
                         mess = `${messages[0].user} invite you to play a game`;
@@ -413,6 +412,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnDestroy(): void {
+    this.selectedChannel = undefined;
     this.$subs.unsubscribe();
   }
 

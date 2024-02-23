@@ -78,7 +78,6 @@ export class ModSectionComponent implements OnInit {
 
   changeDialogStatus() {
     this.isOpen = !this.isOpen;
-	console.log('click')
   }
 
   changePassword( ) {
