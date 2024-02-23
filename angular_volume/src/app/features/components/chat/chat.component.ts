@@ -257,7 +257,13 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
             
             if (this.selectedChannel !== undefined) {
               if(this.selectedChannel.id === messages[0].channelId) {
-                this.chatGateway.receiveUserChannels(this.userService.getUser());
+                console.log(messages);
+                if ((messages[0].msg.includes('has been BANNED from the channel by') ||
+                  messages[0].msg.includes('has been KICKED from the channel by') ||
+                  messages[0].msg.includes('LEFT the channel')) &&
+                  messages[0].msg.includes(this.userService.getUser())) {
+                  this.chatGateway.receiveUserChannels(this.userService.getUser());
+                }
                 this.chatGateway.sendLastSeen(this.selectedChannel.id, this.userService.getUser());
                 this.chatGateway.getChannelById(this.selectedChannel.id);
                 this.stickBottom = true;

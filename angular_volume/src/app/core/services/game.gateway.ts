@@ -43,6 +43,7 @@ export class PongGateway {
 			});
 		this.socket.on('connection-status', (response) => {
 			console.log("BIG ERROR");
+			this.socket.disconnect();
 			this.socket = io('/pong', {
 				path: '/socket.io/',
 				reconnection: true,
