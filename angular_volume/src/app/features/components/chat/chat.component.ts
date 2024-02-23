@@ -222,9 +222,11 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
                 }
               });
             }
-
             this.chatGateway.getUserList(messages[0].channelId).pipe(take(1)).subscribe({
               next:(data) => {
+                if (data.usernames === undefined) {
+                  return
+                }
                 data.usernames.forEach((username: string, i: number) => {
                   if (username === this.userService.getUser() && data.status[i] !== 'BANNED' && username !== messages[0].user) {
                     if (this.selectedChannel === undefined || this.selectedChannel.id !== messages[0].channelId) {
@@ -255,6 +257,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
             
             if (this.selectedChannel !== undefined) {
               if(this.selectedChannel.id === messages[0].channelId) {
+                this.chatGateway.receiveUserChannels(this.userService.getUser());
                 this.chatGateway.sendLastSeen(this.selectedChannel.id, this.userService.getUser());
                 this.chatGateway.getChannelById(this.selectedChannel.id);
                 this.stickBottom = true;
@@ -328,8 +331,11 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.$subs.add(
       this.chatGateway.onCreatedNewPublicChannel().subscribe({
         next: (data: any) => {
+          console.log(data);
           if (data.members.some((member: any) => member.user.username === this.userService.getUser())) {
-            data.allRead = true;
+            if (data.isGroup === true ) {
+              this.chatGateway.sendModChannelMsg(this.userService.getUser() + ' has been added to ' + data.name, data.id, this.userService.getUser(), 'ACTIVE');
+            }
             this.channels.push(data);
             if (data.user === this.userService.getUser()) {
               this.selectedChannel = data;
@@ -355,12 +361,17 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           }
           this.chatGateway.getTypesOfRealation(id, this.whoami.username).pipe(take(1)).subscribe({
             next:(data)=>{
+              console.log(data);
               if (data.type === 'BLOCKED'){
                 this.msgToShow = "You are blocked by this user you can't send a message to him";
                 setTimeout(()=> this.msgToShow = null, 2500);
                 return
               } else if (data.type === 'BLOCKING'){
                 this.msgToShow = "You are blocking this user unlock him to send a message";
+                setTimeout(()=> this.msgToShow = null, 2500);
+                return
+              } else if (data.type === 'BANNED') {
+                this.msgToShow = "You are banned from this channel";
                 setTimeout(()=> this.msgToShow = null, 2500);
                 return
               } else {

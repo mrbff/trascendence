@@ -32,7 +32,6 @@ export class PongGateway {
 	connect(gameMode: string, user: UserInfo, inviteId: string) {
 		this.gameMode = gameMode;
 		this.user = user;
-		//console.log(user);
 		//console.log("QUERY => ", {gameMode, name: user.username, id: user.id, invited: inviteId},)
 		this.socket = io('/pong', {
 			path: '/socket.io/',
@@ -42,7 +41,7 @@ export class PongGateway {
 			query: {gameMode, name: user.username, id: user.id, invited: inviteId},
 			/*transports: ['websocket']*/
 			});
-		this.socket.on('connection_error', () => {
+		this.socket.on('connection-status', (response) => {
 			console.log("BIG ERROR");
 			this.socket = io('/pong', {
 				path: '/socket.io/',
@@ -51,8 +50,6 @@ export class PongGateway {
 				timeout: 180000,
 				query: {gameMode, name: user.username, id: user.id, invited: inviteId},
 				});
-			// alert("Error connecting to server");
-			// this.router.navigate(['/transcendence/home']);
 		});
 		this.socket.on('disconnect', function (reason) {
 		console.log('Socket disconnected because of ' + reason);
@@ -75,10 +72,9 @@ onOpponentFound(): Observable<{username: string}> {
 		});
 	}
 
-	onUnsubOpponent(): Observable<void> {
+	onConnectSuccessfull(): Observable<void> {
 		return new Observable((observer) => {
-			this.socket.on('unsub-opponent', () => {
-				console.log('unsubOpponent');
+			this.socket.on('connection-status', () => {
 				observer.next();
 			});
 		});

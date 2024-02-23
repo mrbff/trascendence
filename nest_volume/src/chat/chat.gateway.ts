@@ -223,14 +223,19 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async handleModChannelMsg(client: Socket, payload: { sender: string, channel: string, message: string, username: string, status: string | null}) {
     const { sender, channel, message, username, status } = payload;
     const { channelId } = await this.channelsService.createModChannelMessage(channel, message, sender);
+    const preMod = await this.channelsService.getChannelById(channelId);
     await this.channelsService.changeUserStatus(channelId, username, status);
     const ch = await this.channelsService.getChannelById(channelId);
     ch?.members?.map((member: any) => {
-      if (member.status === 'ACTIVE' || (member.user.username === username)) {
-        try {
-          userSocketMap[member.user.username].emit('MsgFromChannel', [{ user: sender,  msg: message, channelId, isModer: true}]);
-        } catch (error) {
-          console.log(`cant invite: ${member.user.username} is offline`);
+      console.log("member", member);
+      if ((member.status === 'ACTIVE' || (member.user.username === username))) {
+        if (preMod?.members?.find((m: any) => m.user.username === member.user.username)?.status !== 'BANNED') {
+          try {
+            console.log("sending mod message to: ", member.user.username);
+            userSocketMap[member.user.username].emit('MsgFromChannel', [{ user: sender,  msg: message, channelId, isModer: true}]);
+          } catch (error) {
+            console.log(`cant invite: ${member.user.username} is offline`);
+          }
         }
       }
     });

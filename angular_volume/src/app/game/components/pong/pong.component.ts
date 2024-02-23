@@ -14,7 +14,7 @@ import { Subscription, take } from 'rxjs';
 })
 export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 	@ViewChild('renderCanvas', {static: true})
-	private $subOppent = new Subscription();
+	private $subOppent!: Subscription;
 	private $sub = new Subscription();
 	canvas!: HTMLCanvasElement;
 	
@@ -62,41 +62,20 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 		if (this.$sub)
 			this.$sub.unsubscribe();
 	}
-	
-
-	subscribeWithRetry() {
-    if (this.gate) {
-        this.$sub.add(
-            this.gate.onUnsubOpponent().subscribe({
-							next: () => {
-								this.$subOppent.unsubscribe();
-								this.$subOppent = new Subscription();
-								this.$subOppent = this.gate.onOpponentFound().subscribe({
-										next: (found) => {
-												console.log('creating a new $subOppent in circle');
-												this.opponentConnected = true;
-										},
-								});
-								console.log('clean $subOppent');
-							}
-            })
-        );
-    } else {
-        console.error('this.gate is not defined');
-    }
-	}
 
 	start() {
 		this.starting = true;
 		this.gate.connect(this.gameMode, this.user, this.invited);
-		this.$subOppent = this.gate.onOpponentFound().subscribe({
-			next: (found) => {
-				console.log(found);
-				console.log('creating a new $subOppent');
-				this.opponentConnected = true;
-			},
-		});
-		this.subscribeWithRetry();
+		this.gate.onConnectSuccessfull().subscribe({
+			next: () => {
+				this.gate.onOpponentFound().subscribe({
+					next: (found) => {
+						console.log('creating a new $subOppent in circle');
+						this.opponentConnected = true;
+					},
+				});
+			}
+	})
 		this.gate.onGameFinish().subscribe((data: {won: boolean, matchId: number}) =>{
 			console.log(`game finished\nwon: ${data.won}`);
 			if (data.won)

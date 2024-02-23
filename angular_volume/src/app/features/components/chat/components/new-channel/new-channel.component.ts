@@ -105,11 +105,6 @@ export class NewChannelComponent implements OnInit, AfterViewInit {
       if (this.channelUsers.length !== 0) {
         this.errorMsg = '';
         this.chatGateway.createNewChannel(this.channelName, this.channelUsers, this.userService.getUser(), this.selectedGroupType, this.password);
-        ch = await this.chatGateway.getChannelByNameHttp(this.channelName)
-        console.log(ch)
-        this.channelUsers.forEach((user) => {
-          this.chatGateway.sendModChannelMsg('You have been added to ' + this.channelName, ch, user, 'ACTIVE');
-        });
         this.changeDialogStatus();
       } else {
         this.errorMsg = 'Insert channel users';

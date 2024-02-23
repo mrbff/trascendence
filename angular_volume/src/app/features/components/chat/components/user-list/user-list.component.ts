@@ -74,6 +74,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 		this.$subs.add(
 			this.chatGateway.onChannelId().subscribe({
 				next: (data: any) => {
+					console.log("datachannel", data);
 					this.isGroupChat = true;
 					if (data.channel.type === 'DIRECT'){
 						this.isGroupChat = false;
@@ -82,44 +83,46 @@ export class UserListComponent implements OnInit, OnDestroy{
 					this.players = [];
 					this.channelId = data.channel.id;
 					this.channelName = data.channel.name;
-					for (let user of data.channel.members) {
-						const username = user.user.username;
-						const role = user.role;
-						const id = user.user.id;
-						const blockList = user.user.blockedBy;
-						const banOrKick = user.status;
-						const listable = true;
-						let isBlock = false;
-						let isMuted = false;
-						
-						if (user.muteEndTime > new Date().toISOString()) {
-							isMuted = true;
-						}
-						for (let blockUser of blockList) {
-							if (blockUser.blocker.username === this.user.username) {
-								isBlock = true;
+					if (data.channel.members.find((m: any) => m.user.username === this.user.username)) {
+						for (let user of data.channel.members) {
+							const username = user.user.username;
+							const role = user.role;
+							const id = user.user.id;
+							const blockList = user.user.blockedBy;
+							const banOrKick = user.status;
+							const listable = true;
+							let isBlock = false;
+							let isMuted = false;
+							
+							if (user.muteEndTime > new Date().toISOString()) {
+								isMuted = true;
 							}
-						}
-						if (username !== this.user.username && banOrKick !== 'KICKED' && banOrKick !== 'LEAVED'){
-							if (this.channelName == null) {
-								this.channelName = username;
+							for (let blockUser of blockList) {
+								if (blockUser.blocker.username === this.user.username) {
+									isBlock = true;
+								}
 							}
-							this.players.push({ 
-									id: id,
-									name: username,
-									showMenu: false,
-									role: role,
-									isBlock: isBlock,
-									banOrKick: banOrKick,
-									listable: listable,
-									isMuted: isMuted,
-									pending: false
-								});
-						}
-						else if (username === this.user.username) {
-							this.myRole = role;
-							if (banOrKick !== 'ACTIVE') {
-								this.players = [];
+							if (username !== this.user.username && banOrKick !== 'KICKED' && banOrKick !== 'LEAVED'){
+								if (this.channelName == null) {
+									this.channelName = username;
+								}
+								this.players.push({ 
+										id: id,
+										name: username,
+										showMenu: false,
+										role: role,
+										isBlock: isBlock,
+										banOrKick: banOrKick,
+										listable: listable,
+										isMuted: isMuted,
+										pending: false
+									});
+							}
+							else if (username === this.user.username) {
+								this.myRole = role;
+								if (banOrKick !== 'ACTIVE') {
+									this.players = [];
+								}
 							}
 						}
 					}

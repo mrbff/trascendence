@@ -363,12 +363,23 @@ export class ChannelsController {
           const isBlocked = blockMyInfos?.blockedBy.find((block) => block.blocked.username === username && block.blocker.username === other?.user.username);
           const isBlocking = blockMyInfos?.blockedUsers.find((block) => block.blocker.username === username && block.blocked.username === other?.user.username);
 
+          console.log('blockedUsers', blockMyInfos?.blockedUsers);
+          console.log('blockedBy', blockMyInfos?.blockedBy);
+
           if (isBlocked) {
             return { type: 'BLOCKED' };
           }
           if (isBlocking) {
             return { type: 'BLOCKING' };
           }
+        }
+      }
+      if (channel.type === 'PUBLIC' || channel.type === 'PRIVATE') {
+        const member = channel.members.find((member) => member.user.username === username);
+        if (member) {
+          return { type: member.status };
+        } else {
+          return { type: 'KICKED' };
         }
       }
       return { type: 'NONE'};
