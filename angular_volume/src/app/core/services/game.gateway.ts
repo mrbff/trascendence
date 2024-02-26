@@ -42,7 +42,6 @@ export class PongGateway {
 							timeout: 180000,
 							query: { gameMode, name: user.username, id: user.id, invited: inviteId },
 					});
-	
 					this.socket.on('connection-status', (response) => {
 							if (!response) {
 									console.log("BIG ERROR");
@@ -53,12 +52,9 @@ export class PongGateway {
 					});
 					this.socket.on('error', (error) => {
 							console.error("Socket Error:", error);
-							// Handle error gracefully, e.g., retry connection or show error message
 					});
-	
 					this.socket.on('connect_timeout', () => {
 							console.error("Socket Connection Timeout");
-							// Handle timeout, e.g., retry connection or show error message
 					});
 			};
 	

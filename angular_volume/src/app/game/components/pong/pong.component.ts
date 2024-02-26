@@ -36,7 +36,7 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 		this.user = await this.userData.getUserInfo();
 
 		this.route.queryParams.subscribe((params) => {
-			console.log(params);
+			// console.log(params);
 			if (params['invited']) {
 				this.invited = params['invited'];
 				this.start(); 
@@ -71,12 +71,12 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 				if (data) {
 					this.gate.onOpponentFound().subscribe({
 						next: (found) => {
-							console.log('creating a new $subOppent in circle');
+							// console.log('creating a new $subOppent in circle');
 							this.opponentConnected = true;
 						},
 					});
 					this.gate.onGameFinish().subscribe((data: {won: boolean, matchId: number}) =>{
-						console.log(`game finished\nwon: ${data.won}`);
+						// console.log(`game finished\nwon: ${data.won}`);
 						if (data.won)
 							this.userData.updateWinnLoss(this.user.id, {res: 'Won', matchId: data.matchId});
 						else	
