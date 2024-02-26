@@ -1,10 +1,10 @@
 import { UserInfo } from '../../../models/userInfo.model';
-import { Component, HostListener, OnInit, ViewChild, OnDestroy, AfterViewChecked } from '@angular/core';
+import { EventEmitter, Component, HostListener, OnInit, ViewChild, OnDestroy, AfterViewChecked, Output } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
 import { PongGateway } from 'src/app/core/services/game.gateway';
 import * as BABYLON from '@babylonjs/core';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription, take } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-pong',
@@ -22,7 +22,7 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 	opponentConnected = false;
 	starting = false;
 	scene!: BABYLON.Scene;
-	gameMode: string = "";
+	gameMode: string = "normal";
 	invited!: string;
 
 	
@@ -79,7 +79,7 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 						// console.log(`game finished\nwon: ${data.won}`);
 						if (data.won)
 							this.userData.updateWinnLoss(this.user.id, {res: 'Won', matchId: data.matchId});
-						else	
+						else
 							this.userData.updateWinnLoss(this.user.id, {res: 'Lost', matchId: data.matchId});
 					})
 				}

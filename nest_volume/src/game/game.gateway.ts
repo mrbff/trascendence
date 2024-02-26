@@ -50,7 +50,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			return;
 		}
 		client.emit("connection-status", true);
-		console.log("QUERY => ", query);
+		// console.log("QUERY => ", query);
 		let element = {username: query.name as string, id:query.id as string, client: client}
 		for (var room of this.rooms)
 		{
@@ -101,45 +101,46 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		for (var room of this.rooms)
 		{
 			if (room.data.player1 === client || room.data.player2 === client){
-				if (room.data.scene){
+				if (room.data.scene)
 					room.data.scene?.dispose();
-					if (room.data.mode === 'special')
-						clearInterval(room.data.timer);
-					if (room.data.winner == -1){
-						let matchID =  await this.createMatchHistory(room, client);
-						if (room.data.player1 === client){
-							let other = room.data.player2;
-							other.emit('opp-disconnect');
-							if (room.data.inviteGame)
-							this.prisma.gameinvite.deleteMany({
-								where: {
-								OR: [
-									{ senderId: room.data.id1, receiverId: room.data.id2 },
-									{ senderId: room.data.id2, receiverId: room.data.id1 },
-								],
-								},
-							});
-							this.userData.updateWinLoss(room.data.id1, {res: "Lost", matchId: matchID})
-							this.userData.updateWinLoss(room.data.id2, {res: "Won", matchId: matchID})
-						} 
-						else {
-							let other = room.data.player1;
-							other.emit('opp-disconnect');
-							if (room.data.inviteGame)
-							this.prisma.gameinvite.deleteMany({
-								where: {
-								OR: [
-									{ senderId: room.data.id1, receiverId: room.data.id2 },
-									{ senderId: room.data.id2, receiverId: room.data.id1 },
-								],
-								},
-							});
-							this.userData.updateWinLoss(room.data.id2, {res: "Lost", matchId: matchID})
-							this.userData.updateWinLoss(room.data.id1, {res: "Won", matchId: matchID})
-						}
+				if (room.data.mode === 'special')
+					clearInterval(room.data.timer);
+				if (room.data.winner == -1){
+					let matchID =  await this.createMatchHistory(room, client);
+					if (room.data.player1 === client){
+						let other = room.data.player2;
+						other.emit('opp-disconnect');
+						other.disconnect()
+						if (room.data.inviteGame)
+						this.prisma.gameinvite.deleteMany({
+							where: {
+							OR: [
+								{ senderId: room.data.id1, receiverId: room.data.id2 },
+								{ senderId: room.data.id2, receiverId: room.data.id1 },
+							],
+							},
+						});
+						this.userData.updateWinLoss(room.data.id1, {res: "Lost", matchId: matchID})
+						this.userData.updateWinLoss(room.data.id2, {res: "Won", matchId: matchID})
+					} 
+					else {
+						let other = room.data.player1;
+						other.emit('opp-disconnect');
+						other.disconnect();
+						if (room.data.inviteGame)
+						this.prisma.gameinvite.deleteMany({
+							where: {
+							OR: [
+								{ senderId: room.data.id1, receiverId: room.data.id2 },
+								{ senderId: room.data.id2, receiverId: room.data.id1 },
+							],
+							},
+						});
+						this.userData.updateWinLoss(room.data.id2, {res: "Lost", matchId: matchID})
+						this.userData.updateWinLoss(room.data.id1, {res: "Won", matchId: matchID})
 					}
-					this.rooms.splice(this.rooms.indexOf(room), 1);
 				}
+				this.rooms.splice(this.rooms.indexOf(room), 1);
 			}
 		}
 	}

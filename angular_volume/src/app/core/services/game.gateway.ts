@@ -33,6 +33,7 @@ export class PongGateway {
 	connect(gameMode: string, user: UserInfo, inviteId: string) {
 			this.gameMode = gameMode;
 			this.user = user;
+			console.log(gameMode);
 			this.connected.next(false);
 			const initializeSocket = () => {
 					this.socket = io('/pong', {
@@ -225,7 +226,6 @@ onOpponentFound(): Observable<{username: string}> {
 			window.location.href = '/transcendence/home';
 		});
 		victoryScreen.addControl(exitBtn);
-
 
 		//------------------------- MESHES --------------------------------//
 	
@@ -580,9 +580,11 @@ onOpponentFound(): Observable<{username: string}> {
 		this.socket.on('opp-disconnect',() => {
 			console.log('opponent disconnected');
 			let victoryText = this.HUD.getControlByName('victoryText') as GUI.TextBlock;
+			let button = this.HUD.getControlByName('exit')!;
 			victoryText.text = 'Opponent disconnected';
 			var victoryScreen = this.HUD.getControlByName('victory')!;
 			victoryScreen.isVisible = true;
+			button.isVisible = true;
 		});
 	}
 }
