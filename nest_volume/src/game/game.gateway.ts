@@ -45,12 +45,12 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		console.log(`\n\nClient connected(pong): ${client.id}`);
 		let query = client.handshake.query
 		if (!query.name || !query.id){
-			this.server.emit("connection-status", false);
+			client.emit("connection-status", false);
 			client.disconnect();
 			return;
 		}
-		this.server.emit("connection-status", true);
-		//console.log("QUERY => ", query);
+		client.emit("connection-status", true);
+		console.log("QUERY => ", query);
 		let element = {username: query.name as string, id:query.id as string, client: client}
 		for (var room of this.rooms)
 		{

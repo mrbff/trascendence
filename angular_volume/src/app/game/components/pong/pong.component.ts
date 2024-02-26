@@ -66,23 +66,25 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 	start() {
 		this.starting = true;
 		this.gate.connect(this.gameMode, this.user, this.invited);
-		this.gate.onConnectSuccessfull().subscribe({
-			next: () => {
-				this.gate.onOpponentFound().subscribe({
-					next: (found) => {
-						console.log('creating a new $subOppent in circle');
-						this.opponentConnected = true;
-					},
-				});
+		this.$sub = this.gate.connected.subscribe({
+			next: (data) => {
+				if (data) {
+					this.gate.onOpponentFound().subscribe({
+						next: (found) => {
+							console.log('creating a new $subOppent in circle');
+							this.opponentConnected = true;
+						},
+					});
+					this.gate.onGameFinish().subscribe((data: {won: boolean, matchId: number}) =>{
+						console.log(`game finished\nwon: ${data.won}`);
+						if (data.won)
+							this.userData.updateWinnLoss(this.user.id, {res: 'Won', matchId: data.matchId});
+						else	
+							this.userData.updateWinnLoss(this.user.id, {res: 'Lost', matchId: data.matchId});
+					})
+				}
 			}
-	})
-		this.gate.onGameFinish().subscribe((data: {won: boolean, matchId: number}) =>{
-			console.log(`game finished\nwon: ${data.won}`);
-			if (data.won)
-				this.userData.updateWinnLoss(this.user.id, {res: 'Won', matchId: data.matchId});
-			else	
-				this.userData.updateWinnLoss(this.user.id, {res: 'Lost', matchId: data.matchId});
-		})
+		});
 	}
 
 	@HostListener('window:keydown', ['$event'])

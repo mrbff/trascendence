@@ -1,6 +1,6 @@
 import { Enlarge, Power, Shield, Speed } from './../../game/components/pong/dto/power.dto';
 import { Injectable, NgZone } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 import { Router } from '@angular/router';
 import * as BABYLON from "@babylonjs/core";
@@ -25,42 +25,44 @@ export class PongGateway {
 	private index = -1;
 	private started = false;
 	private readyPing!: NodeJS.Timeout;
+	public connected = new Subject<boolean>();
 
 	constructor(private ngZone: NgZone, private router: Router) {
 	}
 	
 	connect(gameMode: string, user: UserInfo, inviteId: string) {
-		this.gameMode = gameMode;
-		this.user = user;
-		//console.log("QUERY => ", {gameMode, name: user.username, id: user.id, invited: inviteId},)
-		this.socket = io('/pong', {
-			path: '/socket.io/',
-			reconnection: true,
-			reconnectionDelay: 60000,
-			timeout: 180000,
-			query: {gameMode, name: user.username, id: user.id, invited: inviteId},
-			/*transports: ['websocket']*/
-			});
-		this.socket.on('connection-status', (response) => {
-			console.log("BIG ERROR");
-			this.socket.disconnect();
-			this.socket = io('/pong', {
-				path: '/socket.io/',
-				reconnection: true,
-				reconnectionDelay: 60000,
-				timeout: 180000,
-				query: {gameMode, name: user.username, id: user.id, invited: inviteId},
-				});
-		});
-		this.socket.on('disconnect', function (reason) {
-		console.log('Socket disconnected because of ' + reason);
-		});
-		this.socket.on('reconnect', (attemptNumber) => {
-			console.log(`Reconnected after ${attemptNumber} attempts`);
-		});
-		this.socket.on('reconnect_error', (error) => {
-			console.error('Reconnection error:', error);
-		});
+			this.gameMode = gameMode;
+			this.user = user;
+			this.connected.next(false);
+			const initializeSocket = () => {
+					this.socket = io('/pong', {
+							path: '/socket.io/',
+							reconnection: true,
+							reconnectionDelay: 60000,
+							timeout: 180000,
+							query: { gameMode, name: user.username, id: user.id, invited: inviteId },
+					});
+	
+					this.socket.on('connection-status', (response) => {
+							if (!response) {
+									console.log("BIG ERROR");
+									initializeSocket(); // Reinitialize socket in case of connection failure
+							} else {
+									this.connected.next(true);
+							}
+					});
+					this.socket.on('error', (error) => {
+							console.error("Socket Error:", error);
+							// Handle error gracefully, e.g., retry connection or show error message
+					});
+	
+					this.socket.on('connect_timeout', () => {
+							console.error("Socket Connection Timeout");
+							// Handle timeout, e.g., retry connection or show error message
+					});
+			};
+	
+			initializeSocket();
 	}
 
 onOpponentFound(): Observable<{username: string}> {
