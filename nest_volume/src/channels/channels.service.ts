@@ -256,16 +256,21 @@ export class ChannelsService {
   }
   
   async createGameInvite(username: string, sender: string) {
-    const user = await this.usersService.findUserByName(sender);
-    const receiver = await this.usersService.findUserByName(username);
-    const msg = await this.prisma.gameinvite.create({
-      data: {
-        senderId: user.id,
-        receiverId: receiver.id,
-        status: 'PENDING',
-      },
-    });
-    return msg.id;
+    try {
+      const user = await this.usersService.findUserByName(sender);
+      const receiver = await this.usersService.findUserByName(username);
+      const msg = await this.prisma.gameinvite.create({
+        data: {
+          senderId: user.id,
+          receiverId: receiver.id,
+          status: 'PENDING',
+        },
+      });
+      return msg.id;
+    } catch (error) {
+      console.error('invite already exist in progress');
+      return null;
+    }
 }
 
   async createChannelMessage(channelId:string, content:string, username:string) {

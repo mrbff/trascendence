@@ -5,18 +5,21 @@
   <section class="player-list">
     <div class="player-items" *ngFor="let player of players"
       (mouseenter)="togglePlayerMenu(player)" 
-	  (mouseleave)="togglePlayerMenu(player)">
+	    (mouseleave)="togglePlayerMenu(player)">
       {{ player.name }}
       <div @accordion *ngIf="player.showMenu && player.role !== 'EMPTY'" class="player-menu">
         <section *ngIf="player.banOrKick !== 'BANNED'">
-          
-            <button *ngIf="!this.user.pending" class="invateToGame" (click)="inviteToGame(player)">Invite to game</button>
-            <button *ngIf="this.user.pending" class="noInvateToGame">Invite alreay sent</button>
+            <button *ngIf="!this.user.pending && !player.isBlock && !this.user.blocked" class="invateToGame" (click)="inviteToGame(player)">Invite to game</button>
+            <button *ngIf="this.user.pending && !player.isBlock && !this.user.blocked" class="noInvateToGame">Invite alreay sent</button>
+            <button *ngIf="player.isBlock && !this.user.blocked" class="noInvateToGame">Blocking</button>
+            <button *ngIf="this.user.blocked" class="noInvateToGame">Blocked</button>
         
             <button class="profile" (click)="profile(player)">Profile</button>
             <button class="DM" (click)="DM(player)" [ngStyle]="{'background-color': isGroupChat ? '' : 'grey'}">DM</button>
 
-            <button *ngIf="!player.isBlock" class="block" (click)="block(player)">Block</button>
+            <button *ngIf="!player.isBlock && !this.user.blocked" class="block" (click)="block(player)">Block</button>
+            <button *ngIf="this.user.blocked" class="block">Blocked</button>
+
             <button *ngIf="player.isBlock" class="unblock" (click)="unblock(player)">unBlock</button>
             <section *ngIf="isGroupChat && (myRole === 'OWNER' || myRole === 'ADMIN') && player.role !== 'OWNER'">
 

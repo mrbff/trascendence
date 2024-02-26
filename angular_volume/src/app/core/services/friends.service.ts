@@ -1,3 +1,4 @@
+import { ConsoleLogger } from '@nestjs/common';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
@@ -74,8 +75,13 @@ export class FriendsService {
     return lastValueFrom(this.http.get(`/nest/friends/blockeds/`));
   }
 
+  async getBlockedMeUsersName(): Promise<any> {
+    return lastValueFrom(this.http.get(`/nest/friends/blockMe/`));
+  }
+
   async isBlocked(user: string): Promise<boolean> {
     const blockedUsers = await this.getBlockedUsers();
     return blockedUsers.some((f: any) => f.username === user);
   }
+
 }

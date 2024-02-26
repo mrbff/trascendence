@@ -20,6 +20,7 @@
     >
       <app-friend-card
         [topVh]="friend"
+        [pending]="invites"
         class="card"
         *ngFor="let user of users"
         [username]="user.username"

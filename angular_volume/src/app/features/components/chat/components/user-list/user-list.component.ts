@@ -1,12 +1,12 @@
-import { EventEmitter, Component, Input, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
-import { Observable, Subscription, elementAt, interval, map, take } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FriendsService } from 'src/app/core/services/friends.service';
 import { UserInfo } from 'src/app/models/userInfo.model';
 import { MatDialog } from '@angular/material/dialog';
 import { GameInviteComponent } from '../game-invite/game-invite.component';
-import { trigger, state, style, transition, animate } from '@angular/animations';
+import { trigger, style, transition, animate } from '@angular/animations';
 
 class Pending {
   status: boolean = false;
@@ -74,7 +74,6 @@ export class UserListComponent implements OnInit, OnDestroy{
 		this.$subs.add(
 			this.chatGateway.onChannelId().subscribe({
 				next: (data: any) => {
-					console.log("datachannel", data);
 					this.isGroupChat = true;
 					if (data.channel.type === 'DIRECT'){
 						this.isGroupChat = false;
@@ -138,7 +137,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 					}
 				},
 			})
-		);
+			);
 	}
 
 	ngOnDestroy(): void {
@@ -157,7 +156,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 			if (this.pending !== undefined) {
 			isFind = this.pending.some((p: any) => {
 				if (this.nowSelected) {
-					return p.sender === this.user.username && p.reciver === this.nowSelected.name;
+					return (p.sender === this.user.username && p.reciver === this.nowSelected.name) || (p.sender === this.nowSelected.name && p.reciver === this.user.username);
 				}
 				return false;
 			});
@@ -165,11 +164,17 @@ export class UserListComponent implements OnInit, OnDestroy{
 		this.user.pending = isFind;
 	}
 
-	togglePlayerMenu(player: any): void {
+	async togglePlayerMenu(player: any) {
 		this.nowSelected = player;
-		// this.players.forEach((p) => (p.showMenu = false));
 		player.showMenu = !player.showMenu;
-		this.user = {...this.user, pending: false};
+
+		const blockList = await this.friendsService.getBlockedMeUsersName();
+		if (blockList.lenght === 0) {
+			this.user = {...this.user, pending: false, blocked: false};
+		} else {
+			const blocked = blockList.find((b: any) => b === player.name)
+			this.user = {...this.user, pending: false, blocked: blocked};
+		}
 		this.pendingInvite();
 		}
 
@@ -203,7 +208,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 					const ch = await this.chatGateway.getChatOrCreate(this.user.username, player.name, "DIRECT");
 					id = ch.id;
 				}
-				this.chatGateway.sendInviteMsg(id, player.name, player.name);
+				this.chatGateway.sendInviteMsg(id, player.name);
 				this.user.pending = true;
 			}
 			else
@@ -225,7 +230,6 @@ export class UserListComponent implements OnInit, OnDestroy{
 	}
 
 	async mute(player: any) {
-
 		const dateObject = new Date(Date.now() + 1000 * 60 * 15);
 		const hours = dateObject.getHours();
 		const minutes = dateObject.getMinutes();

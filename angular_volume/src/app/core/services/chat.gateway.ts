@@ -58,8 +58,9 @@ export class ChatGateway {
     this.socket.emit('ChannelModMsg', { sender:this.userService.getUser(), channel:channel, message:message, username:username, status:status });
   }
 
-  sendInviteMsg(channelId : string, username: string, inviteId: string) {
-    this.socket.emit('InviteMsg', { channelId: channelId, sender:this.userService.getUser(), username:username, invId: inviteId });
+  sendInviteMsg(channelId : string, username: string) {
+    console.log('Sending invite to', username);
+    this.socket.emit('InviteMsg', { channelId: channelId, sender:this.userService.getUser(), username:username });
   }
 
   createNewChannel(channelName:string, users:string[], creator:string, groupType:string, password:string) {

@@ -12,6 +12,7 @@ import { UsersService } from 'src/users/users.service';
 import * as jwt from 'jsonwebtoken';
 import {JwtPayload} from 'jsonwebtoken'
 import { ChannelsService } from 'src/channels/channels.service';
+import { ConsoleLogger } from '@nestjs/common';
 type MyJwtPayload = {
   userId: number,
 } & JwtPayload;
@@ -196,18 +197,22 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   @SubscribeMessage('InviteMsg')
-  async handleInviteMsg(client: Socket, payload: { channelId: string, sender: string, username: string, invId: string }) {
+  async handleInviteMsg(client: Socket, payload: { channelId: string, sender: string, username: string }) {
     const { channelId, sender, username } = payload;
     try {
+      console.log("invite", sender, username);
       const ids = await this.channelsService.createGameInvite(username, sender)
-      payload.invId = payload.invId + ":" + ids;
-      const {id} = await this.channelsService.createInviteChannelMessage(channelId, payload.invId, sender);
+      if (ids === null) {
+        return;
+      }
+      const invId = payload.username + ":" + ids;
+      const {id} = await this.channelsService.createInviteChannelMessage(channelId, invId, sender);
       setTimeout(() => {this.channelsService.updateInviteStatus(channelId, id, sender, username)}, 1000 * 10);
       const ch = await this.channelsService.getChannelById(channelId);
       ch?.members?.map((member: any) => {
         if (member.status === 'ACTIVE' || (member.user.username === username)) {
           try {
-            userSocketMap[member.user.username].emit('MsgFromChannel', [{ id: id, user: sender,  msg: payload.invId, channelId: ch.id, from: sender, isInvite: "PENDING", channelName: ch.name, time: new Date().toISOString()}]);
+            userSocketMap[member.user.username].emit('MsgFromChannel', [{ id: id, user: sender,  msg: invId, channelId: ch.id, from: sender, isInvite: "PENDING", channelName: ch.name, time: new Date().toISOString()}]);
           } catch (error) {
             console.log(`cant invite: ${member.user.username} is offline`);
           }

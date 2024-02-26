@@ -21,26 +21,28 @@ export class MatchHistoryComponent implements OnInit{
 	}
 
 	private async loadMatchHistory() {
-		let temp = await this.userService.getMatchHistory(this.user.id) as MatchHistoryDatabase[];
-		temp.forEach(async (match, i) => {
-			this.matchHistory[i] = {
-				id: match.id,
-				mode: match.mode,
-				score: match.score,
-				winner: match.winner,
-				User1: '',
-				User2: '',
-			};
-	
-			if (match.User1Id == this.user.id) {
-				this.matchHistory[i].User1 = this.user.username;
-				this.matchHistory[i].User2 = (await this.userService.getOther(match.User2Id)).username;
-			} else {
-				this.matchHistory[i].User2 = this.user.username;
-				console.log(match.User1Id)
-				this.matchHistory[i].User1 = (await this.userService.getOther(match.User1Id)).username;
-			}
-		});
+		if (this.user.id){
+			let temp = await this.userService.getMatchHistory(this.user.id) as MatchHistoryDatabase[];
+			temp.forEach(async (match, i) => {
+				this.matchHistory[i] = {
+					id: match.id,
+					mode: match.mode,
+					score: match.score,
+					winner: match.winner,
+					User1: '',
+					User2: '',
+				};
+		
+				if (match.User1Id == this.user.id) {
+					this.matchHistory[i].User1 = this.user.username;
+					this.matchHistory[i].User2 = (await this.userService.getOther(match.User2Id)).username;
+				} else {
+					this.matchHistory[i].User2 = this.user.username;
+					console.log(match.User1Id)
+					this.matchHistory[i].User1 = (await this.userService.getOther(match.User1Id)).username;
+				}
+			});
+		}
 	}
 
  }

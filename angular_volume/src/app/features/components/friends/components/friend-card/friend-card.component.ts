@@ -1,3 +1,4 @@
+import { finalize } from 'rxjs';
 import { UserService } from 'src/app/core/services/user.service';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { Component, Input, OnInit, AfterViewInit } from '@angular/core';
@@ -15,6 +16,7 @@ import { InvitesService } from 'src/app/core/services/game-invite.service';
 export class FriendCardComponent implements OnInit, AfterViewInit {
   @Input() username: string;
   @Input() topVh: boolean;
+  @Input() pending: any;
 
   user!: UserInfo;
   win!: string;
@@ -51,10 +53,14 @@ export class FriendCardComponent implements OnInit, AfterViewInit {
   }
 
   async inviteToGame(){
+    console.log("Inviting to game");
     const user = this.userService.getUser();
-    this.invites.invite(this.username);
+    //this.invites.invite(this.username);
+    console.log(this.pending);
+    if (this.pending.find((x: any) => x.username === this.username) === undefined) {
     const ch = await this.chatGateway.getChatOrCreate(user, this.username, "DIRECT");
-    this.chatGateway.sendInviteMsg(ch.id, user, this.username);
+    this.chatGateway.sendInviteMsg(ch.id, this.username);
+    }
   }
 
   openFriendProfile() {

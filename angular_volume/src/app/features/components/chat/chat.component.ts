@@ -9,7 +9,6 @@ import { PasswordComponent } from './components/password/password.component';
 import { LeaveChannelComponent } from './components/leave-channel/leave-channel.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
-import { Any } from 'typeorm';
 
 class Pending {
   status: boolean = false;

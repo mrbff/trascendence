@@ -332,4 +332,23 @@ export class FriendsService {
     });
     return blockList;
   }
+
+
+  async getWhoBlockedMe(userId: number): Promise<string[]> {
+    let blockeds = await this.prisma.blockedUser.findMany({
+      where: {
+        blockedId: userId,
+      },
+      include: {
+        blocker: {
+          select: {
+            username: true,
+          },
+        },
+      },
+    });
+    const blockList = blockeds.map((blockedUser) => blockedUser.blocker.username);
+    return blockList;
+  }
+
 }

@@ -112,4 +112,13 @@ export class FriendsController {
   ): Promise<any> {
     return await this.friendsService.getBlockeds(user.id);
   }
+
+  @Get('blockMe')
+  @UseGuards(JwtAuthGuard)
+  @ApiOkResponse()
+  async getWhoBlockedMe(
+    @GetUser() user: User
+  ): Promise<string[]> {
+    return await this.friendsService.getWhoBlockedMe(user.id);
+  }
 }

@@ -29,6 +29,7 @@ export class FriendsComponent implements OnInit, AfterViewInit {
   }
 
   private loadInvitesSubscription!: Subscription;
+  private loadFriendSubscription!: Subscription;
 
   constructor(
     private readonly friendsService: FriendsService,
@@ -48,11 +49,18 @@ export class FriendsComponent implements OnInit, AfterViewInit {
       startWith(0), // So that it runs immediately as well
       switchMap(() => this.loadInvites())
     ).subscribe();
+    this. loadFriendSubscription = interval(1000).pipe(
+      startWith(0), // So that it runs immediately as well
+      switchMap(() => this.loadFriend())
+    ).subscribe();
   }
 
   ngOnDestroy() {
     if (this.loadInvitesSubscription) {
         this.loadInvitesSubscription.unsubscribe();
+    }
+    if (this.loadFriendSubscription) {
+        this.loadFriendSubscription.unsubscribe();
     }
   }
 
@@ -67,6 +75,7 @@ export class FriendsComponent implements OnInit, AfterViewInit {
       .getFriendRequestsRecv()
       .then((resp) => {
         this.friend = resp.length !== 0 ? true : false;
+          if (this.friendRequests != resp)
         this.friendRequests = resp;
       })
       .catch((err) => console.error(err));
@@ -74,7 +83,9 @@ export class FriendsComponent implements OnInit, AfterViewInit {
       .getFriends()
       .then((resp) => {
         this.noFriends = resp.length === 0 ? true : false;
-        this.users = resp;
+        if (!this.users || this.users.length != resp.length){
+          this.users = resp;
+        }
       })
       .catch((err) => console.error(err));
   }
