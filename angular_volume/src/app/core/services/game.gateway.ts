@@ -34,7 +34,7 @@ export class PongGateway {
 	connect(gameMode: string, user: UserInfo, inviteId: string | undefined) {
 			this.gameMode = gameMode;
 			this.user = user;
-			console.log(gameMode);
+			//console.log(gameMode);
 			this.connected.next(false);
 			const initializeSocket = () => {
 					this.socket = io('/pong', {
@@ -46,7 +46,7 @@ export class PongGateway {
 					});
 					this.socket.on('connection-status', (response) => {
 							if (!response) {
-									console.log("BIG ERROR");
+									//console.log("BIG ERROR");
 									initializeSocket(); // Reinitialize socket in case of connection failure
 							} else {
 									this.connected.next(true);
@@ -550,7 +550,7 @@ onOpponentFound(): Observable<{username: string}> {
 	
 	onScoreUpdate(){
 		this.socket.on('score-update', (info: {score1: number, score2: number})=> {
-			console.log("score updated");
+			//console.log("score updated");
 			var ball = this.scene.getMeshByName('ball')!;
 			ball.position = new BABYLON.Vector3(0, 4.5, 0);
 			let score1 = this.HUD.getControlByName('score1') as GUI.TextBlock;
@@ -581,7 +581,7 @@ onOpponentFound(): Observable<{username: string}> {
 	
 	onOpponentDisconnected() {
 		this.socket.on('opp-disconnect',() => {
-			console.log('opponent disconnected');
+			//console.log('opponent disconnected');
 			let victoryText = this.HUD.getControlByName('victoryText') as GUI.TextBlock;
 			let button = this.HUD.getControlByName('exit')!;
 			victoryText.text = 'Opponent disconnected';

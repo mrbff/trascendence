@@ -1,8 +1,16 @@
 <ng-container *ngIf="showQr">
   <ng-container *ngIf="newQr; else showCurrentQr">
-    <div class="qr">
+    <div class="qrI">
       <p class="warning">ATTENTION! SCAN YOUR QR CODE BEFORE CONFIRM</p>
       <img class="popup" [src]="[user.qrcode2fa]" />
+      <div style="grid-row: 4/4;">
+      <input
+      [placeholder]="placeholder"
+      type="number"
+      [(ngModel)]="faCode"
+      class = "input-2fa"
+      />
+    </div>
       <div class="buttons">
         <button class="left" (click)="onConfirm2FA()">CONFIRM</button>
         <button class="right" (click)="onReject2FA()">REJECT</button>

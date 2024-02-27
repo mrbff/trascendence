@@ -37,7 +37,7 @@ export class ChannelsService {
   }
 
   async updateInviteStatus(channelId: string, id: number, sender: string, username: string) {
-    console.log(`updateInviteStatus`, channelId, id, sender, username);
+    //console.log(`updateInviteStatus`, channelId, id, sender, username);
     const find = await this.prisma.message.findUnique({
       where:{
         id: id
@@ -513,7 +513,7 @@ export class ChannelsService {
       });
       return updatedChannel;
     } catch (error) {
-        console.log('Failed to update channel last seen.');
+        //console.log('Failed to update channel last seen.');
       return null;
     }
   }

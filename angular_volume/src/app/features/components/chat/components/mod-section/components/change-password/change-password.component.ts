@@ -49,7 +49,7 @@ export class ChangePasswordComponent {
         if (channel.password !== this.data.password) {
           this.chatGateway.changePassword(this.data.id, this.data.password, this.data.channelType);
           if (this.data.password === '') {
-            this.chatGateway.sendModChannelMsg(`${this.username} REMOVE password from the channel`, this.data.id, this.username, 'ACTIVE');
+            this.chatGateway.sendModChannelMsg(`${this.username} REMOVED password from the channel`, this.data.id, this.username, 'ACTIVE');
           } else {
             this.chatGateway.sendModChannelMsg(`${this.username} SET NEW password channel`, this.data.id, this.username, 'ACTIVE');
           }

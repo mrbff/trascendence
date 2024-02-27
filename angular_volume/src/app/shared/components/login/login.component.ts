@@ -9,6 +9,7 @@ import { GoogleAuthService } from 'src/app/core/auth/google-auth.service';
 import { CodeService } from '../../services/code.service';
 import { StatusService } from 'src/app/core/services/status.service';
 import { RedirectionGateway } from 'src/app/core/services/redirection.gateway';
+import { convolutionPixelShader } from '@babylonjs/core/Shaders/convolution.fragment';
 
 @Component({
   selector: 'app-login',
@@ -58,7 +59,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.route.queryParams.subscribe((params) => {
         const code = params['code'];
         if (code) {
-          console.log({code});
+          //console.log({code});
           //SEND CODE TO BACKEND FOR 42 API WORKFLOW
           this.Oauth2.codeForAccessToken(code)
             .then((response) => {
@@ -126,7 +127,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   // USER INFO
   private initUser(response: any) {
-    console.log({response});
+    //console.log({response});
     this.auth.saveToken(response.accessToken);
     this.userService.setUserId(this.auth.decodeToken(response.accessToken));
     this.userService.setUser(response.username);

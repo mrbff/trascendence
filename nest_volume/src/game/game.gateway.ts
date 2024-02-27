@@ -35,14 +35,14 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	constructor(private prisma: PrismaService, private userData: UsersService){}
 
 	afterInit(server: Server) {
-	  console.log('\n\nInitialized!(pong)');
+	  //console.log('\n\nInitialized!(pong)');
 	  server.on('error', (error) => {
 		console.error('Socket.IO error:', error);
 	  });
 	}
   
 	async handleConnection(client: Socket) {
-		console.log(`\n\nClient connected(pong): ${client.id}`);
+		//console.log(`\n\nClient connected(pong): ${client.id}`);
 		let query = client.handshake.query
 		if (!query.name || !query.id){
 			client.emit("connection-status", false);
@@ -50,7 +50,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			return;
 		}
 		client.emit("connection-status", true);
-		console.log("QUERY => ", query);
+		//console.log("QUERY => ", query);
 		let element = {username: query.name as string, id:query.id as string, client: client}
 		for (var room of this.rooms)
 		{
@@ -79,7 +79,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
 
 	async handleDisconnect(client: Socket) {
-		console.log(`\n\nClient disconnected(pong): ${client.id}`);
+		//console.log(`\n\nClient disconnected(pong): ${client.id}`);
 		this.removeFromQueue(client);
 		for (var room of this.rooms)
 		{
@@ -124,7 +124,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 			return room.data.inviteGame == user.client.handshake.query.invited
 		});
 		if (room){
-			console.log("INV");
+			//console.log("INV");
 			user.client.join(room.name);
 			room.data.id1 = parseInt(user.id);
 			room.data.player1 = user.client;
@@ -168,7 +168,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	}
 
  	private matchmake(queue: {username: string, id: string, client: Socket}[], mode: string) {
-		console.log("QUEUE => ", queue);
+		//console.log("QUEUE => ", queue);
 		if (queue.length >= 2) {
 			const player1 = queue[0];
 			const player2 = queue[1];
@@ -191,7 +191,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 					playersReady: new Set(),
 					inviteGame: null
 				}});
-			console.log(`\n\nMatch found! Players ${player1?.client.id} and ${player2?.client.id} are in room ${roomName}`);
+			//console.log(`\n\nMatch found! Players ${player1?.client.id} and ${player2?.client.id} are in room ${roomName}`);
 			player1?.client.emit('opponent-found', {username: player2.username, seat: 1});
 			player2?.client.emit('opponent-found', {username: player1.username, seat: 2});
 		}
@@ -201,7 +201,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 	start(client: Socket) {
 	  let room = this.findClientRoom(client);
 	  if (room) {
-		console.log(`player ${client.id} ready`);
+		//console.log(`player ${client.id} ready`);
 		room.data.playersReady.add(client.id);
 		if (room.data.playersReady.size === 2) {
 			room.data.playersReady.clear();

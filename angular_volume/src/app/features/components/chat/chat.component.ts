@@ -204,7 +204,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         next: (data: any) => {
           this.chatGateway.getUser(this.whoami.username).subscribe({
             next: (user: UserInfo) => {
-              console.log('user', user);
+              //console.log('user', user);
               if (!user.isPlaying) {
                 let snackBarRef = this.snackBar.open(data.enemy + ' ha accettato il tuo game invite, vuoi joinare?', 'Join', {
                   duration: 5000,
@@ -279,7 +279,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
             
             if (this.selectedChannel !== undefined) {
               if(this.selectedChannel.id === messages[0].channelId) {
-                console.log(messages);
+                //console.log(messages);
                 if ((messages[0].msg.includes('has been BANNED from the channel by') ||
                   messages[0].msg.includes('has been KICKED from the channel by') ||
                   messages[0].msg.includes('LEFT the channel')) &&
@@ -359,7 +359,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.$subs.add(
       this.chatGateway.onCreatedNewPublicChannel().subscribe({
         next: (data: any) => {
-          console.log(data);
+          //console.log(data);
           if (data.members.some((member: any) => member.user.username === this.userService.getUser())) {
             if (data.isGroup === true ) {
               this.chatGateway.sendModChannelMsg(this.userService.getUser() + ' has been added to ' + data.name, data.id, this.userService.getUser(), 'ACTIVE');
@@ -389,7 +389,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
           }
           this.chatGateway.getTypesOfRealation(id, this.whoami.username).pipe(take(1)).subscribe({
             next:(data)=>{
-              console.log(data);
+              //console.log(data);
               if (data.type === 'BLOCKED'){
                 this.msgToShow = "You are blocked by this user you can't send a message to him";
                 setTimeout(()=> this.msgToShow = null, 2500);
@@ -405,7 +405,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
               } else {
               const status = data.status;
               const muteTime = data.muteEndTime;
-              console.log("mute time", muteTime);
+              //console.log("mute time", muteTime);
               if (status === 'LEAVED') {
                 this.msgToShow = "You leaved this channel";
                 setTimeout(()=> this.msgToShow = null, 2500);
@@ -483,7 +483,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     conversation.allRead = true;
     setTimeout(()=> { 
       this.renderer.listen(this.messageArea.nativeElement, 'scroll', (event) => {
-        console.log('scroll', this.messageArea.nativeElement.scrollHeight - this.messageArea.nativeElement.scrollTop, this.messageArea.nativeElement.clientHeight);
+        //console.log('scroll', this.messageArea.nativeElement.scrollHeight - this.messageArea.nativeElement.scrollTop, this.messageArea.nativeElement.clientHeight);
         this.stickBottom = ((this.messageArea.nativeElement.scrollHeight - this.messageArea.nativeElement.scrollTop) == this.messageArea.nativeElement.clientHeight);
       });
     }, 1000);

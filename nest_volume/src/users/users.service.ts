@@ -82,7 +82,7 @@ export class UsersService {
         played: user.Played,
       };
     } catch(error) {
-      console.log((`No user found with username: ${username}`));
+      //console.log((`No user found with username: ${username}`));
       return null;
       //throw new NotFoundException(`No user found with username: ${username}`);
     }

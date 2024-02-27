@@ -18,7 +18,7 @@ export class RedirectionGateway {
   server: Server;
 
   handleConnection(client: Socket, ...args: any[]) {
-    console.log(`\n\nRedirection gateway: ${client.id}\n\n`);//for debug
+    //console.log(`\n\nRedirection gateway: ${client.id}\n\n`);//for debug
   }
 
   @SubscribeMessage('messageRequest')

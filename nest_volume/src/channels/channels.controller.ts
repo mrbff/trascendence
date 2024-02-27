@@ -362,8 +362,8 @@ export class ChannelsController {
           const isBlocked = blockMyInfos?.blockedBy.find((block) => block.blocked.username === username && block.blocker.username === other?.user.username);
           const isBlocking = blockMyInfos?.blockedUsers.find((block) => block.blocker.username === username && block.blocked.username === other?.user.username);
 
-          console.log('blockedUsers', blockMyInfos?.blockedUsers);
-          console.log('blockedBy', blockMyInfos?.blockedBy);
+          //console.log('blockedUsers', blockMyInfos?.blockedUsers);
+          //console.log('blockedBy', blockMyInfos?.blockedBy);
 
           if (isBlocked) {
             return { type: 'BLOCKED' };
@@ -540,7 +540,7 @@ export class ChannelsController {
       @Param('gameId') gameId: number,
       @Body ('status') inf: { status : string, msgId: number},
     ) {
-      console.log('changeGameStatus', gameId, inf.status, inf.msgId);
+      //console.log('changeGameStatus', gameId, inf.status, inf.msgId);
         await this.prisma.message.update({
           where: {
             id: inf.msgId,

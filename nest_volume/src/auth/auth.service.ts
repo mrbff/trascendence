@@ -76,7 +76,7 @@ export class AuthService {
     formData.append('client_id', environment.ft_client_id);
     formData.append('client_secret', environment.ft_client_secret);
     formData.append('code', code);
-    console.log(`http://${IP}:8080/login`);
+    //console.log(`http://${IP}:8080/login`);
     formData.append('redirect_uri', `http://${IP}:8080/login`);
 
     const response = await firstValueFrom(

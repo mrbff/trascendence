@@ -14,7 +14,7 @@ export class OAuth2Service {
   }
 
   async codeForAccessToken(code: string): Promise<any> {
-    console.log('codeForAccessToken:', code);
+    //console.log('codeForAccessToken:', code);
     try {
       const response = await lastValueFrom(this.http.post('/nest/auth/42', { code }).pipe(
         catchError((error) => {

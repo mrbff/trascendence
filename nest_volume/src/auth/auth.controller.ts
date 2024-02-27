@@ -24,7 +24,7 @@ export class AuthController {
   @ApiOkResponse({ type: AuthEntity })
   async login(@Body() { email, password }: LoginDto) {
     const entity = await this.authService.login(email, password);
-    console.log(`\n\n\nlogin normale:\n${entity.accessToken}\n\n\n`);//for debug
+    //console.log(`\n\n\nlogin normale:\n${entity.accessToken}\n\n\n`);//for debug
     return entity;
   }
 
@@ -36,7 +36,7 @@ export class AuthController {
       token42.access_token,
     );
     const entity = await this.authService.login42(profile42data);
-    console.log(`\n\n\nlogin 42:\n${entity.accessToken}\n\n\n`);//for debug
+    //console.log(`\n\n\nlogin 42:\n${entity.accessToken}\n\n\n`);//for debug
     return entity;
   }
 

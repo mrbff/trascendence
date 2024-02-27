@@ -251,17 +251,17 @@ export class ChatGateway {
   }
 
   postChangeGameStatus(gameId: number, status: string, msgId: number) {
-    console.log('Before HTTP PATCH request');
+    //console.log('Before HTTP PATCH request');
     return this.httpClient.patch(`/nest/channels/changeGameStatus/${gameId}`, {status :{status: status, msgId: msgId}})
       .subscribe(
         (response) => {
-          console.log('HTTP PATCH successful:', response);
+          //console.log('HTTP PATCH successful:', response);
         },
         (error) => {
           console.error('HTTP PATCH error:', error);
         }
       );
-    console.log('After HTTP PATCH request');
+    //console.log('After HTTP PATCH request');
   }
 
   //fuori scoop poi lo metton nel file giusto

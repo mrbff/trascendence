@@ -23,7 +23,7 @@ export class ProfileImageComponent implements OnInit{
   @ViewChild('fileInput') fileInput!: ElementRef;
 
   ngOnInit(): void {
-    console.log(this.conversation);
+    //console.log(this.conversation);
   }
   // SELECT NEW FILE, COMPRESS IMAGE BASE64 AND PATCH USER IMG
   onFileSelected(event: Event) {
