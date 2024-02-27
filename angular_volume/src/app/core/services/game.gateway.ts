@@ -31,7 +31,7 @@ export class PongGateway {
 	constructor(private ngZone: NgZone, private router: Router, private userData: UserService) {
 	}
 	
-	connect(gameMode: string, user: UserInfo, inviteId: string) {
+	connect(gameMode: string, user: UserInfo, inviteId: string | undefined) {
 			this.gameMode = gameMode;
 			this.user = user;
 			console.log(gameMode);

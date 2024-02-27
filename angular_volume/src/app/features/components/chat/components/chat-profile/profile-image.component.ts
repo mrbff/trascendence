@@ -14,6 +14,6 @@ export class ChatProfileImageComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    //console.log(this.conversation);
+    console.log(this.conversation);
   }
 }

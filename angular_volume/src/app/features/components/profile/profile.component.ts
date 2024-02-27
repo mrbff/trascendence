@@ -60,7 +60,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.currentUser = true;
       this.$userSubs.add(
         this.userService.getUserObservable().subscribe((user) => {
-          //console.log(user)
+          console.log(user)
           this.user = user;
         })
       );
