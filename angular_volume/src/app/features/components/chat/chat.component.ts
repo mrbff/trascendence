@@ -361,9 +361,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         next: (data: any) => {
           //console.log(data);
           if (data.members.some((member: any) => member.user.username === this.userService.getUser())) {
-            if (data.isGroup === true ) {
-              this.chatGateway.sendModChannelMsg(this.userService.getUser() + ' has been added to ' + data.name, data.id, this.userService.getUser(), 'ACTIVE');
-            }
             this.channels.push(data);
             if (data.user === this.userService.getUser()) {
               this.selectedChannel = data;

@@ -12,6 +12,7 @@ import { UsersService } from 'src/users/users.service';
 import * as jwt from 'jsonwebtoken';
 import {JwtPayload} from 'jsonwebtoken'
 import { ChannelsService } from 'src/channels/channels.service';
+import { use } from 'passport';
 type MyJwtPayload = {
   userId: number,
 } & JwtPayload;
@@ -162,7 +163,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     try {
       userSocketMap[(await user).username].emit('UserChannelList', {channels} );
     } catch (error) {
-      //console.log("User offline");
+      console.log("User offline");
     }
   }
 
@@ -170,6 +171,16 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async createNewChannel(client: Socket, payload: { channelName: string, users: string[], creator: string, groupType: string, password: string }) {
     const { channelName, users, creator, groupType, password } = payload;
     const newChannel = await this.channelsService.createNewChannel(channelName, users, creator, groupType, password);
+    users.push(creator);
+    users.forEach(async (user) => {
+      try {
+        const message = `${user} has been added to the new channel: ${channelName}`;
+        await this.channelsService.createModChannelMessage(newChannel.id, message, creator);
+        userSocketMap[user].emit('MsgFromChannel', [{ user,  msg: message, channelId: newChannel.id, isModer: true}]);
+      } catch (error) {
+        console.log(`cant invite: ${user} is offline`);
+      }
+    });
     this.server.emit('CreatedNewPublicChannel', {channel: {...newChannel, isGroup:true}});
   }
 
@@ -199,7 +210,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         try {
           userSocketMap[member.user.username].emit('MsgFromChannel', [{ user: sender,  msg: message, channelId }]);
         } catch (error) {
-          //console.log(`cant invite: ${member.user.username} is offline`);
+          console.log(`cant invite: ${member.user.username} is offline`);
         }
       }
     });
@@ -209,7 +220,6 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   async handleInviteMsg(client: Socket, payload: { channelId: string, sender: string, username: string, mode: string }) {
     const { channelId, sender, username } = payload;
     try {
-      //console.log("invite", sender, username);
       const ids = await this.channelsService.createGameInvite(username, sender)
       if (ids === null) {
         return;
@@ -223,13 +233,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
           try {
             userSocketMap[member.user.username].emit('MsgFromChannel', [{ id: id, user: sender,  msg: invId, channelId: ch.id, from: sender, isInvite: "PENDING", channelName: ch.name, time: new Date().toISOString()}]);
           } catch (error) {
-            //console.log(`cant invite: ${member.user.username} is offline`);
+            console.log(`cant invite: ${member.user.username} is offline`);
           }
         }
         }
       );
     } catch (error) {
-      //console.log(`invite allready sent to ${username}`);
+      console.log(`invite allready sent to ${username}`);
     }
   }
 
@@ -241,14 +251,12 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     await this.channelsService.changeUserStatus(channelId, username, status);
     const ch = await this.channelsService.getChannelById(channelId);
     ch?.members?.map((member: any) => {
-      //console.log("member", member);
       if ((member.status === 'ACTIVE' || (member.user.username === username))) {
         if (preMod?.members?.find((m: any) => m.user.username === member.user.username)?.status !== 'BANNED') {
           try {
-            //console.log("sending mod message to: ", member.user.username);
             userSocketMap[member.user.username].emit('MsgFromChannel', [{ user: sender,  msg: message, channelId, isModer: true}]);
           } catch (error) {
-            //console.log(`cant invite: ${member.user.username} is offline`);
+            console.log(`cant invite: ${member.user.username} is offline`);
           }
         }
       }

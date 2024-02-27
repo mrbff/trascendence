@@ -1,6 +1,4 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs';
 import { UserService } from '../../core/services/user.service';
 
 @Injectable({

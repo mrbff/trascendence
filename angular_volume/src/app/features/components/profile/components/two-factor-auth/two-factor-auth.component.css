@@ -81,6 +81,7 @@
   color: rgb(107, 15, 15);
   padding: 10px;
   border-radius: 20px;
+  text-align: center;
 }
 
 ::placeholder {
