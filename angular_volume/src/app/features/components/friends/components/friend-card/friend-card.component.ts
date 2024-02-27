@@ -1,4 +1,3 @@
-import { finalize } from 'rxjs';
 import { UserService } from 'src/app/core/services/user.service';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { Component, Input, OnInit, AfterViewInit } from '@angular/core';
@@ -59,7 +58,7 @@ export class FriendCardComponent implements OnInit, AfterViewInit {
     console.log(this.pending);
     if (this.pending.find((x: any) => x.username === this.username) === undefined) {
     const ch = await this.chatGateway.getChatOrCreate(user, this.username, "DIRECT");
-    this.chatGateway.sendInviteMsg(ch.id, this.username);
+    this.chatGateway.sendInviteMsg(ch.id, this.username, "normal");
     }
   }
 

@@ -20,7 +20,6 @@ import { GameModule } from './game/game.module';
     HttpClientModule,
     CoreModule,
     SharedModule,
-    FeaturesModule,
     GameModule,
   ],
   providers: [

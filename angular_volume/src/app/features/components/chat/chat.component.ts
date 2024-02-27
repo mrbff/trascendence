@@ -1,3 +1,4 @@
+import { ConsoleLogger } from '@nestjs/common';
 import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, interval, take } from 'rxjs';
@@ -26,6 +27,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('messageArea') messageArea!: ElementRef;
   private $subs = new Subscription();
   private $msgSub = new Subscription();
+  private $gameSub = new Subscription();
   public messages: any[] = []; // You might want to create a Message interface or class
   public newMessage: string = '';
   public errorMsg: string = '';
@@ -196,6 +198,27 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.chatGateway.receiveUserChannels(this.userService.getUser());
       })
     );
+
+    if(this.$gameSub) {
+      this.chatGateway.onGameAccepted().subscribe({
+        next: (data: any) => {
+          this.chatGateway.getUser(this.whoami.username).subscribe({
+            next: (user: UserInfo) => {
+              console.log('user', user);
+              if (!user.isPlaying) {
+                let snackBarRef = this.snackBar.open(data.enemy + ' ha accettato il tuo game invite, vuoi joinare?', 'Join', {
+                  duration: 5000,
+                });
+        
+                snackBarRef.onAction().subscribe(() => {
+                  this.router.navigate(['/transcendence/pong'], { queryParams: { invited: data.id } });
+                });
+              }
+            }
+          });
+        }
+      });
+    }
 
     if (this.$msgSub) {
       this.$msgSub = (
@@ -382,6 +405,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
               } else {
               const status = data.status;
               const muteTime = data.muteEndTime;
+              console.log("mute time", muteTime);
               if (status === 'LEAVED') {
                 this.msgToShow = "You leaved this channel";
                 setTimeout(()=> this.msgToShow = null, 2500);
@@ -398,7 +422,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
                 return
               }
               if (muteTime > new Date().toISOString()) {
-                const dateObject = new Date( muteTime);
+                const dateObject = new Date(muteTime);
                 const hours = dateObject.getHours();
                 const minutes = dateObject.getMinutes();
                 const formattedTime = `${hours}:${minutes}`;
@@ -459,7 +483,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     conversation.allRead = true;
     setTimeout(()=> { 
       this.renderer.listen(this.messageArea.nativeElement, 'scroll', (event) => {
-        this.stickBottom = this.messageArea.nativeElement.scrollHeight - this.messageArea.nativeElement.scrollTop == this.messageArea.nativeElement.clientHeight
+        console.log('scroll', this.messageArea.nativeElement.scrollHeight - this.messageArea.nativeElement.scrollTop, this.messageArea.nativeElement.clientHeight);
+        this.stickBottom = ((this.messageArea.nativeElement.scrollHeight - this.messageArea.nativeElement.scrollTop) == this.messageArea.nativeElement.clientHeight);
       });
     }, 1000);
   }

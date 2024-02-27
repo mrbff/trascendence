@@ -1,5 +1,4 @@
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
-import { channel } from 'diagnostics_channel';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UserService } from '../../../../../core/services/user.service';
 import { Router } from '@angular/router';
@@ -27,6 +26,7 @@ export class MessageComponent implements OnInit {
   currentUser!: boolean;
   otherUser!: boolean;
   isModerator!: boolean;
+  inviteMode: string | undefined;
   currentTime$: Observable<number>;
   private subscription: Subscription;
   ms: number;
@@ -84,6 +84,7 @@ export class MessageComponent implements OnInit {
           this.pendingEvent.emit({status: false, sender : sender, reciver: reciver, time: 0})}, changeTime);
       });
     }
+    this.inviteMode = this.message.msg.split(":")[2]
   }
 
   ngOnDestroy() {
@@ -93,7 +94,10 @@ export class MessageComponent implements OnInit {
   }
 
   redirectToGame() {
-    this.router.navigate(['/transcendence/pong'], {queryParams: {invited: this.message.msg.split(":")[1]}})
-    this.chatGateway.postChangeGameStatus(parseInt(this.message.msg.split(":")[1]) as number, 'ACCEPTED', this.message.id);
-  }
+    if (this.message.user != this.userService.getUser()){
+      this.router.navigate(['/transcendence/pong'], {queryParams: {invited: this.message.msg.split(":")[1]}})
+      this.chatGateway.gameAccepted(this.message.user, this.message.msg.split(":")[1], this.message.msg.split(":")[0]);
+      this.chatGateway.postChangeGameStatus(parseInt(this.message.msg.split(":")[1]) as number, 'ACCEPTED', this.message.id);
+    }
+    }
 }

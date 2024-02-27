@@ -1,20 +1,19 @@
 <ng-container *ngIf="currentUser; else otherUser">
   <ng-container [ngSwitch]="message.isInvite">
     <section *ngSwitchCase="'PENDING'" class="message mine invite">
-      
-        <h2>Private game </h2>
+        <h2>{{inviteMode}} game </h2>
         <div>
           <button (click)="redirectToGame()">Go to game</button>
         </div>
       </section>
       <section *ngSwitchCase="'ACCEPTED'" class="message mine invite">
-        <h2>Private game</h2>
+        <h2>{{inviteMode}} game</h2>
         <div>
           <button>Invite already accepted</button>
         </div>
       </section>
       <section *ngSwitchCase="'OUTDATED'" class="message mine invite">
-        <h2>Private game</h2>
+        <h2>{{inviteMode}} game</h2>
         <div>
           <button>Invite Outdated</button>
         </div>
@@ -31,19 +30,19 @@
 
     <ng-container [ngSwitch]="message.isInvite">
       <section *ngSwitchCase="'PENDING'" class="message other invite">
-          <h2>Private game</h2>
+          <h2>{{inviteMode}} game</h2>
           <div>
             <button (click)="redirectToGame()">Go to game</button>
           </div>
         </section>
         <section *ngSwitchCase="'ACCEPTED'" class="message other invite">
-          <h2>Private game</h2>
+          <h2>{{inviteMode}} game</h2>
           <div>
             <button>Invite already accepted</button>
           </div>
         </section>
         <section *ngSwitchCase="'OUTDATED'" class="message other invite">
-          <h2>Private game</h2>
+          <h2>{{inviteMode}} game</h2>
           <div>
             <button>Invite Outdated</button>
           </div>

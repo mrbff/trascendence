@@ -4,6 +4,7 @@ import { io } from 'socket.io-client';
 import { AuthService } from '../auth/auth.service';
 import { UserService } from './user.service';
 import { Observable } from 'rxjs';
+import { UserInfo } from '../../models/userInfo.model';
 import { lastValueFrom } from 'rxjs';
 
 @Injectable({
@@ -58,9 +59,8 @@ export class ChatGateway {
     this.socket.emit('ChannelModMsg', { sender:this.userService.getUser(), channel:channel, message:message, username:username, status:status });
   }
 
-  sendInviteMsg(channelId : string, username: string) {
-    console.log('Sending invite to', username);
-    this.socket.emit('InviteMsg', { channelId: channelId, sender:this.userService.getUser(), username:username });
+  sendInviteMsg(channelId : string, username: string, mode: string) {
+    this.socket.emit('InviteMsg', { channelId: channelId, sender:this.userService.getUser(), username:username, mode: mode });
   }
 
   createNewChannel(channelName:string, users:string[], creator:string, groupType:string, password:string) {
@@ -69,6 +69,10 @@ export class ChatGateway {
 
   changePassword(id: string, password: string, channelType: string) {
     this.socket.emit('ChangePassword', { id, password, channelType });
+  }
+
+  gameAccepted(user: string, id :string, enemy: string) {
+    this.socket.emit('emitGameAccepted', { user, id, enemy });
   }
 
   onCreatedNewPublicChannel() {
@@ -114,6 +118,16 @@ export class ChatGateway {
   onReceiveMsgForChannel() {
     return new Observable((observer) => {
       this.socket.on('ReceiveMsgForChannel', (data) => {
+        observer.next(
+          data
+        );
+      });
+    });
+  }
+
+  onGameAccepted() {
+    return new Observable((observer) => {
+      this.socket.on('GameAccepted', (data) => {
         observer.next(
           data
         );
@@ -248,5 +262,10 @@ export class ChatGateway {
         }
       );
     console.log('After HTTP PATCH request');
+  }
+
+  //fuori scoop poi lo metton nel file giusto
+  getUser(user: string): Observable<UserInfo> {
+    return this.httpClient.get<UserInfo>(`/nest/channels/user/${user}`);
   }
 }

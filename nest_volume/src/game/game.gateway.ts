@@ -52,38 +52,25 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		client.emit("connection-status", true);
 		// console.log("QUERY => ", query);
 		let element = {username: query.name as string, id:query.id as string, client: client}
+		if (query.setup){
+			this.inviteSetup(element);
+			return;
+		}
 		for (var room of this.rooms)
 		{
 			if (room.data.id1.toString() === element.id){
-				if (room.data.inviteGame){
-					if (query.invited != room.data.inviteGame)
-						continue ;
-					else{
-						clearTimeout(room.data.deleteTimer);
-						client.emit('opponent-found', {username: (await this.userData.findOne(room.data.id2)).username, seat: 1});
-					}
-				}
 				room.data.player1 = client;
 				client.join(room.name);
 				return
 			} else if (room.data.id2.toString() === element.id){
-				if (room.data.inviteGame){
-					if (query.invited != room.data.inviteGame)
-						continue ;
-					else{
-						clearTimeout(room.data.deleteTimer);
-						client.emit('opponent-found', {username: (await this.userData.findOne(room.data.id1)).username, seat: 2});
-					}
-				}
 				room.data.player2 = client;
 				client.join(room.name);
 				return
 			}
 		}
-		if (query.setup){
+		if (query.invited)
 			this.inviteSetup(element);
-		}
-		else {
+		else{
 			if (query.gameMode === "normal"){
 				this.normalQueue.push(element);
 				this.matchmake(this.normalQueue, "normal");
@@ -145,26 +132,43 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		}
 	}
 
-	inviteSetup(user: {username: string, id: string, client: Socket}){
-		let roomName = `room_${Math.random().toString(36).substring(2, 8)}`;
-		let room = {
-			name: roomName,
-			data: {
-				player1: user.client,
-				id1: parseInt(user.id),
-				player2: user.client,
-				id2: parseInt(user.client.handshake.query.friendId as string),
-				score1: 0,
-				score2: 0,
-				winner: -1,
-				mode: user.client.handshake.query.gamemode as string,
-				playersReady: new Set(),
-				inviteGame: user.client.handshake.query.inviteId as string,
-			} as GameInfo};
-		this.rooms.push(room);
-		room.data.deleteTimer = setTimeout(() => {
-			this.rooms.splice(this.rooms.indexOf(room), 1);
-		}, 120000);
+	async inviteSetup(user: {username: string, id: string, client: Socket}){
+		let room = this.rooms.find((room: {name: string, data: GameInfo}) =>{
+			return room.data.inviteGame == user.client.handshake.query.invited
+		});
+		if (room){
+			console.log("INV");
+			user.client.join(room.name);
+			room.data.id1 = parseInt(user.id);
+			room.data.player1 = user.client;
+			user.client.emit('opponent-found', {username: (await this.userData.findOne(room.data.id2)).username, seat: 1});
+			room.data.player2.emit('opponent-found', {username: (await this.userData.findOne(room.data.id1)).username, seat: 2});
+			clearTimeout(room.data.deleteTimer);
+		}
+		else{
+			let roomName = `room_${Math.random().toString(36).substring(2, 8)}`;
+			room = {
+				name: roomName,
+				data: {
+					player1: user.client,
+					id1: -1,
+					player2: user.client,
+					id2: parseInt(user.id),
+					score1: 0,
+					score2: 0,
+					winner: -1,
+					mode: user.client.handshake.query.gamemode as string,
+					playersReady: new Set(),
+					inviteGame: user.client.handshake.query.invited,
+				} as GameInfo};
+			this.rooms.push(room);
+			room.data.deleteTimer = setTimeout(() => {
+				this.rooms.splice(this.rooms.indexOf(room!), 1);
+				room!.data.player2.emit("invite-expired");
+				room!.data.player2.disconnect();
+			}, 10000);
+			user.client.join(roomName);
+		}
 	}
 
 

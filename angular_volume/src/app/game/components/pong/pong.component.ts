@@ -1,5 +1,5 @@
 import { UserInfo } from '../../../models/userInfo.model';
-import { EventEmitter, Component, HostListener, OnInit, ViewChild, OnDestroy, AfterViewChecked, Output } from '@angular/core';
+import { Component, HostListener, OnInit, ViewChild, OnDestroy, AfterViewChecked, Output } from '@angular/core';
 import { UserService } from 'src/app/core/services/user.service';
 import { PongGateway } from 'src/app/core/services/game.gateway';
 import * as BABYLON from '@babylonjs/core';
@@ -50,6 +50,7 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 			this.canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
 			if (this.canvas && !this.scene) {
 				this.scene = this.gate.start(this.canvas);
+				this.userData.setIsPlaying(this.user.id, true);
 			}
 		}
 	}
@@ -72,11 +73,11 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 					this.gate.onOpponentFound().subscribe({
 						next: (found) => {
 							// console.log('creating a new $subOppent in circle');
-							this.opponentConnected = true;
 						},
 					});
 					this.gate.onGameFinish().subscribe((data: {won: boolean, matchId: number}) =>{
 						// console.log(`game finished\nwon: ${data.won}`);
+						this.userData.setIsPlaying(this.user.id, false);
 						if (data.won)
 							this.userData.updateWinnLoss(this.user.id, {res: 'Won', matchId: data.matchId});
 						else

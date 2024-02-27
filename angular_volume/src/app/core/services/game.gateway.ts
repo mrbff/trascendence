@@ -7,6 +7,7 @@ import * as BABYLON from "@babylonjs/core";
 import "@babylonjs/loaders/glTF";
 import * as GUI from '@babylonjs/gui';
 import { UserInfo } from 'src/app/models/userInfo.model';
+import { UserService } from './user.service';
 
 @Injectable()
 export class PongGateway {
@@ -27,7 +28,7 @@ export class PongGateway {
 	private readyPing!: NodeJS.Timeout;
 	public connected = new Subject<boolean>();
 
-	constructor(private ngZone: NgZone, private router: Router) {
+	constructor(private ngZone: NgZone, private router: Router, private userData: UserService) {
 	}
 	
 	connect(gameMode: string, user: UserInfo, inviteId: string) {
@@ -101,9 +102,11 @@ onOpponentFound(): Observable<{username: string}> {
 			this.ballHandler();
 			this.onGameFinish();
 			this.onOpponentDisconnected();
+			this.onInviteOutdated();
 			this.createScene(canvas);
 			this.scene.executeWhenReady(() => this.renderScene());
 		});
+
 		return(this.scene);
 	}
 	
@@ -585,6 +588,14 @@ onOpponentFound(): Observable<{username: string}> {
 			var victoryScreen = this.HUD.getControlByName('victory')!;
 			victoryScreen.isVisible = true;
 			button.isVisible = true;
+			this.userData.setIsPlaying(this.user.id, false);
+		});
+	}
+
+	onInviteOutdated(){
+		this.socket.on('invite-expired', () => {
+			alert("Invite expired");
+			this.router.navigate(['/transcendence/home/'])
 		});
 	}
 }

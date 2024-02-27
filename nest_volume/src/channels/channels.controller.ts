@@ -1,4 +1,3 @@
-import { PassportModule } from '@nestjs/passport';
 import {
   Body,
   ConsoleLogger,
@@ -377,7 +376,7 @@ export class ChannelsController {
       if (channel.type === 'PUBLIC' || channel.type === 'PRIVATE') {
         const member = channel.members.find((member) => member.user.username === username);
         if (member) {
-          return { type: member.status };
+          return { type: member.status, status: member.status, muteEndTime: member.muteEndTime };
         } else {
           return { type: 'KICKED' };
         }
@@ -518,6 +517,21 @@ export class ChannelsController {
       return messages;
     }
 
+    @Get('user/:user')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOkResponse()
+    async getUser(
+      @Param('user') user: string,
+    ) {
+      const userInfo = await this.prisma.user.findUnique({
+        where: {
+          username: user,
+        },
+      });
+      return userInfo;
+    }
+
     @Patch('changeGameStatus/:gameId')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
@@ -527,20 +541,6 @@ export class ChannelsController {
       @Body ('status') inf: { status : string, msgId: number},
     ) {
       console.log('changeGameStatus', gameId, inf.status, inf.msgId);
-      // const game = await this.prisma.gameinvite.findUnique({
-      //   where: {
-      //     id: gameId as number,
-      //   },
-      // });
-      // if (game) {
-      //   await this.prisma.gameinvite.update({
-      //     where: {
-      //       id: gameId,
-      //     },
-      //     data: {
-      //       status: 'ACCEPTED',
-      //     },
-      //   });
         await this.prisma.message.update({
           where: {
             id: inf.msgId,

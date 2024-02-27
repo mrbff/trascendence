@@ -137,9 +137,9 @@ export class UsersController {
 	@Param('id', ParseIntPipe) id: number,
 	@Body() newImg: any,
 	) {
-	if (user.id == id) {
-		return await this.usersService.updateImg(id, newImg.newImg);
-	}
+		if (user.id == id) {
+			return await this.usersService.updateImg(id, newImg.newImg);
+		}
 	}
 
 	@Patch('online/:id')

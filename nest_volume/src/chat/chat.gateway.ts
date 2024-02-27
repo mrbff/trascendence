@@ -12,7 +12,6 @@ import { UsersService } from 'src/users/users.service';
 import * as jwt from 'jsonwebtoken';
 import {JwtPayload} from 'jsonwebtoken'
 import { ChannelsService } from 'src/channels/channels.service';
-import { ConsoleLogger } from '@nestjs/common';
 type MyJwtPayload = {
   userId: number,
 } & JwtPayload;
@@ -180,6 +179,16 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     await this.channelsService.changePassword(id, password, channelType);
   }
 
+  @SubscribeMessage('emitGameAccepted')
+  async gameAccepted(client: Socket, payload: { user: string, id: string, enemy: string}) {
+    const { user, id, enemy } = payload;
+    try {
+      userSocketMap[user].emit('GameAccepted', { user, id, enemy });
+    } catch (error) {
+      console.log(`cant invite: ${user} is offline`);
+    }
+  }
+
   @SubscribeMessage('ChannelMsg')
   async handleChannelMsg(client: Socket, payload: { sender: string, channel: string, message: string }) {
     const { sender, channel, message } = payload;
@@ -197,7 +206,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   @SubscribeMessage('InviteMsg')
-  async handleInviteMsg(client: Socket, payload: { channelId: string, sender: string, username: string }) {
+  async handleInviteMsg(client: Socket, payload: { channelId: string, sender: string, username: string, mode: string }) {
     const { channelId, sender, username } = payload;
     try {
       console.log("invite", sender, username);
@@ -205,7 +214,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       if (ids === null) {
         return;
       }
-      const invId = payload.username + ":" + ids;
+      const invId = payload.username + ":" + ids + ":" + payload.mode;
       const {id} = await this.channelsService.createInviteChannelMessage(channelId, invId, sender);
       setTimeout(() => {this.channelsService.updateInviteStatus(channelId, id, sender, username)}, 1000 * 10);
       const ch = await this.channelsService.getChannelById(channelId);

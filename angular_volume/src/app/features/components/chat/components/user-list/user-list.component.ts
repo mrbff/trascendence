@@ -45,6 +45,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 	attr: any;
 	players: any[] = [];
 	nowSelected: any;
+	ignoreMouseEvents = false;
 
 	constructor(
 
@@ -165,6 +166,9 @@ export class UserListComponent implements OnInit, OnDestroy{
 	}
 
 	async togglePlayerMenu(player: any) {
+		if (this.ignoreMouseEvents) {
+			return;
+		}
 		this.nowSelected = player;
 		player.showMenu = !player.showMenu;
 
@@ -208,7 +212,7 @@ export class UserListComponent implements OnInit, OnDestroy{
 					const ch = await this.chatGateway.getChatOrCreate(this.user.username, player.name, "DIRECT");
 					id = ch.id;
 				}
-				this.chatGateway.sendInviteMsg(id, player.name);
+				this.chatGateway.sendInviteMsg(id, player.name, choise);
 				this.user.pending = true;
 			}
 			else
@@ -218,18 +222,21 @@ export class UserListComponent implements OnInit, OnDestroy{
 	}
 
 	async block(player: any): Promise<void>{
+		this.handleButtonClick();
 		await this.friendsService
 		.blockUser(player.name)
 		.then(() => (player.isBlock = true));
 	}
 
 	async unblock(player: any): Promise<void> {
+		this.handleButtonClick();
 		await this.friendsService
 		.unblockUser(player.name)
 		.then(() => (player.isBlock = false));
 	}
 
 	async mute(player: any) {
+		this.handleButtonClick();
 		const dateObject = new Date(Date.now() + 1000 * 60 * 15);
 		const hours = dateObject.getHours();
 		const minutes = dateObject.getMinutes();
@@ -241,33 +248,47 @@ export class UserListComponent implements OnInit, OnDestroy{
 	}
 
 	async unmute(player: any) {
+		this.handleButtonClick();
 		this.chatGateway.sendModChannelMsg(`${player.name} has been UNMUTED from the channel by ${this.user.username}`, this.channelId, player.name, 'ACTIVE');
 		this.chatGateway.unMuteUser(this.channelId, player.name);
 		player.isMuted = false;
 	}
 
 	async kick(player: any): Promise<void> {
+		this.handleButtonClick();
 		this.chatGateway.sendModChannelMsg(`${player.name} has been KICKED from the channel by ${this.user.username}`, this.channelId, player.name, 'KICKED');
 	}
 
 	async ban(player: any) {
+		this.handleButtonClick();
 		this.chatGateway.sendModChannelMsg(`${player.name} has been BANNED from the channel by ${this.user.username}`, this.channelId, player.name, 'BANNED');
 	}
 
 	async unban(player: any) {
+		this.handleButtonClick();
 		this.chatGateway.sendModChannelMsg(`${player.name} has been UNBANNED from the channel by ${this.user.username}`, this.channelId, player.name, 'KICKED');
 	}
 
 	async set_admin(player: any) {
+		this.handleButtonClick();
 		this.chatGateway.sendModChannelMsg(`${player.name} has been PROMOTED TO ADMIN by ${this.user.username}`, this.channelId, player.name, 'ACTIVE');
 		this.chatGateway.setAdmin(this.channelId, player.name);
 		player.role = 'ADMIN';
 	}
 
 	async rm_admin(player: any) {
+		this.handleButtonClick();
 		this.chatGateway.sendModChannelMsg(`${player.name} has been DEMOTED TO MEMBER by ${this.user.username}`, this.channelId, player.name, 'ACTIVE');
 		this.chatGateway.removeAdmin(this.channelId, player.name);
 		player.role = 'MEMBER';
 	}
 	
+
+	handleButtonClick() {
+		this.ignoreMouseEvents = true;
+	
+		setTimeout(() => {
+		  this.ignoreMouseEvents = false;
+		}, 200); 
+	  }
 }

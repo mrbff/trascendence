@@ -56,7 +56,8 @@
 
 .player-menu {
 	cursor: pointer;
-	display: none;
+	/* display: none; */
+	margin-left: 10px;
 	position: absolute;
 	background-color: #333;
 	padding: 10px;
@@ -67,7 +68,7 @@
 }
   
 .player-list div:hover .player-menu {
-	display: block;
+	/* display: block; */
 	margin-left: 10px;
 }
 

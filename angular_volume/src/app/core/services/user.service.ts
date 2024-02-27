@@ -35,23 +35,29 @@ export class UserService {
   getUser(): string {
     return this.cookieService.get('user');
   }
-
+  
   getOther(id: string): Promise<any> {
-	return lastValueFrom(this.http.get(`/nest/users/${id}`));
+    return lastValueFrom(this.http.get(`/nest/users/${id}`));
   }
-
+  
   setUserId(decodedJwt: any) {
     this.cookieService.set('id', decodedJwt.userId, 1 / 24, '/');
   }
-
+  
   getUserId(): string {
     return this.cookieService.get('id');
   }
-
+  
   deleteAllCookie() {
     this.cookieService.deleteAll('/');
   }
 
+  setIsPlaying(id: string, status: boolean): Promise<any> {
+    return lastValueFrom(
+      this.http.patch(`/nest/users/is-playing/${id}`, { newStatus: status })
+    );
+  }
+  
   async setUserAvatar(id: string, img: string): Promise<any> {
     return lastValueFrom(
       this.http.patch(`/nest/users/img/${id}`, { newImg: img })
