@@ -142,24 +142,26 @@ export class UsersService {
   }
 
   async updateWinLoss(id: number, update: {res: string, matchId: number}) {
-	if (update.res == 'Won')
-		return this.prisma.user.update({
-			where: { id: id },
-			data: { 
-				Wins: {increment: 1},
-				Played: {increment: 1},
-				matchHistory: {push: update.matchId}
-			},
-		});
-	else if (update.res == 'Lost')
-		return this.prisma.user.update({
-			where: { id: id },
-			data: {
-				Losses: {increment: 1},
-				Played: {increment: 1},
-				matchHistory: {push: update.matchId}
-			},
-		});
+  if (id != -1){
+    if (update.res == 'Won')
+      return this.prisma.user.update({
+        where: { id: id },
+        data: { 
+          Wins: {increment: 1},
+          Played: {increment: 1},
+          matchHistory: {push: update.matchId}
+        },
+      });
+    else if (update.res == 'Lost')
+      return this.prisma.user.update({
+        where: { id: id },
+        data: {
+          Losses: {increment: 1},
+          Played: {increment: 1},
+          matchHistory: {push: update.matchId}
+        },
+      });
+    }
   }
 
   async getMatchHistory(userId: number): Promise<any[]> {

@@ -58,6 +58,9 @@ export class PongGateway {
 					this.socket.on('connect_timeout', () => {
 							console.error("Socket Connection Timeout");
 					});
+					this.socket.on('disconnect', (reason) => {
+							console.error("Socket Disconnected:", reason);
+					});
 			};
 	
 			initializeSocket();
