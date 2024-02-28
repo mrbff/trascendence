@@ -55,6 +55,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   stickBottom = true;
   
   selectedChannel: any;
+  isDefined: boolean;
   
   @HostListener('window:resize', ['$event'])
   onWindowResize() {
@@ -81,6 +82,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.allRead = false;
     this.isGroup = false;
     this.isOwner = false;
+    this.isDefined = false;
   }
 
   ngAfterViewChecked(): void {
@@ -88,6 +90,14 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.scrollToBottom();
     }
     this.cdr.detectChanges();
+    if (this.messageArea && !this.isDefined) {
+      this.isDefined = true;
+      setTimeout(()=> { 
+        this.renderer.listen(this.messageArea.nativeElement, 'scroll', (event) => {
+          this.stickBottom = ((this.messageArea.nativeElement.scrollHeight - this.messageArea.nativeElement.scrollTop) == this.messageArea.nativeElement.clientHeight);
+        });
+      }, 1000);
+    }
   }
 
   private scrollToBottom(): void {
@@ -478,12 +488,6 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.chatGateway.sendLastSeen(conversation.id, this.userService.getUser());
     }
     conversation.allRead = true;
-    setTimeout(()=> { 
-      this.renderer.listen(this.messageArea.nativeElement, 'scroll', (event) => {
-        //console.log('scroll', this.messageArea.nativeElement.scrollHeight - this.messageArea.nativeElement.scrollTop, this.messageArea.nativeElement.clientHeight);
-        this.stickBottom = ((this.messageArea.nativeElement.scrollHeight - this.messageArea.nativeElement.scrollTop) == this.messageArea.nativeElement.clientHeight);
-      });
-    }, 1000);
   }
 
 
