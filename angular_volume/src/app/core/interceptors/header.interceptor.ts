@@ -36,7 +36,6 @@ export class HeaderInterceptor implements HttpInterceptor {
     return next.handle(modifiedRequest).pipe(
       finalize(() => {
         this.requestNumber--;
-        console.log(this.requestNumber);
         if (this.requestNumber == 0) {
           this.loader.setStatus(false);
         }
