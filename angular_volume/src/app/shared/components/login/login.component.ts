@@ -9,7 +9,6 @@ import { GoogleAuthService } from 'src/app/core/auth/google-auth.service';
 import { CodeService } from '../../services/code.service';
 import { StatusService } from 'src/app/core/services/status.service';
 import { RedirectionGateway } from 'src/app/core/services/redirection.gateway';
-import { convolutionPixelShader } from '@babylonjs/core/Shaders/convolution.fragment';
 
 @Component({
   selector: 'app-login',

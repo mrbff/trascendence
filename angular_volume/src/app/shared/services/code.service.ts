@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, OnDestroy } from '@angular/core';
+import { BehaviorSubject, take } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -13,6 +13,7 @@ export class CodeService {
 
   setCode(code: string) {
     this.codeSubject.next(code);
+    this.codeSubject.next(''); // is this leagal? I don't think so
   }
 
   emitCode(): Promise<string> {
