@@ -1,4 +1,3 @@
-import { ConsoleLogger } from '@nestjs/common';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { firstValueFrom, lastValueFrom } from 'rxjs';

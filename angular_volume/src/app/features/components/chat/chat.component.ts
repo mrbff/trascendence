@@ -1,4 +1,3 @@
-import { ConsoleLogger } from '@nestjs/common';
 import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription, interval, take } from 'rxjs';

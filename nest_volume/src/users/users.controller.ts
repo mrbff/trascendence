@@ -8,7 +8,6 @@ import {
   Delete,
   ParseIntPipe,
   UseGuards,
-  ConsoleLogger,
   NotFoundException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';

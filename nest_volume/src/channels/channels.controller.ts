@@ -1,11 +1,9 @@
 import {
   Body,
-  ConsoleLogger,
   Controller,
   Get,
   Param,
   Patch,
-  Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -19,8 +17,6 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GetUser } from 'src/users/users.decorator';
 import { UsersService } from 'src/users/users.service';
-import { use } from 'passport';
-import { all } from 'axios';
 
 @Controller('channels')
 @ApiTags('channels')
