@@ -44,22 +44,4 @@
         ></app-request-card>
       </div>
     </div>
-	<div class="friend-request" *ngIf="inv">
-		<div class="new-request">
-			<div class="line-s"></div>
-			<span>NEW INVITE TO GAME</span>
-			<div class="line-e"></div>
-		</div>
-		<div  class="request-box" (wheel)="onMouseWheel($event, 'request')">
-			<app-invite-card
-			class="request-card"
-			*ngFor="let invite of invites"
-			[username]="invite.username"
-			[profileImage]="invite.img"
-			[inviteId]="invite.id"
-			(reload)="loadInvites()">
-			</app-invite-card>
-		</div>
-	</div>
-  </div>
 </div>

@@ -102,7 +102,6 @@ onOpponentFound(): Observable<{username: string}> {
 			this.ballHandler();
 			this.onGameFinish();
 			this.onOpponentDisconnected();
-			this.onInviteOutdated();
 			this.createScene(canvas);
 			this.scene.executeWhenReady(() => this.renderScene());
 		});
@@ -422,7 +421,7 @@ onOpponentFound(): Observable<{username: string}> {
 		});
 		this.readyPing = setInterval(() => {
 			this.socket.emit('start');
-		}, 10000);
+		}, 7000);
 		this.engine.runRenderLoop(()=> {
 			this.scene.render();
 		});
@@ -593,7 +592,7 @@ onOpponentFound(): Observable<{username: string}> {
 	}
 
 	onInviteOutdated(){
-		this.socket.on('invite-expired', () => {
+		this.socket.on("invite-expired", () => {
 			alert("Invite expired");
 			this.router.navigate(['/transcendence/home/'])
 		});

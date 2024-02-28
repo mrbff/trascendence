@@ -55,7 +55,7 @@ export class FriendCardComponent implements OnInit, AfterViewInit {
     //console.log("Inviting to game");
     const user = this.userService.getUser();
     //this.invites.invite(this.username);
-    //console.log(this.pending);
+    console.log(this.pending);
     if (this.pending.find((x: any) => x.username === this.username) === undefined) {
     const ch = await this.chatGateway.getChatOrCreate(user, this.username, "DIRECT");
     this.chatGateway.sendInviteMsg(ch.id, this.username, "normal");

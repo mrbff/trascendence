@@ -55,14 +55,18 @@ export class ChannelsService {
     }
     const other = await this.prisma.user.findUnique({ where:{ username: username }});
     const user = await this.prisma.user.findUnique({ where:{ username: sender }});
-    await this.prisma.gameinvite.delete({
-      where: {
-        senderId_receiverId: {
-        senderId: user!.id,
-        receiverId: other!.id,
+    try {
+      await this.prisma.gameinvite.delete({
+        where: {
+          senderId_receiverId: {
+          senderId: user!.id,
+          receiverId: other!.id,
+          },
         },
-      },
-    });
+      });
+    } catch (error) {
+      console.error('invite already deleted');
+    }
   }
 
   async unMuteUser(channelId: string, username: string) {

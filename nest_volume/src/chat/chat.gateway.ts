@@ -226,7 +226,7 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       }
       const invId = payload.username + ":" + ids + ":" + payload.mode;
       const {id} = await this.channelsService.createInviteChannelMessage(channelId, invId, sender);
-      setTimeout(() => {this.channelsService.updateInviteStatus(channelId, id, sender, username)}, 1000 * 10);
+      setTimeout(() => {this.channelsService.updateInviteStatus(channelId, id, sender, username)}, 1000 * 60 * 2);
       const ch = await this.channelsService.getChannelById(channelId);
       ch?.members?.map((member: any) => {
         if (member.status === 'ACTIVE' || (member.user.username === username)) {

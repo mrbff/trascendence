@@ -40,6 +40,7 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 			if (params['invited']) {
 				this.invited = params['invited'];
 				this.start(); 
+				this.gate.onInviteOutdated();
 			}
 		});
 	}

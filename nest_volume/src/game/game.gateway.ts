@@ -94,15 +94,20 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 						let other = room.data.player2;
 						other.emit('opp-disconnect');
 						other.disconnect()
-						if (room.data.inviteGame)
-						this.prisma.gameinvite.deleteMany({
-							where: {
-							OR: [
-								{ senderId: room.data.id1, receiverId: room.data.id2 },
-								{ senderId: room.data.id2, receiverId: room.data.id1 },
-							],
-							},
-						});
+						if (room.data.inviteGame) {
+							try {
+								this.prisma.gameinvite.deleteMany({
+									where: {
+									OR: [
+										{ senderId: room.data.id1, receiverId: room.data.id2 },
+										{ senderId: room.data.id2, receiverId: room.data.id1 },
+									],
+									},
+								});
+							} catch (error) {
+								console.error('Invite already deleted:');
+							}
+						}
 						this.userData.updateWinLoss(room.data.id1, {res: "Lost", matchId: matchID})
 						this.userData.updateWinLoss(room.data.id2, {res: "Won", matchId: matchID})
 					} 

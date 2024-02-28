@@ -48,7 +48,7 @@ export class MessageComponent implements OnInit {
     this.currentTime$ = interval(1000).pipe(
       map(() => {
         const currentDate = Date.now();
-        return currentDate - 10000;
+        return currentDate - (1000 * 60 * 2);
       })
     );
 
