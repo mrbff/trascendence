@@ -49,7 +49,6 @@ export class TwoFactorAuthComponent {
   // }
 
   async onConfirm2FA() {
-    await this.status.set2fa(this.user.id, true);
     await this.googleAuth
     .validate2fa(this.user.id, this.faCode)
     .then(async (response) => {
@@ -57,6 +56,7 @@ export class TwoFactorAuthComponent {
       if (response.status !== 401) {
         this.showQr = false;
         this.faCode = '';
+        await this.status.set2fa(this.user.id, true);
         this.userService.updateUser();
       } else {
         this.faCode = '';
