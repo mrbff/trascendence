@@ -66,15 +66,15 @@ export class PongGateway {
 			initializeSocket();
 	}
 
-onOpponentFound(): Observable<{username: string}> {
-		return new Observable((observer) => {
-			this.socket.on('opponent-found', (response: {username: string; seat: number}) => {
-				this.player = response.seat;
-				this.opponent = response.username;
-				observer.next(response);
+	onOpponentFound(): Observable<{username: string}> {
+			return new Observable((observer) => {
+				this.socket.on('opponent-found', (response: {username: string; seat: number}) => {
+					this.player = response.seat;
+					this.opponent = response.username;
+					observer.next(response);
+				});
 			});
-		});
-	}
+		}
 
 	onConnectSuccessfull(): Observable<void> {
 		return new Observable((observer) => {

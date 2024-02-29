@@ -84,15 +84,15 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		for (var room of this.rooms)
 		{
 			if (room.data.player1 === client || room.data.player2 === client){
+				this.rooms.splice(this.rooms.indexOf(room), 1);
 				if (room.data.scene)
 					room.data.scene?.dispose();
 				if (room.data.mode === 'special')
 					clearInterval(room.data.timer);
 				if (room.data.winner == -1){
 					if (room.data.player1 === client){
-						let other = room.data.player2;
-						other.emit('opp-disconnect');
-						other.disconnect()
+						room.data.player2.emit('opp-disconnect');
+						room.data.player2.disconnect()
 						if (room.data.inviteGame) {
 							try {
 								await this.prisma.gameinvite.delete({
@@ -108,15 +108,16 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 							let matchID =  await this.createMatchHistory(room, client);
 							this.userData.updateWinLoss(room.data.id1, {res: "Lost", matchId: matchID})
 							this.userData.updateWinLoss(room.data.id2, {res: "Won", matchId: matchID})
+							this.userData.updateIsPlaying(room.data.id1, false);
 						}
+						console.log(`\n\nClient disconnected(pong1): ${client.id}`);
 					} 
 					else {
-						let other = room.data.player1;
-						other.emit('opp-disconnect');
-						other.disconnect();
+						room.data.player1.emit('opp-disconnect');
+						room.data.player1.disconnect();
 						if (room.data.inviteGame) {
 							try {
-							await	this.prisma.gameinvite.deleteMany({
+								await this.prisma.gameinvite.deleteMany({
 									where: {
 										id: parseInt(room.data.inviteGame),
 									},
@@ -129,10 +130,11 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 							let matchID =  await this.createMatchHistory(room, client);
 							this.userData.updateWinLoss(room.data.id2, {res: "Lost", matchId: matchID})
 							this.userData.updateWinLoss(room.data.id1, {res: "Won", matchId: matchID})
+							this.userData.updateIsPlaying(room.data.id2, false);
 						}
+						console.log(`\n\nClient disconnected(pong2): ${client.id}`);
 					}
 				}
-				this.rooms.splice(this.rooms.indexOf(room), 1);
 			}
 		}
 	}
