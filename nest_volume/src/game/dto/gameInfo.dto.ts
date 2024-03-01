@@ -19,9 +19,3 @@ export interface GameInfo{
 	playersReady: Set<string>;
 }
 
-// export const START_GAME_DATA: GameInfo = {
-// 	player: ,
-// 	opponent: ,
-// 	score1: 0,
-// 	score2: 0,
-// }

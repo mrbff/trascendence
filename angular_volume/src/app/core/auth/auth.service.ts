@@ -10,11 +10,17 @@ export class AuthService {
   saveToken(token: string) {
     if (token !== undefined) {
       this.cookieService.set('token', token, 1 / 24, '/');
+	  localStorage.setItem('token', token);
+	  sessionStorage.setItem('token', token);
     }
   }
 
   getToken(): string {
     return this.cookieService.get('token');
+  }
+
+  getLocalToken() {
+	return localStorage.getItem('token');
   }
 
   decodeToken(token: string): any {
