@@ -164,7 +164,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 					score1: 0,
 					score2: 0,
 					winner: -1,
-					mode: user.client.handshake.query.gamemode as string,
+					mode: user.client.handshake.query.gameMode as string,
 					playersReady: new Set(),
 					inviteGame: user.client.handshake.query.invited,
 				} as GameInfo};

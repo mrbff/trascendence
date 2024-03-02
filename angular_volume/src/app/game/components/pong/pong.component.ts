@@ -24,6 +24,7 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 	scene!: BABYLON.Scene;
 	gameMode: string = "normal";
 	invited: string | undefined;
+	loadingScreen!: HTMLElement;
 
 	
 	constructor(
@@ -39,6 +40,7 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 			//console.log(params);
 			if (params['invited']) {
 				this.invited = params['invited'];
+				this.gameMode = params['mode'];
 				this.start(); 
 				this.gate.onInviteOutdated();
 			}
@@ -49,8 +51,9 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 		// Check if opponent is connected and canvas is available
 		if (this.opponentConnected) {
 			this.canvas = document.getElementById('renderCanvas') as HTMLCanvasElement;
+			this.loadingScreen = document.getElementById('loadingScreen') as HTMLElement;
 			if (this.canvas && !this.scene) {
-				this.scene = this.gate.start(this.canvas);
+				this.scene = this.gate.start(this.canvas, this.loadingScreen);
 				this.userData.setIsPlaying(this.user.id, true);
 			}
 		}

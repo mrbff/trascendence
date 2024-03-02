@@ -9,6 +9,24 @@ import * as GUI from '@babylonjs/gui';
 import { UserInfo } from 'src/app/models/userInfo.model';
 import { UserService } from './user.service';
 
+class CustomLoadingScreen implements BABYLON.ILoadingScreen {
+	//optional, but needed due to interface definitions
+	loadingUIBackgroundColor!: string;
+	loadingUIText!: string
+	constructor(private loadingScreen: HTMLElement) {}
+	public displayLoadingUI() {
+
+	}
+  
+	public hideLoadingUI() {
+		this.loadingScreen.className = "loaded";
+		setTimeout(() => {
+			this.loadingScreen.style.display = "none";
+		}, 1000);
+	}
+  }
+
+
 @Injectable()
 export class PongGateway {
 
@@ -34,7 +52,6 @@ export class PongGateway {
 	connect(gameMode: string, user: UserInfo, inviteId: string | undefined) {
 			this.gameMode = gameMode;
 			this.user = user;
-			//console.log(gameMode);
 			this.connected.next(false);
 			const initializeSocket = () => {
 					this.socket = io('/pong', {
@@ -42,7 +59,7 @@ export class PongGateway {
 							reconnection: true,
 							reconnectionDelay: 60000,
 							timeout: 180000,
-							query: { gameMode, name: user.username, id: user.id, invited: inviteId },
+							query: { gameMode: this.gameMode , name: user.username, id: user.id, invited: inviteId },
 					});
 					this.socket.on('connection-status', (response) => {
 							if (!response) {
@@ -96,7 +113,7 @@ export class PongGateway {
 	//------------------------------------------------------------------------------------------------------------------------//
 
 
-	start(canvas: HTMLCanvasElement): BABYLON.Scene {
+	start(canvas: HTMLCanvasElement, loadingScreen: HTMLElement): BABYLON.Scene {
 		this.ngZone.runOutsideAngular(() => {
 			this.waitForPlayer();
 			this.onScoreUpdate();
@@ -105,7 +122,7 @@ export class PongGateway {
 			this.ballHandler();
 			this.onGameFinish();
 			this.onOpponentDisconnected();
-			this.createScene(canvas);
+			this.createScene(canvas, loadingScreen);
 			this.scene.executeWhenReady(() => this.renderScene());
 		});
 
@@ -113,8 +130,10 @@ export class PongGateway {
 	}
 	
 	
-	async createScene(canvas: HTMLCanvasElement){
+	async createScene(canvas: HTMLCanvasElement, loadingDiv: HTMLElement){
 		this.engine = new BABYLON.Engine(canvas, true, {stencil: true});
+		var loadingScreen = new CustomLoadingScreen(loadingDiv);
+		this.engine.loadingScreen = loadingScreen;
 		if (this.scene) {
 			this.scene.dispose();
 		}

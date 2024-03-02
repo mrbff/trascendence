@@ -31,7 +31,31 @@
 
 
 <ng-template #maingame>
-	<canvas id="renderCanvas" *ngIf="opponentConnected; else findingOpponent" class="game"> </canvas>
+	<ng-container *ngIf="opponentConnected; else findingOpponent">
+		<div id="loadingScreen" class="loading-screen">
+			<div style="display: flex;
+				width: 18%;
+				align-items: center;
+				justify-content: space-evenly;">
+				<H1 class="titles">Loading</H1>
+				<div class="dot-flashing"></div>
+			</div>
+				
+			<div id="tutorial" style="display: flex;">
+				<div class="controls">
+					<h2 class="titles">Move Racket</h2>
+					<img src="../../../../assets/W.png" alt="">
+					<img src="../../../../assets/S.png" alt="">
+				</div>
+				<div class="controls">
+					<h2 class="titles">Move Camera</h2>
+					<img src="../../../../assets/LMB.png" alt="">
+					<img src="../../../../assets/RMB.png" alt="">
+				</div>
+			</div>
+		</div>
+		<canvas id="renderCanvas"  class="game"> </canvas>
+	</ng-container>
 
 	<ng-template #findingOpponent>
 		<div class="container">

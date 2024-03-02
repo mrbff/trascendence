@@ -95,7 +95,7 @@ export class MessageComponent implements OnInit {
 
   redirectToGame() {
     if (this.message.user != this.userService.getUser()){
-      this.router.navigate(['/transcendence/pong'], {queryParams: {invited: this.message.msg.split(":")[1]}})
+      this.router.navigate(['/transcendence/pong'], {queryParams: {invited: this.message.msg.split(":")[1], mode: this.inviteMode}})
       this.chatGateway.gameAccepted(this.message.user, this.message.msg.split(":")[1], this.message.msg.split(":")[0]);
       this.chatGateway.postChangeGameStatus(parseInt(this.message.msg.split(":")[1]) as number, 'ACCEPTED', this.message.id);
     }
