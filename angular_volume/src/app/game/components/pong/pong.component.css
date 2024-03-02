@@ -54,6 +54,9 @@ text {
 
 .controls {
 	margin: 15px;
+	padding: 15px;
+    border: 1px solid orange;
+    border-radius: 40px;
 }
 
 .controls img{
