@@ -71,8 +71,8 @@ export class ChatGateway {
     this.socket.emit('ChangePassword', { id, password, channelType });
   }
 
-  gameAccepted(user: string, id :string, enemy: string) {
-    this.socket.emit('emitGameAccepted', { user, id, enemy });
+  gameAccepted(user: string, id :string, enemy: string, mode: string | undefined) {
+    this.socket.emit('emitGameAccepted', { user, id, enemy, mode });
   }
 
   onCreatedNewPublicChannel() {

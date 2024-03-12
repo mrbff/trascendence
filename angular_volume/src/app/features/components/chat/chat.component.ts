@@ -220,7 +220,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
                 });
         
                 snackBarRef.onAction().subscribe(() => {
-                  this.router.navigate(['/transcendence/pong'], { queryParams: { invited: data.id } });
+                  this.router.navigate(['/transcendence/pong'], { queryParams: { invited: data.id, mode: data.mode } });
                 });
               }
             }

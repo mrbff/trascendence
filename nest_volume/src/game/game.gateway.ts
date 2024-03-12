@@ -178,8 +178,6 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 		}
 	}
 
-
-
 	private removeFromQueue(client: Socket) {
 		if (this.normalQueue.find((elem) => elem.client.id == client.id))
 			this.normalQueue = this.normalQueue.filter((elem) => elem.client.id !== client.id);
@@ -335,7 +333,6 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
 		}
 	}
-
 
 	initHandlers(room: {name:string; data: GameInfo}) {
 		var ball = room.data.scene?.getMeshByName('ball')!;
