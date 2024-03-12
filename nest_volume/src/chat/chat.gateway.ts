@@ -191,10 +191,10 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   @SubscribeMessage('emitGameAccepted')
-  async gameAccepted(client: Socket, payload: { user: string, id: string, enemy: string}) {
-    const { user, id, enemy } = payload;
+  async gameAccepted(client: Socket, payload: { user: string, id: string, enemy: string, mode : string | undefined}) {
+    const { user, id, enemy, mode } = payload;
     try {
-      userSocketMap[user].emit('GameAccepted', { user, id, enemy });
+      userSocketMap[user].emit('GameAccepted', { user, id, enemy, mode });
     } catch (error) {
       //console.log(`cant invite: ${user} is offline`);
     }
