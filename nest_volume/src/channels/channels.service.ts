@@ -3,8 +3,6 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UsersService } from "src/users/users.service";
 import { UserStatus } from '@prisma/client';
-import { userInfo } from 'os';
-
 
 @Injectable()
 export class ChannelsService {
@@ -304,50 +302,50 @@ export class ChannelsService {
     
   }
 
-  async createDirectMessage(receiverName: string, content: string, username: string) {
-    const sender = await this.usersService.findUserByName(username);
-    const receiver = await this.usersService.findUserByName(receiverName);
-    let channel = await this.prisma.channel.findFirst({
-      where: {
-        type: "DIRECT",
-        AND:[
-          {
-            members:{
-              some:{
-                userId:sender.id
-              }
-            }
-          },
-          {
-            members:{
-              some:{
-                userId:receiver.id
-              }
-            }
-          }
-        ]
-      },
-    });
-    let newChannel = false;
-    if (!channel) {
-      newChannel = true;
-      channel = await this.createDirect(username, receiverName);
-    }
-  
-    await this.prisma.message.create({
-      data: {
-        channelId: channel.id,
-        senderId: sender.id,
-        content: content,
-        isInvite: "FALSE"
-      },
-    });
-    return {newChannel, 
-      channel: {
-        ...channel,
-        members: [{username: sender.username }, {username: receiver.username}]
-      }};
-  }  
+  // async createDirectMessage(receiverName: string, content: string, username: string) {
+  //   const sender = await this.usersService.findUserByName(username);
+  //   const receiver = await this.usersService.findUserByName(receiverName);
+  //   let channel = await this.prisma.channel.findFirst({
+  //     where: {
+  //       type: "DIRECT",
+  //       AND:[
+  //         {
+  //           members:{
+  //             some:{
+  //               userId:sender.id
+  //             }
+  //           }
+  //         },
+  //         {
+  //           members:{
+  //             some:{
+  //               userId:receiver.id
+  //             }
+  //           }
+  //         }
+  //       ]
+  //     },
+  //   });
+  //   let newChannel = false;
+  //   if (!channel) {
+  //     newChannel = true;
+  //     channel = await this.createDirect(username, receiverName);
+  //   }
+  //
+  //   await this.prisma.message.create({
+  //     data: {
+  //       channelId: channel.id,
+  //       senderId: sender.id,
+  //       content: content,
+  //       isInvite: "FALSE"
+  //     },
+  //   });
+  //   return {newChannel, 
+  //     channel: {
+  //       ...channel,
+  //       members: [{username: sender.username }, {username: receiver.username}]
+  //     }};
+  // }  
 
   async findDirChannel(sender : string, username : string) {
     const ch = await this.prisma.channel.findFirst({
