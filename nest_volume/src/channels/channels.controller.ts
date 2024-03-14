@@ -138,8 +138,9 @@ export class ChannelsController {
       @Query('type') type: string,
     ) {
       if (type === 'DIRECT') {
-        try {
-          const channel = await this.prisma.channel.findFirstOrThrow({
+      try {
+        const channel = await this.prisma.$transaction(async (prisma) => {
+          const existingChannel = await prisma.channel.findFirst({
             where: {
               type: type as 'DIRECT' | 'PUBLIC' | 'PRIVATE',
               AND: [
@@ -155,54 +156,60 @@ export class ChannelsController {
                 {
                   members: {
                     some: {
-                      user: {
-                        username: otherusername,
-                      },
+                    user: {
+                      username: otherusername,
+                    },
                     },
                   },
                 },
               ],
             },
           });
-          if (channel.lastSeen.find((seen) => seen === username)) {
-            return {...channel, allRead : true};
-          } else {
-            return {...channel, allRead : false};
-          }
-        } catch (error: any) {
-          const user = await this.prisma.user.findUnique({
-            where: {
-              username: username,
-            },
-          });
-          const otherUser = await this.prisma.user.findUnique({
-            where: {
-              username: otherusername,
-            },
-          });
-          const newChannel = await this.prisma.channel.create({
-            data: {
-              type: type as any,
-            },
-          });
-          await this.prisma.channelMembership.create({
-            data: {
-              user: { connect: { id: user!.id } },
-              channel: { connect: { id: newChannel.id } },
-              status: 'ACTIVE',
-              role: 'MEMBER',
+          if (existingChannel) {
+            if (existingChannel.lastSeen.find((seen) => seen === username)) {
+              return { ...existingChannel, allRead: true };
+            } else {
+              return { ...existingChannel, allRead: false };
             }
+          } else {
+            const user = await prisma.user.findUnique({
+              where: {
+                username: username,
+              },
+            });
+            const otherUser = await prisma.user.findUnique({
+              where: {
+                username: otherusername,
+              },
+            });
+            const newChannel = await prisma.channel.create({
+              data: {
+                type: type as any,
+              },
+            });
+            await prisma.channelMembership.create({
+              data: {
+                user: { connect: { id: user!.id } },
+                channel: { connect: { id: newChannel.id } },
+                status: 'ACTIVE',
+                role: 'MEMBER',
+              },
           });
-          await this.prisma.channelMembership.create({
+          await prisma.channelMembership.create({
             data: {
               user: { connect: { id: otherUser!.id } },
               channel: { connect: { id: newChannel.id } },
               status: 'ACTIVE',
               role: 'MEMBER',
-            }
+            },
           });
           return newChannel;
         }
+        });
+        return channel;
+      } catch (error: any) {
+        // Handle error
+      }
       }
     }
 
