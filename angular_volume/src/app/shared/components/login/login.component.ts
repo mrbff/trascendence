@@ -125,22 +125,24 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   // USER INFO
-  private initUser(response: any) {
-	if (this.auth.getLocalToken() === null || sessionStorage.getItem('token') !== null){
-		console.log('user setup');
+  private async initUser(response: any) {
+    try {
+      const userId = await this.userService.getUserInfo();
+      if (userId) {
+        if (userId.isOnline) {            
+          this.errorMsg = 'User already online';
+          this.router.navigate(['/login']);
+        }
+      }
+    } catch (error) {
+      ;
+    }
 		this.auth.saveToken(response.accessToken);
 		this.userService.setUserId(this.auth.decodeToken(response.accessToken));
-		this.userService.setUser(response.username);
-		this.status.setStatus(this.userService.getUserId(), true);
+		this.userService.setUser(response.username); 
 		this.userService.getUserInfo().then(async (resp) => {
 		});
 		this.router.navigate(['/transcendence/home/']);
-	}
-	else{
-		this.errorMsg = 'Session already active';
-		console.log(this.auth.getLocalToken());
-	}
-
   }
 
   private isFieldEmpty(field: string): boolean {

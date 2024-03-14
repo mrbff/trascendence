@@ -75,7 +75,13 @@ export class UserService {
   }
 
   async getUserInfo(): Promise<UserInfo> {
-    return lastValueFrom(this.http.get<UserInfo>(`/nest/users/me`));
+    try {
+      const userInfo = await this.http.get<UserInfo>(`/nest/users/me`).toPromise();
+      return userInfo as UserInfo;
+    } catch (error) {
+      console.error('An error occurred while fetching user info:');
+      throw null;
+    }
   }
 
   async getAllUsers(): Promise<UserInfo[]> {

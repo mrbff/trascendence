@@ -24,6 +24,7 @@ export class RedirectionGateway {
   @SubscribeMessage('messageRequest')
   handleMessage(client: any, payload: any): void {
     const message = environment.ft_api_url;
-    this.server.emit('textMessage', { message });
+    //this.server.emit('textMessage', { message });
+    client.emit('textMessage', { message });
   }
 }
