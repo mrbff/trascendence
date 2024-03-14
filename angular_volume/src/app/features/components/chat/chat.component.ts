@@ -108,8 +108,11 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnInit(): void {
-    this.isGroup = window.localStorage.getItem('isGroup') === 'true';
-    this.isOwner = window.localStorage.getItem('isOwner') === 'true';
+    const idsLocal = this.activatedRoute.snapshot.queryParams['id'];
+    if (idsLocal == window.localStorage.getItem('idConv')?.replace(/\"/g, '')) {
+      this.isGroup = window.localStorage.getItem('isGroup') === 'true';
+      this.isOwner = window.localStorage.getItem('isOwner') === 'true';
+    }
     this.messages = [];
     this.screenW = window.innerWidth;
     this.userService.getUserInfo().then(data=>{
@@ -468,6 +471,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     }
     this.isGroup = conversation.isGroup;
     window.localStorage.setItem('isGroup', JSON.stringify(conversation.isGroup));
+    window.localStorage.setItem('idConv', JSON.stringify(conversation.id));
     conversation = conversation;
     this.messages = [];
     this.router.navigate(
