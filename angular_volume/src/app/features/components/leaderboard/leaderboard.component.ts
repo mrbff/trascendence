@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from 'src/app/core/services/user.service';
 
@@ -7,7 +7,7 @@ import { UserService } from 'src/app/core/services/user.service';
   templateUrl: './leaderboard.component.html',
   styleUrls: ['./leaderboard.component.css'],
 })
-export class LeaderboardComponent implements OnInit {
+export class LeaderboardComponent implements OnInit, OnDestroy {
   players: any;
 
   constructor(
@@ -16,6 +16,8 @@ export class LeaderboardComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.userService.patchNumberOfConnections('+');
+    window.onbeforeunload = () => this.ngOnDestroy();
     this.players = (await this.userService.getAllUsers()).sort((a: any, b: any) => {
       const getWinRatio = (player: any): number => {
           return player.Wins / (player.Wins + player.Losses) || 0;
@@ -31,4 +33,9 @@ export class LeaderboardComponent implements OnInit {
   openProfile(player: string) {
     this.router.navigate(['/transcendence/profile', player]);
   }
+
+  ngOnDestroy() {
+    this.userService.patchNumberOfConnections('-');
+  }
+
 }

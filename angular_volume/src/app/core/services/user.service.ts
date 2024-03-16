@@ -57,7 +57,27 @@ export class UserService {
       this.http.patch(`/nest/users/is-playing/${id}`, { newStatus: status })
     );
   }
+
+  patchNumberOfConnections(newConnections: string): Promise<any> {
+    try {
+      return lastValueFrom(
+        this.http.patch(`/nest/users/NumberOfConnections`, { newConnections })
+      );
+    } catch (error) {
+      console.error('An error occurred while patching number of connections :(');
+      return Promise.resolve(null);
+    }
+  }
   
+  getNumberOfConnections(): Promise<any> {
+    try {
+      return lastValueFrom(this.http.get(`/nest/users/NumberOfConnections/`));
+    } catch (error) {
+      console.error('An error occurred while fetching number of connections:');
+      throw null;
+    }
+  }
+
   async setUserAvatar(id: string, img: string): Promise<any> {
     return lastValueFrom(
       this.http.patch(`/nest/users/img/${id}`, { newImg: img })

@@ -134,6 +134,25 @@ export class UsersService {
     });
   }
 
+  async updateNumberOfConnections(id: number, newConnections: string) {
+    try {
+      if (newConnections == '+') {
+        return this.prisma.user.update({
+          where: { id: id },
+          data: { nbOfConnections: {increment: 1} },
+        });
+      } else {
+        return this.prisma.user.update({
+          where: { id: id },
+          data: { nbOfConnections: {decrement: 1} },
+        });
+      }
+    } catch (error) {
+      console.error('An error occurred while updating number of connections :(');
+      return null;
+    }
+  }
+
   async updateOnline(id: number, newStatus: boolean) {
     return this.prisma.user.update({
       where: { id: id },

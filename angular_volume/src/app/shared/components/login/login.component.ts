@@ -126,20 +126,18 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   // USER INFO
   private async initUser(response: any) {
+    this.auth.saveToken(response.accessToken);
+		this.userService.setUserId(this.auth.decodeToken(response.accessToken));
+		this.userService.setUser(response.username); 
     try {
-      const userId = await this.userService.getUserInfo();
-      if (userId) {
-        if (userId.isOnline) {            
-          this.errorMsg = 'User already online';
-          this.router.navigate(['/login']);
-        }
+      const nbrOf = await this.userService.getNumberOfConnections();
+      if (nbrOf) {            
+        this.errorMsg = 'User already online';
+        return;
       }
     } catch (error) {
       ;
     }
-		this.auth.saveToken(response.accessToken);
-		this.userService.setUserId(this.auth.decodeToken(response.accessToken));
-		this.userService.setUser(response.username); 
 		this.userService.getUserInfo().then(async (resp) => {
 		});
 		this.router.navigate(['/transcendence/home/']);

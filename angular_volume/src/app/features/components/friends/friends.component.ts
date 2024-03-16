@@ -1,15 +1,16 @@
-import { AfterViewInit, Component, HostListener, OnInit } from '@angular/core';
+import { AfterViewInit, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FriendsService } from 'src/app/core/services/friends.service';
 import {InvitesService} from 'src/app/core/services/game-invite.service'
 import { Router } from '@angular/router';
 import { Subscription, interval } from 'rxjs';
 import { startWith, switchMap } from 'rxjs/operators';
+import { UserService } from 'src/app/core/services/user.service';
 
 @Component({
   templateUrl: './friends.component.html',
   styleUrls: ['./friends.component.css'],
 })
-export class FriendsComponent implements OnInit, AfterViewInit {
+export class FriendsComponent implements OnInit, AfterViewInit, OnDestroy {
   search: string;
   placeholder: string;
   searchBox!: any;
@@ -32,6 +33,7 @@ export class FriendsComponent implements OnInit, AfterViewInit {
   private loadFriendSubscription!: Subscription;
 
   constructor(
+    private readonly userService: UserService,
     private readonly friendsService: FriendsService,
     private readonly inviteService: InvitesService,
     private readonly router: Router,
@@ -44,6 +46,8 @@ export class FriendsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    window.onbeforeunload = () => this.ngOnDestroy();
+    this.userService.patchNumberOfConnections('+');
     this.loadFriend();
     this.loadInvitesSubscription = interval(1000).pipe(
       startWith(0), // So that it runs immediately as well
@@ -56,6 +60,7 @@ export class FriendsComponent implements OnInit, AfterViewInit {
   }
 
   ngOnDestroy() {
+    this.userService.patchNumberOfConnections('-');
     if (this.loadInvitesSubscription) {
         this.loadInvitesSubscription.unsubscribe();
     }

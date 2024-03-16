@@ -17,7 +17,11 @@ export class Enlarge extends Power {
 		setTimeout(()=> {this.end(target)}, 20000);
 	}
 	override end(target: BABYLON.AbstractMesh): void {
-		target.scaling.y = 1;
+		if (target) {
+			if (target.scaling) {
+				target.scaling.y = 1;
+			}
+		}
 	}
 }
 
@@ -29,7 +33,11 @@ export class Speed extends Power {
 		setTimeout(()=> {this.end(target)}, 15000);
 	}
 	override end(target: BABYLON.AbstractMesh): void {
-		target.metadata.speed = 1;
+		if (target) {
+			if(target.metadata) {
+				target.metadata.speed = 1;
+			}
+		}
 	}
 }
 
@@ -41,6 +49,10 @@ export class Shield extends Power {
 		setTimeout(()=> {this.end(target)}, 10000);
 	}
 	override end(target: BABYLON.AbstractMesh): void {
-		target.metadata.shield.visibility = 0;
+		if (target) {
+			if(target.metadata) {
+				target.metadata.shield.visibility = 0;
+			}
+		}
 	}
 }

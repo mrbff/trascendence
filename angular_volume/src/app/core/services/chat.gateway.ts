@@ -250,6 +250,10 @@ export class ChatGateway {
     return this.httpClient.get<any>(`/nest/channels/getMessagesPenidng/${empty}`);
   }
 
+  getHowIBlock(id : string): Promise<any> {
+    return lastValueFrom(this.httpClient.get<any>(`/nest/channels/getHowIBlock/${id}`));
+  }
+
   postChangeGameStatus(gameId: number, status: string, msgId: number) {
     //console.log('Before HTTP PATCH request');
     return this.httpClient.patch(`/nest/channels/changeGameStatus/${gameId}`, {status :{status: status, msgId: msgId}})

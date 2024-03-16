@@ -19,7 +19,7 @@ export class OAuth2Service {
       const response = await lastValueFrom(this.http.post('/nest/auth/42', { code }).pipe(
         catchError((error) => {
           // Handle the error here or rethrow it
-          console.error('HTTP request error:', error);
+          console.error('HTTP request error :)');
           throw error;
         })
       ));

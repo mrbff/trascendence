@@ -147,6 +147,8 @@ export class PongGateway {
 		//------------------------- AMBIENT -------------------------------//
 		this.camera = new BABYLON.ArcRotateCamera('camera', 0, 0.5, 100, BABYLON.Vector3.Zero(), this.scene);
 		this.camera.setTarget(BABYLON.Vector3.Zero());
+		this.camera.lowerRadiusLimit = 10;
+		this.camera.upperRadiusLimit = 100;
 		// This attaches the camera to the canvas
 		this.camera.attachControl(canvas, true);
 	

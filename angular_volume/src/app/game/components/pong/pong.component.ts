@@ -35,7 +35,8 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 	
 	public async  ngOnInit() {
 		this.user = await this.userData.getUserInfo();
-
+		this.userData.patchNumberOfConnections('+');
+		window.onbeforeunload = () => this.ngOnDestroy();
 		this.route.queryParams.subscribe((params) => {
 			//console.log(params);
 			if (params['invited']) {
@@ -66,6 +67,8 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 			this.$subOppent.unsubscribe();
 		if (this.$sub)
 			this.$sub.unsubscribe();
+		this.userData.patchNumberOfConnections('-');
+		this.userData.setIsPlaying(this.user.id, false);
 	}
 
 	start() {
@@ -95,10 +98,10 @@ export class PongComponent implements OnInit , OnDestroy, AfterViewChecked{
 
 	@HostListener('window:keydown', ['$event'])
 	onKeyDown(e: any) {
-		if (e.code === 'KeyW' || e.code === 'ArrowUp') {
+		if (e.code === 'KeyW') {
 			this.gate.moveRacket('up');
 		}
-		if (e.code === 'KeyS' || e.code === 'ArrowDown') {
+		if (e.code === 'KeyS') {
 			this.gate.moveRacket('down');
 		}
 	}

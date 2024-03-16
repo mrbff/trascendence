@@ -1,6 +1,6 @@
 import { AfterViewChecked, Component, ElementRef, HostListener, OnDestroy, OnInit, Renderer2, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription, interval, take } from 'rxjs';
+import { Subscription, interval } from 'rxjs';
 import { ChatGateway } from 'src/app/core/services/chat.gateway';
 import { UserService } from 'src/app/core/services/user.service';
 import { Router } from '@angular/router';
@@ -9,6 +9,7 @@ import { PasswordComponent } from './components/password/password.component';
 import { LeaveChannelComponent } from './components/leave-channel/leave-channel.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { take } from 'rxjs/operators';
 
 class Pending {
   status: boolean = false;
@@ -108,6 +109,8 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnInit(): void {
+    window.onbeforeunload = () => this.ngOnDestroy();
+    this.userService.patchNumberOfConnections('+');
     const idsLocal = this.activatedRoute.snapshot.queryParams['id'];
     if (idsLocal == window.localStorage.getItem('idConv')?.replace(/\"/g, '')) {
       this.isGroup = window.localStorage.getItem('isGroup') === 'true';
@@ -247,6 +250,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
                 return channel;
               });
             }
+
             if (!isListed) {
               this.chatGateway.getChannelByIds(messages[0].channelId).pipe(take(1)).subscribe({
                 next:(data)=>{
@@ -256,6 +260,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
                 }
               });
             }
+
             this.chatGateway.getUserList(messages[0].channelId).pipe(take(1)).subscribe({
               next:(data) => {
                 if (data.usernames === undefined) {
@@ -263,7 +268,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
                 }
                 data.usernames.forEach((username: string, i: number) => {
                   if (username === this.userService.getUser() && data.status[i] !== 'BANNED' && username !== messages[0].user) {
-                    if (this.selectedChannel === undefined || this.selectedChannel.id !== messages[0].channelId) {
+                    if ((this.selectedChannel === undefined || this.selectedChannel.id !== messages[0].channelId)) {
                       let mess; 
                       if (messages[0].isInvite === 'PENDING') {
                         mess = `${messages[0].user} invite you to play a game`;
@@ -282,13 +287,13 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
               }
             });
 
-            this.messages = [...this.messages, ...messages.filter((message:any)=> {
-              if (!this.selectedChannel) {
-                return message.members?.every((mem:string)=>mem === this.queryParams['username'] || mem === this.userService.getUser());
-              }
-              return (this.selectedChannel.id === message.channelId);
-            })];
-            
+              this.messages = [...this.messages, ...messages.filter((message:any)=> {
+                if (!this.selectedChannel) {
+                  return message.members?.every((mem:string)=>mem === this.queryParams['username'] || mem === this.userService.getUser());
+                }
+                return (this.selectedChannel.id === message.channelId);
+              })];
+
             if (this.selectedChannel !== undefined) {
               if(this.selectedChannel.id === messages[0].channelId) {
                 //console.log(messages);
@@ -461,6 +466,7 @@ export class ChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   ngOnDestroy(): void {
+    this.userService.patchNumberOfConnections('-');
     this.selectedChannel = undefined;
     this.$subs.unsubscribe();
   }

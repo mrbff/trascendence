@@ -59,6 +59,14 @@ export class UsersController {
 	}
 	}
 
+	@Get('NumberOfConnections')
+	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
+	@ApiOkResponse()
+	async getNumberOfConnections(@GetUser() user: User) {
+		return user.nbOfConnections;
+	}
+
 	@Get(':id')
 	@UseGuards(JwtAuthGuard)
 	@ApiBearerAuth()
@@ -112,20 +120,36 @@ export class UsersController {
       played: user.Played,
     };
   }
-
-  @Patch(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOkResponse()
-  async update(
-    @GetUser() user: User,
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updateUserDto: UpdateUserDto,
-  ) {
-    if (user.id == id) {
-      return await this.usersService.update(id, updateUserDto);
-    }
-  }
+  
+	@Patch('NumberOfConnections')
+	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
+	@ApiOkResponse()
+	async updateNumberOfConnections(
+	@GetUser() user: User,
+	@Body('newConnections') newConnections: string,
+	) {
+		try {
+			return await this.usersService.updateNumberOfConnections(user.id, newConnections);
+		} catch (error) {
+			console.log('auth error - ');
+			return null;
+		}
+	}
+	
+	@Patch(':id')
+	@UseGuards(JwtAuthGuard)
+	@ApiBearerAuth()
+	@ApiOkResponse()
+	async update(
+		@GetUser() user: User,
+		@Param('id', ParseIntPipe) id: number,
+		@Body() updateUserDto: UpdateUserDto,
+	) {
+		if (user.id == id) {
+		return await this.usersService.update(id, updateUserDto);
+		}
+	}
 
 	@Patch('img/:id')
 	@UseGuards(JwtAuthGuard)
@@ -140,6 +164,8 @@ export class UsersController {
 			return await this.usersService.updateImg(id, newImg.newImg);
 		}
 	}
+
+
 
 	@Patch('online/:id')
 	@UseGuards(JwtAuthGuard)

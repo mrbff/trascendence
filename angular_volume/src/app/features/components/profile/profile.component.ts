@@ -5,6 +5,7 @@ import { StatusService } from 'src/app/core/services/status.service';
 import { FriendsService } from 'src/app/core/services/friends.service';
 import { BLOCKED_USER_INFO, UserInfo } from 'src/app/models/userInfo.model';
 import { Subscription } from 'rxjs';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   templateUrl: './profile.component.html',
@@ -24,7 +25,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private readonly router: Router,
     private readonly status: StatusService,
     private readonly route: ActivatedRoute,
-    private readonly friendsService: FriendsService
+    private readonly friendsService: FriendsService,
+    private readonly cookies: CookieService,
   ) {
     this.currentUser = true;
     this.isFriend = false;
@@ -36,6 +38,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // SEARCH USER FROM PARAM IN URL
+    window.onbeforeunload = () => this.ngOnDestroy();
+    this.userService.patchNumberOfConnections('+');
     this.$userSubs.add(
       this.route.params.subscribe((params) => {
         const username = params['username'];
@@ -49,6 +53,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (this.cookies.get('user'))
+      this.userService.patchNumberOfConnections('-').catch((err) => console.error('Error auth expired'));
     if (this.$userSubs) {
       this.$userSubs.unsubscribe();
     }
@@ -89,6 +95,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   async logout() {
     await this.status.setStatus(this.user.id, false);
+    this.userService.patchNumberOfConnections('-');
     this.userService.deleteAllCookie();
     this.router.navigate(['/login']);
   }

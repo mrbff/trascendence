@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { StatusService } from 'src/app/core/services/status.service';
 import { UserService } from 'src/app/core/services/user.service';
@@ -8,7 +8,7 @@ import { UserService } from 'src/app/core/services/user.service';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit, OnDestroy{
   constructor(private readonly router: Router, private readonly userService: UserService, private readonly userStatus: StatusService) {
     const userId = this.userService.getUserId();
 		//console.log('userId', userId);
@@ -17,6 +17,15 @@ export class HomeComponent {
 		}
   }
   
+  ngOnInit() {
+    this.userService.patchNumberOfConnections('+');
+    window.onbeforeunload = () => {this.ngOnDestroy()};
+  }
+
+  ngOnDestroy() {
+    this.userService.patchNumberOfConnections('-');
+  }
+
   @HostListener('document:keydown.enter', ['$event'])
   enterKeyPressed(event: KeyboardEvent) {
     event.preventDefault();

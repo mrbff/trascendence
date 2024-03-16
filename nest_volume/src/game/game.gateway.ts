@@ -392,7 +392,7 @@ export class PongGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 				var location = new BABYLON.Vector3(24 * Math.random() - 12, 20, 40 * Math.random() - 20);
 				var power = this.getRandomPower();
 				this.server.to(room.name).emit("power-update",{position: location, power: power});
-			}, 30000);
+			}, 20000);
 		this.server.to(room.name).emit('start');
 		this.gameLoop(room, move);
 	}

@@ -19,6 +19,7 @@ model User {
   img                    String              @default("https://cdn.dribbble.com/users/2092880/screenshots/6426030/pong_1.gif")
   isOnline               Boolean             @default(false)
   isPlaying              Boolean             @default(false)
+  nbOfConnections        Int                 @default(0)
   Wins                   Int                 @default(0)
   Losses                 Int                 @default(0)
   is2faEnabled           Boolean             @default(false)

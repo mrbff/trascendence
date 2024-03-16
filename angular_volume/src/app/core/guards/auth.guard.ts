@@ -10,17 +10,17 @@ export const authGuard: CanActivateFn = async () => {
 	const cookieService: CookieService = inject(CookieService);
 	try {
 		console.log('authGuard activated');
-		let user = await userService.getUserInfo();
-		console.log(user.isOnline);
-		if (user.isOnline){
+		if (!cookieService.get('user')) {
 			router.navigate(['/login']);
-			cookieService.delete('id');
 			return false;
 		}
-		//console.log('true authGuard');
+		const nbr = await userService.getNumberOfConnections().catch((err) => {  console.error('Error auth expired'); return 0; })
+		if (nbr > 0){
+			router.navigate(['/login']);
+			return false;
+		}
 	  return true;
 	} catch (error) {
-		//console.log('false authGuard');
 		userService.deleteAllCookie();
 		router.navigate(['/login']);
 		return false;

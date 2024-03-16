@@ -520,6 +520,32 @@ export class ChannelsController {
       return messages;
     }
 
+    @Get('getHowIBlock/:id')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOkResponse()
+    async getHowIBlock(
+      @Param('id') id: string,
+    ) {
+      const users = await this.prisma.user.findUnique({
+        where: {
+          id: parseInt(id),
+        },
+        include: {
+          blockedUsers: {
+            include: {
+              blocked: {
+                select: {
+                  username: true,
+                },
+              },
+            }
+          },
+        },
+      });
+      return users?.blockedUsers.map((user) => user.blocked.username);
+    }
+
     @Get('user/:user')
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
@@ -552,8 +578,6 @@ export class ChannelsController {
             isInvite: 'ACCEPTED',
           },
         });
-      //   return { status: 'OK' };
-      // }
       return { status: 'ERROR' };
     }
 }
